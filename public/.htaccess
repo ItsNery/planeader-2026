@@ -1,0 +1,43 @@
+RewriteEngine On
+    php_value upload_max_filesize 400M
+    php_value post_max_size 400M
+    php_value max_execution_time 10000
+    php_value max_input_time 10000
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect /pdf/ to the homepage
+    RedirectMatch 301 ^/pdf/ / 
+    RedirectMatch 301 ^/PDF/ / 
+    RedirectMatch 301 ^/detalle-subcomite/ /subcomites 
+    RedirectMatch 301 ^/pagina/ /subcomites 
+    RedirectMatch 301 ^/planestatal/ /ped 
+    RedirectMatch 301 ^/secretaria/ / 
+    RedirectMatch 301 ^/registro/ / 
+    RedirectMatch 301 ^/pdfGuia/ /
+    RedirectMatch 301 ^/home /
+    Redirect 301 /FichasMuni /planesmunicipales
+    Redirect 301 /subcomites/copladep /copladep
+    Redirect 301 /subcomites/SectorialSeguidad /subcomites/subcomite-sectorial-de-seguridad-publica-justicia-y-estado-de-derecho
+    Redirect 301 /subcomites/SectorialSDR /subcomites/subcomite-sectorial-de-recuperacion-del-campo-poblano
+    Redirect 301 /subcomites/SectorialEconomia /subcomites/subcomite-sectorial-de-desarrollo-economico-para-todas-y-todos
+    Redirect 301 /subcomites/EspecialNinaninos /subcomites/subcomite-especial-de-ninas-ninos-y-adolescentes
+    Redirect 301 /subcomites/EspecialIgualSustantiva /subcomites/subcomite-especial-de-igualdad-sustantiva
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
