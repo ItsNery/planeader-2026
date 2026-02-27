@@ -107,10 +107,10 @@ class InicioController extends Controller
      */
     public function regionalizacion()
     {
-        $regiones = CatMunicipio::select('id_microrregion', 'nombre_microrregion', 'id_macrorregion', 'nombre_macrorregion',)
-            ->groupBy('id_microrregion', 'nombre_microrregion', 'id_macrorregion', 'nombre_macrorregion',) // Agrupas por todas las columnas que seleccionas para obtener combinaciones únicas
-            ->orderBy('id_microrregion', 'asc')
-            ->get();
+        // $regiones = CatMunicipio::select('id_microrregion', 'nombre_microrregion', 'id_macrorregion', 'nombre_macrorregion',)
+        //     ->groupBy('id_microrregion', 'nombre_microrregion', 'id_macrorregion', 'nombre_macrorregion',) // Agrupas por todas las columnas que seleccionas para obtener combinaciones únicas
+        //     ->orderBy('id_microrregion', 'asc')
+        //     ->get();
         $microrregiones = CatMunicipio::select('id_microrregion', 'nombre_microrregion')
             ->groupBy('id_microrregion', 'nombre_microrregion')
             ->orderBy('id_microrregion', 'asc')
@@ -121,7 +121,7 @@ class InicioController extends Controller
             ->orderBy('id_macrorregion', 'asc')
             ->get();
 
-        return view('regionalizacion', compact('regiones', 'microrregiones', 'macrorregiones'));
+        return view('regionalizacion', compact( 'microrregiones', 'macrorregiones'));
     }
 
     /**

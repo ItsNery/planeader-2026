@@ -16,6 +16,22 @@
 @endsection
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.css" />
+    <style>
+        #mi-minimapa-estatico {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000; 
+            border: 2px solid #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            background: white;
+            pointer-events: none;
+        }
+    </style>
 @endsection
 @section('content')
     <section class="contenedor-imagen-regionalizacion">
@@ -31,13 +47,10 @@
                 Puebla para fomentar un desarrollo equilibrado y sostenible.
             </p>
             <div class="row my-5">
-                {{-- Columna de la izquierda con las listas y TABS --}}
                 <div class="col-md-4">
-                    {{-- INICIO DE TABS --}}
                     <ul class="nav nav-tabs" id="regionalizacionTab" role="tablist">
 
                         <li class="nav-item" role="presentation">
-                            {{-- Tab de Macrorregiones. Atributo clave: data-capa="Macrorregiones" --}}
                             <button class="nav-link active" id="macrorregiones-tab" data-bs-toggle="tab"
                                 data-bs-target="#macrorregiones-pane" type="button" role="tab"
                                 aria-controls="macrorregiones-pane" aria-selected="false" data-capa="Macrorregiones">
@@ -45,7 +58,6 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            {{-- Tab de Microrregiones. Atributo clave: data-capa="Microrregiones" --}}
                             <button class="nav-link " id="microrregiones-tab" data-bs-toggle="tab"
                                 data-bs-target="#microrregiones-pane" type="button" role="tab"
                                 aria-controls="microrregiones-pane" aria-selected="true" data-capa="Microrregiones">
@@ -53,11 +65,7 @@
                             </button>
                         </li>
                     </ul>
-                    {{-- FIN DE TABS --}}
-
-                    {{-- CONTENIDO DE LOS TABS --}}
                     <div class="tab-content" id="regionalizacionTabContent">
-                        {{-- PANEL DE MACRORREGIONES --}}
                         <div class="tab-pane fade show active" id="macrorregiones-pane" role="tabpanel"
                             aria-labelledby="macrorregiones-tab" tabindex="0">
                             <article class="leaderboard">
@@ -70,7 +78,6 @@
                                 </header>
                                 <main class="leaderboard__profiles">
                                     <div class="container">
-                                        {{-- Buscador para Macrorregiones --}}
                                         <input type="text" id="searchMacro"
                                             onkeyup="searchNames('searchMacro', '#macrorregiones-pane')"
                                             placeholder="Buscar macrorregión..."
@@ -81,9 +88,8 @@
                                         @foreach ($macrorregiones as $region)
                                             <article class="leaderboard__profile item-region"
                                                 data-id="{{ $region->id_macrorregion }}" data-capa="Macrorregiones">
-                                                <img src="{{ asset('Regiones/2025/Macro/' . $region->id_macrorregion . '.webp') }}"
-                                                    alt="{{ $region->nombre_macrorregion }}"
-                                                    class="leaderboard__picture w-50"
+                                                <img src="{{ asset('Regiones/2026/Macro/' . $region->id_macrorregion . '.webp') }}"
+                                                    alt="{{ $region->nombre_macrorregion }}" class="leaderboard__picture w-50"
                                                     title="Ubicación de la Macrorregión {{ $region->id_macrorregion }}">
                                                 <span class="leaderboard__name">{{ $region->id_macrorregion }} -
                                                     {{ $region->nombre_macrorregion }}</span>
@@ -93,7 +99,6 @@
                                 </main>
                             </article>
                         </div>
-                        {{-- PANEL DE MICRORREGIONES --}}
                         <div class="tab-pane fade" id="microrregiones-pane" role="tabpanel"
                             aria-labelledby="microrregiones-tab" tabindex="0">
                             <article class="leaderboard">
@@ -106,134 +111,53 @@
                                 </header>
                                 <main class="leaderboard__profiles">
                                     <div class="container">
-                                        {{-- Buscador para Microrregiones --}}
                                         <input type="text" id="searchMicro"
                                             onkeyup="searchNames('searchMicro', '#microrregiones-pane')"
                                             placeholder="Buscar microrregión..."
                                             style="margin-top: 3%; margin-bottom:0; margin-left:1%; width: 98%;">
                                     </div>
-                                    {{-- La tabla es necesaria para el scroll, pero el contenido es el <main> --}}
-                                    <table class="table"
-                                        style="border-spacing: 0 !important; border-collapse: collapse !important;">
-                                        @foreach ($microrregiones as $region)
-                                            {{-- Usamos un data-id y un data-capa para saber qué buscar en el JS --}}
-                                            <article class="leaderboard__profile item-region"
-                                                data-id="{{ $region->id_microrregion }}" data-capa="Microrregiones">
-                                                <img src="{{ asset('Regiones/2025/Micro/' . $region->id_microrregion . '.webp') }}"
-                                                    alt="{{ $region->nombre_microrregion }}"
-                                                    class="leaderboard__picture w-50"
-                                                    title="Ubicación de la Región {{ $region->id_microrregion }}">
-                                                <span class="leaderboard__name">{{ $region->id_microrregion }} -
-                                                    {{ $region->nombre_microrregion }}</span>
-                                            </article>
-                                        @endforeach
-                                    </table>
-                                </main>
+                                        <table class="table"
+                                            style="border-spacing: 0 !important; border-collapse: collapse !important;">
+                                            @foreach ($microrregiones as $region)
+                                                <article class="leaderboard__profile item-region"
+                                                    data-id="{{ $region->id_microrregion }}" data-capa="Microrregiones">
+                                                    <img src="{{ asset('Regiones/2026/Micro/' . $region->id_microrregion . '.webp') }}"
+                                                        alt="{{ $region->nombre_microrregion }}"
+                                                        class="leaderboard__picture w-50"
+                                                        title="Ubicación de la Región {{ $region->id_microrregion }}">
+                                                    <span class="leaderboard__name">{{ $region->id_microrregion }} -
+                                                        {{ $region->nombre_microrregion }}</span>
+                                                </article>
+                                            @endforeach
+                                        </table>
+                                    </main>
                             </article>
                         </div>
-
-
                     </div>
-                    {{-- FIN CONTENIDO DE LOS TABS --}}
                 </div>
-
-                {{-- Columna de la derecha con el mapa --}}
                 <div class="col-md-8">
-                    <div class="mapa" id="mapa">
-                        <div class="container text-black">
-                            Seleccione una región de la lista o de clic en el mapa
-                            <a href="https://geoportal.puebla.gob.mx/" target="_blank"
-                                class="btn btn-outline-secondary btn-sm boton-geoportal">
-                                Con la tecnología del Geoportal SEI
-                            </a>
+                    <div class="mapa-wrapper" style="position: relative; width: 100%; height: 600px;">
+                        <div id="loader-mapa" class="loader-overlay" style="display: flex;">
+                            <div class="spinner"></div>
+                            <p>Cargando mapa...</p>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row my-5">
-                {{-- <div class="row">
-                    <ul class="nav nav-tabs" id="regionalizacionTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="macrorregiones-tab" data-bs-toggle="tab"
-                                data-bs-target="#macrorregiones-pane" type="button" role="tab"
-                                aria-controls="macrorregiones-pane" aria-selected="true">
-                                Macrorregiones
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="microrregiones-tab" data-bs-toggle="tab"
-                                data-bs-target="#microrregiones-pane" type="button" role="tab"
-                                aria-controls="microrregiones-pane" aria-selected="true">
-                                Microrregiones
-                            </button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="regionalizacionTabContent">
-                        <div class="tab-pane fade show active" id="macrorregiones-pane" role="tabpanel"
-                            aria-labelledby="macrorregiones-tab" tabindex="0">
-                            <div class="content-container pt-4">
-                                <div class="row">
-                                   
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="microrregiones-pane" role="tabpanel"
-                            aria-labelledby="microrregiones-tab" tabindex="0">
-                            <div class="content-container pt-4">
-                                <div class="container">
-                                    <h1>hola micro</h1>
-                                </div>
+
+                        <div class="mapa" id="mapa" style="width: 100%; height: 100%;"></div>
+                        <div id="mi-minimapa-estatico"></div>
+
+                        <!-- CONTENEDOR FLOTANTE (ABSOLUTO) -->
+                        <div class="controles-flotantes" style="position: absolute; bottom: 10px; left: 10px; z-index: 1000; pointer-events: none;">
+                            <div class="botonera-vertical" style="pointer-events: auto;">
+                                <button class="btn-info" id="btnInfo" title="Seleccione una región de la lista o haga clic en el mapa">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                <button class="btn-reset" id="btnResetMap" title="Restablecer vista">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div> --}}
-                {{-- <div class="col-md-4">
-                    <article class="leaderboard" style="">
-                        <header class="encabezado-regiones">
-                            <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" width="20%"
-                                style="padding-left:40px; padding-top:10px;" title="Mapa de Puebla en gris"
-                                alt="Mapa de Puebla en gris">
-                            <h1 class="leaderboard__title"><span class="leaderboard__title--top">Microrregiones</span>
-                            </h1>
-                        </header>
-                        <table class="table" style="border-spacing: 0 !important; border-collapse: collapse !important;">
-                            <main class="leaderboard__profiles">
-                                <div class="container">
-                                    <input type="text" id="searchInput" onkeyup="searchNames()"
-                                        placeholder="Buscar por nombre..."
-                                        style="margin-top: 3%; margin-bottom:0; margin-left:1%">
-                                </div>
-                                <tr>
-                                    <td>
-                                        @foreach ($regiones as $region)
-                                            <article class="leaderboard__profile item-region"
-                                                data-id="{{ $region->id_microrregion }}">
-                                                <img src="{{ asset('Regiones/2025/' . $region->id_microrregion . '.png') }}"
-                                                    width="100%" alt="{{ $region->nombre_microrregion }}"
-                                                    class="leaderboard__picture"
-                                                    title="Ubicación de la Región {{ $region->id_microrregion }}">
-                                                <span class="leaderboard__name">{{ $region->id_microrregion }} -
-                                                    {{ $region->nombre_microrregion }}</span>
-                                            </article>
-                                        @endforeach
-                                    </td>
-                                </tr>
-                            </main>
-                        </table>
-                    </article>
                 </div>
-                <div class="col-md-8">
-                    <div class="mapa" id="mapa">
-                        <div class="container">
-                            Seleccione una región de la lista o de clic en el mapa
-                            <a href="https://geoportal.puebla.gob.mx/" target="_blank"
-                                class="btn btn-outline-secondary btn-sm text-black"
-                                style="position: absolute; top: 41rem; left: 10px;">
-                                Con la tecnología del Geoportal SEI
-                            </a>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
         </div>
     </section>
@@ -244,8 +168,8 @@
                 Aquí podrás descargar la base de datos con la relación de las regiones y sus municipios.
             </p>
             <div class="contenedor-boton">
-                <a href="{{ asset('documentos/Regiones2025.xlsx') }}" target="_blank" class="btn-descargar"
-                    title="Base Regionalizacion 2025">
+                <a href="{{ asset('documentos/Regiones2026.xlsx') }}" target="_blank" class="btn-descargar"
+                    title="Base Regionalizacion 2026">
                     <span class="btn-descargar__texto">Consultar<br>documento</span>
 
                     <span class="btn-descargar__icono">
@@ -276,7 +200,7 @@
             var names = pane.querySelectorAll('.leaderboard__name');
 
             // Recorrer los nombres y mostrar u ocultar los elementos <article> según coincidan
-            names.forEach(function(name) {
+            names.forEach(function (name) {
                 if (name.innerHTML.toUpperCase().indexOf(filter) > -1) {
                     // Sube al elemento <article> padre para mostrarlo/ocultarlo
                     name.closest('.leaderboard__profile').style.display = '';
@@ -286,6 +210,9 @@
             });
         }
     </script>
-    <script src="{{ asset('js/mapa_regionalizacion.js') }}"></script>
-    {{-- <script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
+    {{-- <script src="{{ asset('js/mapa_regionalizacion.js') }}"></script> --}}
+    <script src="{{ asset('js/mapa_regionalizacion_v2.js') }}"></script>
+    {{--
+    <script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"></script>
 @endsection
