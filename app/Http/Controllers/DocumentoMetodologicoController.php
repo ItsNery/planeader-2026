@@ -10,6 +10,15 @@ use App\Traits\UpdatesPublicado;
 class DocumentoMetodologicoController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-doc-metodologico|crear-doc-metodologico|editar-doc-metodologico|borrar-doc-metodologico', ['only' => ['index']]);
+        $this->middleware('permission:crear-doc-metodologico', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-doc-metodologico', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-doc-metodologico', ['only' => ['destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *

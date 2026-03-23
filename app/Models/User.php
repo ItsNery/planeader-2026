@@ -13,7 +13,8 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasRoles;
+    use HasApiTokens;
+    use HasRoles;
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
@@ -60,4 +61,6 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    protected $guard_name = 'web';
 }

@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\DocumentoApoyoCoplademun;
@@ -10,6 +10,14 @@ use App\Traits\UpdatesPublicado;
 class DocumentoApoyoCoplademunController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-doc-apoyo|crear-doc-apoyo|editar-doc-apoyo|borrar-doc-apoyo', ['only' => ['index']]);
+        $this->middleware('permission:crear-doc-apoyo', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-doc-apoyo', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-doc-apoyo', ['only' => ['destroy']]);
+    }
 
     /**
      * Display a listing of the resource.

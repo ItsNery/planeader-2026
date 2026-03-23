@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -19,6 +19,8 @@ use App\Models\Capacitacion;
 
 class DashboardController extends Controller
 {
+    // El acceso al dashboard está permitido para cualquier usuario autenticado
+
     /**
      * Muestra múltiples variables en la vista protegida de Dashboard para tener un panorama amplio de la cantidad de elementos que se tienen cargados.
      *

@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\Municipio;
@@ -11,19 +11,80 @@ use Illuminate\Support\Str;
 use App\Traits\UpdatesPublicado;
 use App\Models\CatMunicipio;
 use Illuminate\Http\JsonResponse;
+use Yajra\DataTables\Facades\DataTables;
 
 class PlanMunicipalController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-plan-municipal|crear-plan-municipal|editar-plan-municipal|borrar-plan-municipal', ['only' => ['index']]);
+        $this->middleware('permission:crear-plan-municipal', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-plan-municipal', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-plan-municipal', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los planes municipales de desarrollo.
      * Se pasa la variable municipios para que se pueda acceder a los nombres de los municipios en la vista.
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $municipios = Municipio::all();
-        $planesMun = PlanMunicipal::all();
-        return view('panel-planes-municipales.index', compact('planesMun', 'municipios'));
+        if ($request->ajax()) {
+            $data = PlanMunicipal::with('municipio')->select('planes_municipales.*');
+
+            return DataTables::of($data)
+                ->addColumn('info', function ($row) {
+                    $html = '<div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">' . e($row->nombre) . '</div>';
+                    $html .= '<div class="d-flex flex-wrap gap-2 align-items-center">';
+                    $html .= '<span class="text-muted fw-bold small"><i class="fa-regular fa-calendar me-1"></i>' . e($row->periodo) . '</span>';
+                    $html .= '<span class="badge bg-light text-dark border">' . e($row->municipio->nombre) . '</span>';
+                    $html .= '</div>';
+                    return $html;
+                })
+                ->addColumn('documento', function ($row) {
+                    return '<div class="text-center"><a href="' . asset('planesmun/' . $row->ruta_documento) . '" target="_blank" title="Ver documento ' . e($row->nombre) . '"><i class="fa-solid fa-file-pdf fs-2"></i></a></div>';
+                })
+                ->addColumn('estado', function ($row) {
+                    if (auth()->user()->can('editar-plan-municipal')) {
+                        $selectedPublicado = $row->publicado ? 'selected' : '';
+                        $selectedBorrador = !$row->publicado ? 'selected' : '';
+                        return '
+                            <form action="' . route('update-publicado-plan-municipal', $row->id) . '" method="POST" class="d-inline">
+                                ' . csrf_field() . '
+                                ' . method_field('PATCH') . '
+                                <select name="publicado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="1" ' . $selectedPublicado . '>Publicado</option>
+                                    <option value="0" ' . $selectedBorrador . '>Borrador</option>
+                                </select>
+                            </form>';
+                    } else {
+                        $class = $row->publicado ? 'bg-success' : 'bg-warning';
+                        $text = $row->publicado ? 'Publicado' : 'Borrador';
+                        return '<span class="badge ' . $class . '">' . $text . '</span>';
+                    }
+                })
+                ->addColumn('acciones', function ($row) {
+                    $btn = '<div class="text-center"><div class="btn-group btn-group-sm" role="group">';
+                    if (auth()->user()->can('editar-plan-municipal')) {
+                        $btn .= '<a href="' . route('panel-planes-municipales.edit', $row->id) . '" class=""><button class="btn btn-outline-secondary" title="Editar elemento"><i class="fa-regular fa-pen-to-square"></i></button></a>';
+                    }
+                    if (auth()->user()->can('borrar-plan-municipal')) {
+                        $btn .= '
+                            <form action="' . route('panel-planes-municipales.destroy', $row->id) . '" method="POST" class="formEliminar ms-1">
+                                ' . csrf_field() . '
+                                ' . method_field('DELETE') . '
+                                <button class="btn btn-outline-danger" title="Eliminar elemento"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>';
+                    }
+                    $btn .= '</div></div>';
+                    return $btn;
+                })
+                ->rawColumns(['info', 'documento', 'estado', 'acciones'])
+                ->make(true);
+        }
+
+        return view('panel-planes-municipales.index');
     }
 
     /**

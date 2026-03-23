@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\ProgramaEstatal;
@@ -10,6 +10,14 @@ use App\Models\PlanEstatal;
 
 class ProgramaEstatalController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-programa-estatales|crear-programa-estatales|editar-programa-estatales|borrar-programa-estatales', ['only' => ['index']]);
+        $this->middleware('permission:crear-programa-estatales', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-programa-estatales', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-programa-estatales', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los documentos de los programas estatales.
      *

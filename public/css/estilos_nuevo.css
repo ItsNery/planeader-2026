@@ -356,7 +356,8 @@ body {
     font-size: .9rem;
     padding: 0 0;
     margin: 0 0;
-    &:hover{
+
+    &:hover {
         transform: none;
         transition: none;
     }
@@ -4208,8 +4209,66 @@ footer {
     text-align: center;
     opacity: 0.9;
 }
+
 .acordion__imagen-piramide {
     width: 100%;
-    max-width: 700px;  
-    height: auto;      
+    max-width: 700px;
+    height: auto;
+}
+
+/* Estilos de carrusel de regionales dentro de primera sesion ordinaria 2026 */
+.coverflow-carousel {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+/* Estilos para cada slide */
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+    /* width: 280px; */
+    height: 380px;
+    max-width: 90vw;
+    max-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-box-reflect: below 1px linear-gradient(transparent, transparent, #0006);
+}
+
+.swiper-slide a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Cuando el slide está activo (el del centro), puedes hacerlo un poco más grande */
+.swiper-slide-active {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+
+/* Personalización de la paginación y navegación */
+.swiper-pagination-bullet-active {
+    background-color: #007aff !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: #007aff !important;
+    --swiper-navigation-size: 30px;
 }

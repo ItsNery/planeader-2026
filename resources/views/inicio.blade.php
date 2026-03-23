@@ -14,8 +14,7 @@
 @section('css')
 @endsection
 @section('content')
-    <!-- Chatra {literal} -->
-    <script>
+    {{-- <script>
         (function(d, w, c) {
             w.ChatraID = 'DGbhKob3ckcWLhwPx';
             var s = d.createElement('script');
@@ -26,8 +25,7 @@
             s.src = 'https://call.chatra.io/chatra.js';
             if (d.head) d.head.appendChild(s);
         })(document, window, 'Chatra');
-    </script>
-    <!-- /Chatra {/literal} -->
+    </script> --}}
 
     <section class="carrusel">
         <div class="container-fluid p-0">
@@ -78,11 +76,8 @@
                     </div>
 
                     <div class="boton-ped mb-4">
-                        {{-- <img src="{{ asset('img/logo-ped.png') }}" alt="Imagotipo del Plan Estatal de Desarrollo"
-                            title="Imagotipo del PED" class="img-fluid"> --}}
                         <video autoplay loop muted playsinline class="img-fluid">
                             <source src="{{ asset('video/hero-video.mp4') }}" type="video/mp4">
-                            <!-- Fallback: imagen si el video no es soportado -->
                             <img src="{{ asset('img/logo-ped.png') }}" alt="Imagotipo del Plan Estatal de Desarrollo"
                                 title="Imagotipo del PED" class="img-fluid">
                         </video>

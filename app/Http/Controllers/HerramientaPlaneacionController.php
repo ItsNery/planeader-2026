@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\HerramientaPlaneacion;
@@ -11,6 +11,14 @@ use App\Traits\UpdatesPublicado;
 class HerramientaPlaneacionController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-herramienta|crear-herramienta|editar-herramienta|borrar-herramienta', ['only' => ['index']]);
+        $this->middleware('permission:crear-herramienta', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-herramienta', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-herramienta', ['only' => ['destroy', 'destroyAnexo']]);
+    }
 
     /**
      * Display a listing of the resource.

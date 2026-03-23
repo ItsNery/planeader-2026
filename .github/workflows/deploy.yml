@@ -58,6 +58,9 @@ jobs:
           git fetch origin
           git reset --hard origin/main
 
+          sudo chown -R user_planeacion:www-data storage bootstrap/cache
+          sudo chmod -R g+s storage bootstrap/cache
+
           npm install --legacy-peer-deps
           npm run prod
 
@@ -76,6 +79,3 @@ jobs:
 
           php artisan storage:link
           php artisan route:clear
-
-          sudo chown -R user_planeacion:www-data storage bootstrap/cache
-          sudo chmod -R 775 storage bootstrap/cache

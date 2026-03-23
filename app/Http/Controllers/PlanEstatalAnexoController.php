@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\PlanEstatal;
@@ -11,6 +11,14 @@ use App\Traits\UpdatesPublicado;
 class PlanEstatalAnexoController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-plan-estatal|crear-plan-estatal|editar-plan-estatal|borrar-plan-estatal', ['only' => ['index']]);
+        $this->middleware('permission:crear-plan-estatal', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-plan-estatal', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-plan-estatal', ['only' => ['destroy']]);
+    }
 
     /**
      * Display a listing of the resource.

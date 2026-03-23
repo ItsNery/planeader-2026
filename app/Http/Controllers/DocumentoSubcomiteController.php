@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\DocumentoSubcomite;
@@ -8,18 +8,93 @@ use Illuminate\Http\Request;
 use App\Models\Subcomite;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
 
 class DocumentoSubcomiteController extends Controller
 {
+    use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-doc-subcomite|crear-doc-subcomite|editar-doc-subcomite|borrar-doc-subcomite', ['only' => ['index']]);
+        $this->middleware('permission:crear-doc-subcomite', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-doc-subcomite', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-doc-subcomite', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los documentos de los subcomités, paginado cada 1000 registros.
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $DocumentoSubcomites = DocumentoSubcomite::orderBy('anio', 'desc')->orderBy('created_at', 'desc')->get();
-        return view('panel-documentos-subcomites.index', compact('DocumentoSubcomites'));
+        if ($request->ajax()) {
+            $data = DocumentoSubcomite::with('subcomite')
+                ->orderBy('anio', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->select('documentosSubcomites.*');
+
+            return DataTables::of($data)
+                ->addColumn('info', function ($row) {
+                    $html = '<div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">' . e($row->nombre) . '</div>';
+                    $html .= '<div class="d-flex flex-wrap gap-2 align-items-center">';
+                    $html .= '<span class="text-muted fw-bold me-2 small"><i class="fa-regular fa-calendar me-1"></i>' . e($row->anio) . '</span>';
+                    $html .= '<span class="badge bg-light text-dark border">' . e($row->tipo_documento) . '</span>';
+                    if ($row->tipo_acta && $row->tipo_acta != 'No aplica') {
+                        $html .= '<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-integration"><i class="fa-solid fa-file-lines me-1"></i>' . e($row->tipo_acta) . '</span>';
+                    }
+                    $html .= '</div>';
+                    return $html;
+                })
+                ->addColumn('documento', function ($row) {
+                    return '<div class="text-center"><a href="' . asset('documentosubcomites/' . $row->ruta_documento) . '" target="_blank" title="Ver documento ' . e($row->nombre) . '"><i class="fa-solid fa-file-pdf fs-2"></i></a></div>';
+                })
+                ->addColumn('subcomite_nombre', function ($row) {
+                    $html = '<small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.7rem;">Pertenece al:</small>';
+                    $html .= '<span class="text-secondary">' . e($row->subcomite->nombre) . '</span>';
+                    return $html;
+                })
+                ->addColumn('estado', function ($row) {
+                    if (auth()->user()->can('editar-doc-subcomite')) {
+                        $selectedPublicado = $row->publicado ? 'selected' : '';
+                        $selectedBorrador = !$row->publicado ? 'selected' : '';
+                        return '
+                            <form action="' . route('update-publicado-documento-subcomite', $row->id) . '" method="POST">
+                                ' . csrf_field() . '
+                                ' . method_field('PATCH') . '
+                                <select name="publicado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="1" ' . $selectedPublicado . '>Publicado</option>
+                                    <option value="0" ' . $selectedBorrador . '>Borrador</option>
+                                </select>
+                            </form>';
+                    } else {
+                        $class = $row->publicado ? 'bg-success' : 'bg-warning';
+                        $text = $row->publicado ? 'Publicado' : 'Borrador';
+                        return '<span class="badge ' . $class . '">' . $text . '</span>';
+                    }
+                })
+                ->addColumn('acciones', function ($row) {
+                    $btn = '<div class="text-center"><div class="btn-group btn-group-sm" role="group">';
+                    if (auth()->user()->can('editar-doc-subcomite')) {
+                        $btn .= '<a href="' . route('panel-documentos-subcomites.edit', $row->id) . '" class=""><button class="btn btn-outline-secondary" title="Editar elemento"><i class="fa-regular fa-pen-to-square"></i></button></a>';
+                    }
+                    if (auth()->user()->can('borrar-doc-subcomite')) {
+                        $btn .= '
+                            <form action="' . route('panel-documentos-subcomites.destroy', $row->id) . '" method="POST" class="formEliminar ms-1">
+                                ' . csrf_field() . '
+                                ' . method_field('DELETE') . '
+                                <button class="btn btn-outline-danger" title="Eliminar elemento"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>';
+                    }
+                    $btn .= '</div></div>';
+                    return $btn;
+                })
+                ->rawColumns(['info', 'documento', 'subcomite_nombre', 'estado', 'acciones'])
+                ->make(true);
+        }
+
+        return view('panel-documentos-subcomites.index');
     }
 
     /**

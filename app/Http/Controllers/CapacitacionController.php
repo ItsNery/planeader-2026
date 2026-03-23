@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+// local
 use App\Models\Capacitacion;
 use App\Models\Documento;
 use App\Models\DocumentoCapacitacion;
@@ -15,15 +15,19 @@ use App\Traits\UpdatesPublicado;
 class CapacitacionController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-capacitacion|crear-capacitacion|editar-capacitacion|borrar-capacitacion', ['only' => ['index']]);
+        $this->middleware('permission:crear-capacitacion', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-capacitacion', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-capacitacion', ['only' => ['destroy', 'destroyDocumento']]);
+    }
+
     /**
      * Muestra un listado de las capacitaciones.
      *
      * @return \Illuminate\View\View
-     */
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {

@@ -14,6 +14,7 @@
     'Página principal de los Primera Sesión Ordinaria del Comité de Planeación para el
     Desarrollo del Estado de Puebla del Estado de Puebla.')
 @section('css')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 @endsection
 
 @section('content')
@@ -107,6 +108,20 @@
                                     </li>
 
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading9">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                Lineamientos para el Funcionamiento del COPLADEP y sus Órganos Auxiliares
+                            </button>
+                        </h2>
+                        <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+
                             </div>
                         </div>
                     </div>
@@ -222,30 +237,48 @@
                         <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <ul>
-                                    <li class="document-item">
-                                        <div class="document-item__main-content">
-                                            {{-- <p class="document-item__name">
-                                                Pendiente
-                                            </p> --}}
-                                            {{-- <span class="document-badge badge-pdf">
-                                                PDF
-                                            </span> --}}
+                                <div class="swiper coverflow-carousel regionales">
+                                    <div class="swiper-wrapper">
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-1-sierra-norte.webp') }}"
+                                                alt="Portada del programa regional de la Region 1 Sierra Norte"
+                                                title="Programa Regional 1 Sierra Norte">
                                         </div>
-                                        {{-- <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentocopladep') }}"
-                                                data-title="Titulo del documento" title="Ver documento">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
-                                            </a>
-                                            <a href="{{ asset('documentocopladep') }}" download="Nombre documento"
-                                                rel="noopener" title="Descargar documento">
-                                                <i class="fas fa-download"></i>
-                                                <span>Descargar</span>
-                                            </a>
-                                        </div> --}}
-                                    </li>
-                                </ul>
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-2-sierra-nororiental.webp') }}"
+                                                alt="Portada del programa regional de la Region 2 Sierra Nororiental"
+                                                title="Programa Regional 2 Sierra Nororiental">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-3-valle-de-serdan.webp') }}"
+                                                alt="Portada del programa regional de la Region 3 Valle de Serdán"
+                                                title="Programa Regional 3 Valle de Serdán">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-4-angelopolis.webp') }}"
+                                                alt="Portada del programa regional de la Region 4 Angelópolis"
+                                                title="Programa Regional 4 Angelópolis">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-5-valle-de-atlixco-y-matamoros.webp') }}"
+                                                alt="Portada del programa regional de la Region 5 Valle de Atlixco y Matamoros"
+                                                title="Programa Regional 5 Valle de Atlixco y Matamoros">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-6-mixteca.webp') }}"
+                                                alt="Portada del programa regional de la Region 6 Mixteca"
+                                                title="Programa Regional 6 Mixteca">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-7-tehuacan-y-sierra-negra.webp') }}"
+                                                alt="Portada del programa regional de la Region 7 Tehuacán y Sierra Negra"
+                                                title="Programa Regional 7 Tehuacán y Sierra Negra">
+                                        </div>
+                                    </div>
+                                    <div class="swiper-pagination"></div>
+                                    <div class="swiper-button-prev"></div>
+                                    <div class="swiper-button-next"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -262,25 +295,27 @@
                                 <ul>
                                     <li class="document-item">
                                         <div class="document-item__main-content">
-                                            {{-- <p class="document-item__name">
-                                                Pendiente
-                                            </p> --}}
-                                            {{-- <span class="document-badge badge-pdf">
+                                            <p class="document-item__name">
+                                                Programas Institucionales - Sector Educativo
+                                            </p>
+                                            <span class="document-badge badge-pdf">
                                                 PDF
-                                            </span> --}}
+                                            </span>
                                         </div>
-                                        {{-- <div class="document-item__actions">
+                                        <div class="document-item__actions">
                                             <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentocopladep') }}"
-                                                data-title="Titulo del documento" title="Ver documento">
+                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
+                                                data-title="Programas Institucionales - Sector Educativo"
+                                                title="Ver Programas Institucionales - Sector Educativo">
                                                 <i class="fas fa-eye"></i> <span>Ver</span>
                                             </a>
-                                            <a href="{{ asset('documentocopladep') }}" download="Nombre documento"
-                                                rel="noopener" title="Descargar documento">
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
+                                                download="Programas Institucionales - Sector Educativo" rel="noopener"
+                                                title="Descargar Programas Institucionales - Sector Educativo">
                                                 <i class="fas fa-download"></i>
                                                 <span>Descargar</span>
                                             </a>
-                                        </div> --}}
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -324,13 +359,13 @@
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <div class="row">
-                                    <div class="mx-auto px-4 py-4 col-lg-3 col-md-6 col-sm-12 col-12">
+                                    <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="contenedor-tarjetadocs">
                                             <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/9.1 PED.png') }}"
                                                 alt="Titulo" class="width-100" title="Titulo">
                                         </div>
                                     </div>
-                                    <div class="mx-auto px-4 py-4 col-lg-3 col-md-6 col-sm-12 col-12">
+                                    <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="contenedor-tarjetadocs">
                                             <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/9.2 Evaluación de Diseño del Plan Estatal de Desarrollo 2024 – 2030.png') }}"
                                                 alt="Titulo" class="width-100" title="Titulo">
@@ -407,5 +442,40 @@
                 modalIframe.src = '';
             }
         }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const swiper = new Swiper(".regionales", {
+                loop: true,
+
+                autoplay: {
+                    delay: 6000,
+                    disableOnInteraction: false,
+                },
+
+                slidesPerView: "3",
+                centeredSlides: true,
+
+                effect: "coverflow",
+                coverflowEffect: {
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true,
+                },
+
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+            });
+        });
     </script>
 @endsection
