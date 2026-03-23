@@ -1,5 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom sticky-top">
     <div class="container">
+        {{-- local --}}
         <!-- Logo -->
         <a class="navbar-brand me-4" href="/">
 
@@ -18,99 +19,154 @@
                 </x-nav-link>
 
                 <!-- Documentos Dropdown -->
-                <x-dropdown id="docsDropdown" :active="request()->routeIs([
-        'panel-documentos-subcomites*',
-        'panel-documentos-copladep*',
-        'panel-marco-juridico*',
-        'panel-documentos-apoyo-coplademun*',
-        'panel-documentos-metodologicos*',
-    ])">
-                    <x-slot name="trigger">
-                        {{ __('Documentos') }}
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-dropdown-link href="{{ route('panel-documentos-subcomites.index') }}">
-                            {{ __('Docs. Subcomités') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-documentos-copladep.index') }}">
-                            {{ __('Docs. Copladep') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
-                            {{ __('Marco Jurídico') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-documentos-apoyo-coplademun.index') }}">
-                            {{ __('Apoyo Coplademun') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
-                            {{ __('Metodológicos') }}
-                        </x-dropdown-link>
-                    </x-slot>
-                </x-dropdown>
+                @canany(['ver-doc-subcomite', 'ver-doc-copladep', 'ver-marco-juridico', 'ver-doc-apoyo',
+                    'ver-doc-metodologico', 'ver-doc-sesion'])
+                    <x-dropdown id="docsDropdown" :active="request()->routeIs([
+                        'panel-documentos-subcomites*',
+                        'panel-documentos-copladep*',
+                        'panel-marco-juridico*',
+                        'panel-documentos-apoyo-coplademun*',
+                        'panel-documentos-metodologicos*',
+                        // 'panel-documentos-sesiones*',
+                    ])">
+                        <x-slot name="trigger">
+                            {{ __('Documentos') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-doc-subcomite')
+                                <x-dropdown-link href="{{ route('panel-documentos-subcomites.index') }}">
+                                    {{ __('Docs. Subcomités') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-doc-copladep')
+                                <x-dropdown-link href="{{ route('panel-documentos-copladep.index') }}">
+                                    {{ __('Docs. Copladep') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-marco-juridico')
+                                <x-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
+                                    {{ __('Marco Jurídico') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-doc-apoyo')
+                                <x-dropdown-link href="{{ route('panel-documentos-apoyo-coplademun.index') }}">
+                                    {{ __('Apoyo Coplademun') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-doc-metodologico')
+                                <x-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
+                                    {{ __('Metodológicos') }}
+                                </x-dropdown-link>
+                            @endcan
+                            {{-- @can('ver-doc-sesion')
+                                <x-dropdown-link href="{{ route('panel-documentos-sesiones.index') }}">
+                                    {{ __('Docs. Sesiones') }}
+                                </x-dropdown-link>
+                            @endcan --}}
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
 
                 <!-- Planeación Dropdown -->
-                <x-dropdown id="planeacionDropdown" :active="request()->routeIs([
-        'panel-planes-estatales*',
-        'panel-planes-municipales*',
-        'panel-herramientas*',
-        'capacitaciones*',
-        'panel-subcomites*',
-    ])">
-                    <x-slot name="trigger">
-                        {{ __('Planeación') }}
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-dropdown-link href="{{ route('panel-planes-estatales.index') }}">
-                            {{ __('Planes Estatales') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-planes-municipales.index') }}">
-                            {{ __('Planes Municipales') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-herramientas.index') }}">
-                            {{ __('Herramientas de planeación') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('capacitaciones.index') }}">
-                            {{ __('Capacitaciones municipales') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-subcomites.index') }}">
-                            {{ __('Subcomités') }}
-                        </x-dropdown-link>
-                    </x-slot>
-                </x-dropdown>
+                @canany(['ver-plan-estatal', 'ver-plan-municipal', 'ver-herramienta', 'ver-capacitacion',
+                    'ver-subcomite'])
+                    <x-dropdown id="planeacionDropdown" :active="request()->routeIs([
+                        'panel-planes-estatales*',
+                        'panel-planes-municipales*',
+                        'panel-herramientas*',
+                        'capacitaciones*',
+                        'panel-subcomites*',
+                    ])">
+                        <x-slot name="trigger">
+                            {{ __('Planeación') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-plan-estatal')
+                                <x-dropdown-link href="{{ route('panel-planes-estatales.index') }}">
+                                    {{ __('Planes Estatales') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-plan-municipal')
+                                <x-dropdown-link href="{{ route('panel-planes-municipales.index') }}">
+                                    {{ __('Planes Municipales') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-herramienta')
+                                <x-dropdown-link href="{{ route('panel-herramientas.index') }}">
+                                    {{ __('Herramientas de planeación') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-capacitacion')
+                                <x-dropdown-link href="{{ route('capacitaciones.index') }}">
+                                    {{ __('Capacitaciones municipales') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-subcomite')
+                                <x-dropdown-link href="{{ route('panel-subcomites.index') }}">
+                                    {{ __('Subcomités') }}
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
 
                 <!-- Programas Dropdown -->
-                <x-dropdown id="programasDropdown" :active="request()->routeIs(['panel-programas-derivados*', 'panel-programas-estatales*'])">
-                    <x-slot name="trigger">
-                        {{ __('Programas') }}
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-dropdown-link href="{{ route('panel-programas-derivados.index') }}">
-                            {{ __('Derivados') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-programas-estatales.index') }}">
-                            {{ __('Estatales') }}
-                        </x-dropdown-link>
+                @canany(['ver-programa-derivado', 'ver-programa-estatales'])
+                    <x-dropdown id="programasDropdown" :active="request()->routeIs(['panel-programas-derivados*', 'panel-programas-estatales*'])">
+                        <x-slot name="trigger">
+                            {{ __('Programas') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-programa-derivado')
+                                <x-dropdown-link href="{{ route('panel-programas-derivados.index') }}">
+                                    {{ __('Derivados') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-programa-estatales')
+                                <x-dropdown-link href="{{ route('panel-programas-estatales.index') }}">
+                                    {{ __('Estatales') }}
+                                </x-dropdown-link>
+                            @endcan
 
-                    </x-slot>
-                </x-dropdown>
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
 
                 <!-- Gestión Dropdown -->
-                <x-dropdown id="gestionDropdown" :active="request()->routeIs(['panel-banners*', 'panel-contacto*', 'panel-admin*'])">
-                    <x-slot name="trigger">
-                        {{ __('Gestión') }}
-                    </x-slot>
-                    <x-slot name="content">
-
-                        <x-dropdown-link href="{{ route('panel-banners.index') }}">
-                            {{ __('Banners') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-contacto.index') }}">
-                            {{ __('Mensajes de contacto') }}
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('panel-admin.index') }}">
-                            {{ __('Usuarios') }}
-                        </x-dropdown-link>
-                    </x-slot>
-                </x-dropdown>
+                @canany(['ver-banner', 'ver-contacto', 'ver-usuario'])
+                    <x-dropdown id="gestionDropdown" :active="request()->routeIs([
+                        'panel-banners*',
+                        'panel-contacto*',
+                        'panel-admin*',
+                        'panel-roles*',
+                    ])">
+                        <x-slot name="trigger">
+                            {{ __('Gestión') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-banner')
+                                <x-dropdown-link href="{{ route('panel-banners.index') }}">
+                                    {{ __('Banners') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-contacto')
+                                <x-dropdown-link href="{{ route('panel-contacto.index') }}">
+                                    {{ __('Mensajes de contacto') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-usuario')
+                                <x-dropdown-link href="{{ route('panel-admin.index') }}">
+                                    {{ __('Usuarios') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-rol')
+                                <x-dropdown-link href="{{ route('panel-roles.index') }}">
+                                    {{ __('Roles y Permisos') }}
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -165,8 +221,8 @@
                     <x-dropdown id="settingsDropdown">
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                                <img class="rounded-circle" width="32" height="32" src="{{ Auth::user()->profile_photo_url }}"
-                                    alt="{{ Auth::user()->name }}" />
+                                <img class="rounded-circle" width="32" height="32"
+                                    src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                             @else
                                 {{ Auth::user()->name }}
 
@@ -198,7 +254,8 @@
                             <hr class="dropdown-divider">
 
                             <!-- Authentication -->
-                            <x-dropdown-link href="{{ route('logout') }}" onclick="event.preventDefault();
+                            <x-dropdown-link href="{{ route('logout') }}"
+                                onclick="event.preventDefault();
                                                              document.getElementById('logout-form').submit();">
                                 {{ __('Cerrar sesión') }}
                             </x-dropdown-link>
