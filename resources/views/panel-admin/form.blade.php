@@ -45,20 +45,18 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="validador" class="fw-bold mb-1">Tipo de usuario: *</label>
-                                <select name="validador" id="validador"
-                                    class="form-control @error('validador') is-invalid @enderror">
-                                    <option value="" disabled selected>Seleccione</option>
-                                    <option value="1"
-                                        {{ old('validador', $user->validador ?? '') == '1' ? 'selected' : '' }}>
-                                        Validador
-                                    </option>
-                                    <option value="0"
-                                        {{ old('validador', $user->validador ?? '') == '0' ? 'selected' : '' }}>
-                                        Capturista
-                                    </option>
+                                <label for="role" class="fw-bold mb-1">Rol de usuario: *</label>
+                                <select name="role" id="role"
+                                    class="form-control @error('role') is-invalid @enderror" required>
+                                    <option value="" disabled {{ !isset($userRole) ? 'selected' : '' }}>Seleccione un rol</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->name }}"
+                                            {{ old('role', $userRole ?? '') == $role->name ? 'selected' : '' }}>
+                                            {{ ucfirst($role->name) }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('validador')
+                                @error('role')
                                     <small class="invalid-feedback d-block">
                                         <strong>{{ $message }}</strong>
                                     </small>
