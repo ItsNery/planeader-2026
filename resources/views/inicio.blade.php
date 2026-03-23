@@ -31,9 +31,7 @@
         <div class="container-fluid p-0">
             <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
-                    <!-- Verificar si hay banners dinámicos -->
                     @if ($banners && count($banners) > 0)
-                        <!-- Banners dinámicos -->
                         @foreach ($banners as $banner)
                             <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
                                 <a href="{{ $banner->enlace }}" target="_blank" title="{{ $banner->nombre }}" rel="noopener">
@@ -43,7 +41,6 @@
                             </div>
                         @endforeach
                     @else
-                        <!-- Banner estático si no hay banners dinámicos -->
                         <div class="carousel-item active">
                             <a href="#" rel="noopener" title="Baner por defecto del Planeader">
                                 <img class="w-100 imagen-banner-planeader" src="/baners/20240411231551.png" alt="Image">
