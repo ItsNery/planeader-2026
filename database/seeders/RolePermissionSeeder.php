@@ -33,7 +33,6 @@ class RolePermissionSeeder extends Seeder
             'subcomite',
             'usuario',
             'rol',
-            'dashboard',
             'registro-capacitacion'
         ];
 
