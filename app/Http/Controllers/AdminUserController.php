@@ -1,13 +1,22 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class AdminUserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-usuario|crear-usuario|editar-usuario|borrar-usuario', ['only' => ['index']]);
+        $this->middleware('permission:crear-usuario', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-usuario', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-usuario', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los usuarios que actuamente están en la base de datos.
      *
@@ -15,7 +24,7 @@ class AdminUserController extends Controller
      */
     public function index()
     {
-        $users = User::where('id', '!=', 1)->get(); // Excluir el usuario administrador
+        $users = User::where('id', '!=', 1)->with('roles')->get(); // Excluir el usuario administrador
         return view('panel-admin.index', compact('users'));
     }
 
@@ -27,7 +36,8 @@ class AdminUserController extends Controller
     public function create()
     {
         $user = new User();
-        return view('panel-admin.form', compact('user'));
+        $roles = Role::all();
+        return view('panel-admin.form', compact('user', 'roles'));
     }
 
     /**
@@ -42,15 +52,17 @@ class AdminUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'validador' => 'required|boolean',
+            'role' => 'required|exists:roles,name',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'validador' => $request->validador,
+            'validador' => $request->role === 'admin' || $request->role === 'super-admin' ? 1 : 0, // Legacy support
         ]);
+
+        $user->assignRole($request->role);
 
         return redirect()->route('panel-admin.index')->with('success', 'Usuario creado correctamente.');
     }
@@ -74,7 +86,9 @@ class AdminUserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('panel-admin.form', compact('user'));
+        $roles = Role::all();
+        $userRole = $user->roles->first()?->name;
+        return view('panel-admin.form', compact('user', 'roles', 'userRole'));
     }
 
     /**
@@ -90,7 +104,7 @@ class AdminUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
-            'validador' => 'required|boolean',
+            'role' => 'required|exists:roles,name',
         ]);
 
         $user = User::findOrFail($id);
@@ -99,10 +113,12 @@ class AdminUserController extends Controller
         if ($request->password) {
             $user->password = Hash::make($request->password);
         }
-        $user->validador = $request->input('validador');
+        $user->validador = $request->role === 'admin' || $request->role === 'super-admin' ? 1 : 0; // Legacy support
         $user->save();
 
-        return redirect()->route('panel-admin.index')->with('success', 'User updated successfully.');
+        $user->syncRoles([$request->role]);
+
+        return redirect()->route('panel-admin.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
     /**
