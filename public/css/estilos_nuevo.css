@@ -458,32 +458,37 @@ body {
     }
 
     .nav-links a:hover {
-        background-color: var(--color6);
-        padding: 1rem 1rem;
+        background-color: var(--arena);
+        /* padding: 1rem 1rem; */
         border-radius: 10px;
-        color: var(--colorBlanco);
+        color: var(--color3);
     }
 
-    /* Lógica del menú desplegable en hover */
     .dropdown {
         position: relative;
     }
 
     .dropdown-content {
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(15px);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         position: absolute;
         top: 100%;
         left: 0;
         background-color: white;
         min-width: 220px;
-        padding-left: 0;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        border-radius: 0 0 4px 4px;
+        padding: 10px 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
         z-index: 10;
+        margin-top: 5px;
     }
 
     .dropdown:hover .dropdown-content {
-        display: block;
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .dropdown-content a {
