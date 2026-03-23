@@ -5,112 +5,111 @@ namespace App\Http\Controllers;
 use App\Models\MarcoJuridico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Traits\UpdatesPublicado;
 
 class MarcoJuridicoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-marco-juridico|crear-marco-juridico|editar-marco-juridico|borrar-marco-juridico', ['only' => ['index']]);
+        $this->middleware('permission:crear-marco-juridico', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-marco-juridico', ['only' => ['edit', 'update', 'updatePublicado']]);
+        $this->middleware('permission:borrar-marco-juridico', ['only' => ['destroy']]);
+    }
+
     /**
-     * Muestra un listado paginado de los documentos del marco jurídico, paginado cada 1000 registros.
+     * Display a listing of the resource.
      *
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $documentos = MarcoJuridico::orderBy('orden', 'asc')->get();
-        return view('panel-marco-juridico.index', compact('documentos'));
+        $documentos = MarcoJuridico::paginate(1000);
+        return view('panel-marcojuridico.index', compact('documentos'));
     }
 
     /**
-     * Muestra el formulario para subir un nuevo documento.
+     * Show the form for creating a new resource.
      *
-     * Pre-carga los datos necesarios para los selectores del formulario
-     * Calcula el total de documentos existentes y las órdenes disponibles
-     * (totalDocumentos, ordenesExistentes, ordenesDisponibles).
-     *
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $documento = new MarcoJuridico();
         $totalDocumentos = MarcoJuridico::count();
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
-        $ordenesDisponibles = range(1, $totalDocumentos + 1);
-        return view('panel-marco-juridico.form', compact('documento', 'ordenesExistentes', 'ordenesDisponibles'));
+        $ordenesDisponibles = range(1, $totalDocumentos + 2);
+        return view('panel-marcojuridico.crear', compact('ordenesExistentes', 'ordenesDisponibles'));
     }
 
     /**
-     * Valida y almacena un nuevo documento en la base de datos.
+     * Store a newly created resource in storage.
      *
-     * Gestiona la subida y el almacenamiento del archivo pdf e imagen asociados.
-     *
-     * @param  \Illuminate\Http\Request  $request La solicitud HTTP con los datos del nuevo documento.
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $this->validate($request, [
-            'nombre' => 'required|string|max:255',
-            'ruta_documento' => 'required|file|mimes:pdf|max:51200',
-            'portada' => 'required|image|mimes:jpeg,png,jpg,svg|max:6144',
-            'orden' => 'required|integer|min:1',
+            'nombre' => 'required',
+            'ruta_documento' => 'required|mimes:pdf|max:500000',
+            'portada' => 'required|image|mimes:jpeg,png,svg,jpg|max:6144',
+            'orden' => 'required|integer',
             'publicado' => 'nullable'
         ], [
             'nombre.required' => 'El nombre del documento es requerido',
-            'nombre.string' => 'El nombre del documento debe ser texto.',
-            'nombre.max' => 'El nombre del documento no puede exceder los :max caracteres.',
-
-            'ruta_documento.required' => 'Es obligatorio seleccionar un documento PDF.',
-            'ruta_documento.file' => 'El campo documento debe ser un archivo válido.',
-            'ruta_documento.mimes' => 'El documento debe ser un archivo PDF.',
-            'ruta_documento.max' => 'El tamaño del documento no debe superar los 50 MB.',
-
-            'portada.required' => 'Es obligatorio seleccionar una imagen de portada.',
-            'portada.image' => 'El archivo de portada debe ser una imagen.',
-            'portada.mimes' => 'La imagen de portada debe ser de tipo JPEG, PNG, JPG o SVG.',
-            'portada.max' => 'El tamaño de la imagen de portada no debe superar los 6 MB.',
-
-            'orden.required' => 'Es obligatorio especificar un número para el orden.',
-            'orden.integer' => 'El orden debe ser un número entero.',
-            'orden.min' => 'El número de orden debe ser al menos :min.',
+            'ruta_documento.required' => 'No ha elegido un documento',
+            'ruta_documento.mimes' => 'El archivo debe ser PDF (Formato de documento portátil)',
+            'ruta_documento.max' => 'El archivo no debe pesar mas de 500MB',
+            'portada.required' => 'Se requiere la portada del plan',
+            'portada.image' => 'El archivo no es una imagen',
+            'portada.mimes' => 'El archivo no es una imagen',
+            'portada.max' => 'La imagen no debe pesar mas de 6MB',
+            'orden.required' => 'Se requiere un número para definir el orden, por ej.:1 o 2 o 3, etc',
+            'orden.integer' => 'Se requiere un número',
         ]);
 
+        // Obtener los datos individuales del formulario
         $nombre = $request->input('nombre');
         $ruta_documento = $request->file('ruta_documento');
         $portada = $request->file('portada');
         $orden = $request->input('orden');
 
+        // Crear un nuevo registro MarcoJuridico con los datos recibidos
         $documentosMarcoJuridico = new MarcoJuridico();
         $documentosMarcoJuridico->nombre = $nombre;
         $documentosMarcoJuridico->orden = $orden;
 
+        // $documentosMarcoJuridico = $request->all();
+
         if ($ruta_documentomarco = $request->file('ruta_documento')) {
             $rutaGuardarDoc = 'marco-juridico/';
             $slugNombre = Str::limit(Str::slug($nombre), 70);
-            $nombreArchivo = $slugNombre . '-' . Str::random(4) . "." . $ruta_documentomarco->getClientOriginalExtension();
+            $nombreArchivo = $slugNombre . date('YmdHis') . "." . $ruta_documentomarco->getClientOriginalExtension();
 
-            $ruta_documentomarco->move($rutaGuardarDoc, $nombreArchivo);
-            $documentosMarcoJuridico['ruta_documento'] = $nombreArchivo;
+            $ruta_documentomarco->move($rutaGuardarDoc, $nombreArchivo); // Corregido aquí
+            $documentosMarcoJuridico['ruta_documento'] = $nombreArchivo; // Y también aquí
         }
 
         if ($portada = $request->file('portada')) {
             $rutaGuardarImg = 'portadas-marcojuridico/';
             $slugNombrePortada = Str::limit('Portada_de_' . Str::slug($nombre), 70);
-            $nombrePortada = $slugNombrePortada . '_'  . Str::random(4) . "." . $portada->getClientOriginalExtension();
+            $nombrePortada = $slugNombrePortada . '_'  . date('YmdHis') . "." . $portada->getClientOriginalExtension();
 
             $portada->move($rutaGuardarImg, $nombrePortada);
-            $documentosMarcoJuridico['portada'] = $nombrePortada;
+            $documentosMarcoJuridico['portada'] = $nombrePortada; // Corregido aquí
         }
         if ($request->has('publicado')) {
             $documentosMarcoJuridico->publicado = $request->publicado;
         }
 
+        // MarcoJuridico::create($documentosMarcoJuridico);
         $documentosMarcoJuridico->save();
-        return redirect()->route('panel-marco-juridico.index')->with('success', 'Documento subido exitosamente.');
+        // return redirect()->route('.index');
+        return redirect()->route('panel-marcojuridico.index')->with('success', 'Documento subido exitosamente.');
     }
 
     /**
      * Display the specified resource.
-     * Actualmente no se utiliza, pero se deja como parte de la estructura del controlador.
+     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -120,94 +119,86 @@ class MarcoJuridicoController extends Controller
     }
 
     /**
-     * Muestra el formulario para editar un documento existente.
+     * Show the form for editing the specified resource.
      *
-     * Carga los datos del documento a editar y la información necesaria
-     * para los selectores del formulario. Además calcula el total de documentos existentes y los ordenes disponibles
-     * (totalDocumentos, ordenesExistentes, ordenesDisponibles).
-     *
-     * @param  int  $id El ID del documento a editar.
-     * @return \Illuminate\View\View
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $documento = MarcoJuridico::findOrFail($id);
         $totalDocumentos = MarcoJuridico::count();
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
-        $ordenesDisponibles = range(1, $totalDocumentos);
-        return view('panel-marco-juridico.form', compact('documento', 'ordenesExistentes', 'ordenesDisponibles'));
+        $ordenesDisponibles = range(1, $totalDocumentos + 1);
+        $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
+        return view('panel-marcojuridico.editar', compact('documentosMarcoJuridico', 'ordenesExistentes', 'ordenesDisponibles'));
     }
 
     /**
-     * Valida y actualiza un documento existente en la base de datos.
+     * Update the specified resource in storage.
      *
-     * Gestiona la actualización del documento y portada, eliminando los anteriores si se sube uno nuevo.
-     *
-     * @param  \Illuminate\Http\Request  $request La solicitud con los datos actualizados.
-     * @param  int  $id El ID del documento a actualizar.
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
+
         $this->validate($request, [
-            'nombre' => 'required|string|max:255',
-            'ruta_documento' => 'nullable|file|mimes:pdf|max:51200',
-            'portada' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:6144',
-            'orden' => 'required|integer|min:1',
+            'nombre' => 'required',
+            'ruta_documento' => 'nullable|mimes:pdf',
+            'portada' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
+            'orden' => 'required|integer',
             'publicado' => 'nullable'
         ], [
             'nombre.required' => 'El nombre del documento es requerido',
-            'nombre.string' => 'El nombre del documento debe ser texto.',
-            'nombre.max' => 'El nombre del documento no puede exceder los :max caracteres.',
-
             'ruta_documento.mimes' => 'El archivo debe ser PDF (Formato de documento portátil)',
-            'ruta_documento.max' => 'El tamaño del documento no debe superar los 50 MB.',
-            'ruta_documento.file' => 'El campo documento debe ser un archivo válido.',
-
             'portada.image' => 'El archivo no es una imagen',
             'portada.mimes' => 'El archivo no es una imagen',
             'portada.max' => 'La imagen no debe pesar más de 6MB',
-
             'orden.required' => 'Se requiere el número de ordenación del documento',
-            'orden.integer' => 'Se requiere el número',
-            'orden.min' => 'El número de orden debe ser al menos :min.',
+            'orden.integer' => 'Se requiere el número'
         ]);
 
         $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
 
+        // Actualizar campos no relacionados con archivos
         $documentosMarcoJuridico->nombre = $request->nombre;
         $documentosMarcoJuridico->orden = $request->orden;
         $slugNombre = Str::limit(Str::slug($request->nombre), 70);
 
+        // Manejar la actualización de la ruta del documento (si se proporciona un nuevo archivo)
         if ($request->hasFile('ruta_documento')) {
             $ruta_documento = $request->file('ruta_documento');
-            $nombre_documento = $slugNombre . '_' . Str::random(4) . '.' . $ruta_documento->getClientOriginalExtension();
+            $nombre_documento = $slugNombre . '_' . date('YmdHis') . '.' . $ruta_documento->getClientOriginalExtension();
             $ruta_documento->move(public_path('marco-juridico/'), $nombre_documento);
             $documentosMarcoJuridico->ruta_documento = $nombre_documento;
         }
 
+        // Manejar la actualización de la portada (si se proporciona un nuevo archivo)
         if ($request->hasFile('portada')) {
             $portada = $request->file('portada');
             $nombre_portada = 'Portada_de_' . Str::limit(Str::slug($request->nombre), 70);
-            $nombre_portada = $nombre_portada . '_' . Str::random(4) . '.' . $portada->getClientOriginalExtension();
+            $nombre_portada = $nombre_portada . '_' . date('YmdHis') . '.' . $portada->getClientOriginalExtension();
             $portada->move(public_path('portadas-marcojuridico/'), $nombre_portada);
             $documentosMarcoJuridico->portada = $nombre_portada;
         }
 
+        // Manejar la actualización del campo publicado si se proporciona
         if ($request->has('publicado')) {
             $documentosMarcoJuridico->publicado = $request->publicado;
         }
 
+        // Guardar los cambios en la base de datos
         $documentosMarcoJuridico->save();
 
-        return redirect()->route('panel-marco-juridico.index')->with('success', 'Documento actualizado exitosamente.');
+        return redirect()->route('panel-marcojuridico.index')->with('success', 'Documento actualizado exitosamente.');
     }
 
     /**
-     * Elimina un documento de la base de datos y su archivo pdf e imagen asociado.
+     * Remove the specified resource from storage.
      *
-     * @param  int  $id El ID del documento a eliminar.
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
@@ -215,25 +206,22 @@ class MarcoJuridicoController extends Controller
 
         $rutaArchivo = public_path('marco-juridico/') . $documento->ruta_documento;
 
+        // Verificar si el archivo existe y luego eliminarlo
         if (file_exists($rutaArchivo)) {
             unlink($rutaArchivo);
         }
         $rutaArchivo2 = public_path('portadas-marcojuridico/') . $documento->portada;
 
+        // Verificar si el archivo existe y luego eliminarlo
         if (file_exists($rutaArchivo2)) {
             unlink($rutaArchivo2);
         }
 
         $documento->delete();
 
-        return redirect()->route('panel-marco-juridico.index')->with('success', 'Documento eliminado exitosamente.');
+        return redirect()->route('panel-marcojuridico.index');
     }
 
-    /**
-     * Muestra un listado de los documentos del marco jurídico en la vista pública del portal, ordenados de manera ascendente por el campo orden.
-     *
-     * @return \Illuminate\View\View
-     */
     public function mostrarDocumentosMarco()
     {
         $documentos = MarcoJuridico::where('publicado', 1)
@@ -241,16 +229,16 @@ class MarcoJuridicoController extends Controller
             ->get();
         return view('marcojuridico', compact('documentos'));
     }
-
-    use UpdatesPublicado;
-    /**
-     * Define el modelo principal que este controlador gestiona
-     * para ser utilizado por el trait UpdatesPublicado.
-     *
-     * @return string La clase del modelo MarcoJuridico.
-     */
-    protected function getModel()
+    public function updatePublicado(Request $request, $id)
     {
-        return MarcoJuridico::class;
+        $request->validate([
+            'publicado' => 'required|boolean',
+        ]);
+
+        $documento = MarcoJuridico::findOrFail($id);
+        $documento->publicado = $request->input('publicado');
+        $documento->save();
+
+        return redirect()->back()->with('success', 'Estado de publicación actualizado');
     }
 }

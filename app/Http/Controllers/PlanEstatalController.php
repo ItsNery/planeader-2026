@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\PlanEstatal;
@@ -12,6 +12,14 @@ use App\Traits\UpdatesPublicado;
 
 class PlanEstatalController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-plan-estatal|crear-plan-estatal|editar-plan-estatal|borrar-plan-estatal', ['only' => ['index']]);
+        $this->middleware('permission:crear-plan-estatal', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-plan-estatal', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-plan-estatal', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los planes estatales de desarrollo ordenados de menos reciente a mas reciente, paginado cada 1000 registros.
      * @return \Illuminate\View\View

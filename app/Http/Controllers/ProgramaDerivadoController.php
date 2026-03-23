@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\ProgramaDerivado;
@@ -9,19 +9,86 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Traits\UpdatesPublicado;
 use App\Models\Banner;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProgramaDerivadoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-programa-derivado|crear-programa-derivado|editar-programa-derivado|borrar-programa-derivado', ['only' => ['index']]);
+        $this->middleware('permission:crear-programa-derivado', ['only' => ['create', 'store', 'createMassive', 'storeMassive']]);
+        $this->middleware('permission:editar-programa-derivado', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-programa-derivado', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los documentos de los programas derivados, paginado cada 1000 registros.
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+            $data = ProgramaDerivado::with('planestatal')->select('programa_derivados.*');
+
+            return DataTables::of($data)
+                ->addColumn('info', function ($row) {
+                    $html = '<div class="d-flex align-items-center">';
+                    $html .= '<img src="' . asset('portadaprogder/' . $row->portada) . '" class="img-thumbnail mx-2 imagen-lista">';
+                    $html .= '<div>';
+                    $html .= '<div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">' . e($row->nombre) . '</div>';
+                    $html .= '<div class="d-flex flex-wrap gap-2 align-items-center">';
+                    $html .= '<span class="badge bg-light text-dark border">' . e($row->tipo_derivado) . '</span>';
+                    $html .= '<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-integration"><i class="fa-solid fa-file-lines me-1"></i>' . e($row->planestatal->nombre) . '</span>';
+                    $html .= '</div>';
+                    $html .= '</div>';
+                    $html .= '</div>';
+                    return $html;
+                })
+                ->addColumn('documento', function ($row) {
+                    return '<div class="text-center"><a href="' . asset('progderi/' . $row->ruta_documento) . '" target="_blank" title="Ver documento ' . e($row->nombre) . '"><i class="fa-solid fa-file-pdf fs-2"></i></a></div>';
+                })
+                ->addColumn('estado', function ($row) {
+                    if (auth()->user()->can('editar-programa-derivado')) {
+                        $selectedPublicado = $row->publicado ? 'selected' : '';
+                        $selectedBorrador = !$row->publicado ? 'selected' : '';
+                        return '
+                            <form action="' . route('update-publicado-programa-derivado', $row->id) . '" method="POST" class="d-inline">
+                                ' . csrf_field() . '
+                                ' . method_field('PATCH') . '
+                                <select name="publicado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="1" ' . $selectedPublicado . '>Publicado</option>
+                                    <option value="0" ' . $selectedBorrador . '>Borrador</option>
+                                </select>
+                            </form>';
+                    } else {
+                        $class = $row->publicado ? 'bg-success' : 'bg-warning';
+                        $text = $row->publicado ? 'Publicado' : 'Borrador';
+                        return '<span class="badge ' . $class . '">' . $text . '</span>';
+                    }
+                })
+                ->addColumn('acciones', function ($row) {
+                    $btn = '<div class="text-center"><div class="btn-group btn-group-sm" role="group">';
+                    if (auth()->user()->can('editar-programa-derivado')) {
+                        $btn .= '<a href="' . route('panel-programas-derivados.edit', $row->id) . '" class="text-decoration-none"><button class="btn btn-outline-secondary" title="Editar elemento"><i class="fa-regular fa-pen-to-square"></i></button></a>';
+                    }
+                    if (auth()->user()->can('borrar-programa-derivado')) {
+                        $btn .= '
+                            <form action="' . route('panel-programas-derivados.destroy', $row->id) . '" method="POST" class="formEliminar ms-1">
+                                ' . csrf_field() . '
+                                ' . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-outline-danger"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>';
+                    }
+                    $btn .= '</div></div>';
+                    return $btn;
+                })
+                ->rawColumns(['info', 'documento', 'estado', 'acciones'])
+                ->make(true);
+        }
+
         $planes_estatales = PlanEstatal::all();
-        $programasDerivados = ProgramaDerivado::paginate(1000);
-        return view('panel-programas-derivados.index', compact('programasDerivados', 'planes_estatales'));
+        return view('panel-programas-derivados.index', compact('planes_estatales'));
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\DocumentoApoyoCoplademun;
@@ -10,6 +10,14 @@ use App\Traits\UpdatesPublicado;
 class DocumentoApoyoCoplademunController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-doc-apoyo|crear-doc-apoyo|editar-doc-apoyo|borrar-doc-apoyo', ['only' => ['index']]);
+        $this->middleware('permission:crear-doc-apoyo', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-doc-apoyo', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-doc-apoyo', ['only' => ['destroy']]);
+    }
 
     /**
      * Display a listing of the resource.
@@ -122,7 +130,7 @@ class DocumentoApoyoCoplademunController extends Controller
     public function destroy($id)
     {
         $documento = DocumentoApoyoCoplademun::findOrFail($id);
-        
+
         $this->deleteFile('documentos/apoyo-coplademun/' . $documento->ruta_documento);
         $this->deleteFile('imagen/apoyo-coplademun/' . $documento->imagen);
 
@@ -152,7 +160,8 @@ class DocumentoApoyoCoplademunController extends Controller
         }
     }
 
-    public function mostrarCoplademun(){
+    public function mostrarCoplademun()
+    {
         $documentos = DocumentoApoyoCoplademun::where('publicado', true)->orderby('orden', 'asc')->get();
 
         return view('coplademun', compact('documentos'));

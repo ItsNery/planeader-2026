@@ -115,82 +115,82 @@
 @section('scripts')
     <script src="{{ asset('js/mapa_planesmunicipales.js') }}"></script>
     {{-- <script src="{{ asset('web/js/mostrar-municipios.js') }}"></script> --}}
-    <script>
-        /**
-         * Función unificada para cerrar el modal.
-         */
-        function closeModal() {
-            const modal = document.getElementById('myModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
+<script>
+    /**
+     * Función unificada para cerrar el modal.
+     */
+    function closeModal() {
+        const modal = document.getElementById('myModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        
+        const modalIframe = document.getElementById('modalIframe');
+        if (modalIframe) {
+            modalIframe.src = '';
+        }
+    }
 
-            const modalIframe = document.getElementById('modalIframe');
-            if (modalIframe) {
-                modalIframe.src = '';
+    // Se ejecuta cuando la página ha cargado completamente.
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- Referencias a los elementos del DOM ---
+        const modal = document.getElementById('myModal');
+        const modalIframe = document.getElementById('modalIframe');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeButton = document.querySelector('#myModal .close-btn');
+
+        // --- LÓGICA PARA ABRIR EL MODAL (CON DELEGACIÓN DE EVENTOS) ---
+        
+        // 1. Añadimos un solo listener al documento.
+        document.addEventListener('click', function(event) {
+            
+            // 2. Verificamos si el elemento clickeado (o su padre más cercano) es un botón para abrir el modal.
+            const openButton = event.target.closest('.js-open-modal');
+
+            // 3. Si encontramos un botón, ejecutamos la lógica.
+            if (openButton) {
+                // Prevenimos cualquier comportamiento por defecto si el botón fuera un enlace <a>
+                event.preventDefault();
+
+                // Obtenemos la info desde los data-attributes del botón encontrado.
+                const docUrl = openButton.dataset.src;
+                const docTitle = openButton.dataset.title;
+
+                if (docUrl) {
+                    // Llenamos el modal con la información
+                    modalTitle.textContent = docTitle;
+                    modalIframe.src = docUrl;
+                    
+                    // Mostramos el modal
+                    modal.style.display = 'block';
+                }
             }
+        });
+
+
+        // --- Lógica para CERRAR el modal (esta no cambia) ---
+
+        // 1. Clic en el botón de cierre (X)
+        if (closeButton) {
+            closeButton.addEventListener('click', closeModal);
         }
 
-        // Se ejecuta cuando la página ha cargado completamente.
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // --- Referencias a los elementos del DOM ---
-            const modal = document.getElementById('myModal');
-            const modalIframe = document.getElementById('modalIframe');
-            const modalTitle = document.getElementById('modalTitle');
-            const closeButton = document.querySelector('#myModal .close-btn');
-
-            // --- LÓGICA PARA ABRIR EL MODAL (CON DELEGACIÓN DE EVENTOS) ---
-
-            // 1. Añadimos un solo listener al documento.
-            document.addEventListener('click', function(event) {
-
-                // 2. Verificamos si el elemento clickeado (o su padre más cercano) es un botón para abrir el modal.
-                const openButton = event.target.closest('.js-open-modal');
-
-                // 3. Si encontramos un botón, ejecutamos la lógica.
-                if (openButton) {
-                    // Prevenimos cualquier comportamiento por defecto si el botón fuera un enlace <a>
-                    event.preventDefault();
-
-                    // Obtenemos la info desde los data-attributes del botón encontrado.
-                    const docUrl = openButton.dataset.src;
-                    const docTitle = openButton.dataset.title;
-
-                    if (docUrl) {
-                        // Llenamos el modal con la información
-                        modalTitle.textContent = docTitle;
-                        modalIframe.src = docUrl;
-
-                        // Mostramos el modal
-                        modal.style.display = 'block';
-                    }
-                }
-            });
-
-
-            // --- Lógica para CERRAR el modal (esta no cambia) ---
-
-            // 1. Clic en el botón de cierre (X)
-            if (closeButton) {
-                closeButton.addEventListener('click', closeModal);
+        // 2. Clic en el fondo (overlay)
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                closeModal();
             }
-
-            // 2. Clic en el fondo (overlay)
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    closeModal();
-                }
-            });
-
-            // 3. Presionar la tecla "Escape"
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    closeModal();
-                }
-            });
         });
-    </script>
+
+        // 3. Presionar la tecla "Escape"
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+    });
+</script>
     <script>
         const $leaderboardProfile = document.querySelectorAll('.leaderboard__profile')
         const $mapa = document.getElementById('mapa')

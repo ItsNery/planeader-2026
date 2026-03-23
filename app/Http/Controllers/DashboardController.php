@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -19,6 +19,8 @@ use App\Models\Capacitacion;
 
 class DashboardController extends Controller
 {
+    // El acceso al dashboard está permitido para cualquier usuario autenticado
+
     /**
      * Muestra múltiples variables en la vista protegida de Dashboard para tener un panorama amplio de la cantidad de elementos que se tienen cargados.
      *
@@ -42,73 +44,5 @@ class DashboardController extends Controller
         $cantidad_prog_estatales = ProgramaEstatal::count();
         $cantidad_capacitaciones = Capacitacion::count();
         return view('dashboard', compact('cantidad_documentos_subcomites', 'cantidad_documentos_copladep', 'cantidad_documentos_planesmun', 'cantidad_documentos_planesest', 'cantidad_programas_derivados', 'cantidad_subcomites', 'cantidad_banners', 'cantidad_docsMarco', 'cantidad_mensajes', 'encuesta_feliz', 'encuesta_indiferente', 'encuesta_enojado', 'cantidad_usuarios', 'cantidad_prog_estatales', 'cantidad_capacitaciones'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     * No se utiliza en este controlador, pero se deja como parte de la estructura de recursos.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     * No se utiliza en este controlador, pero se deja como parte de la estructura de recursos.
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * No se utiliza en este controlador, pero se deja como parte de la estructura de recursos.
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * No se utiliza en este controlador, pero se deja como parte de la estructura de recursos.
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * No se utiliza en este controlador, pero se deja como parte de la estructura de recursos.
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * No se utiliza en este controlador, pero se deja como parte de la estructura de recursos.
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

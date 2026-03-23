@@ -21,7 +21,7 @@
                  <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Inicio</a></li>
                  <li><a href="{{ url('/marcojuridico') }}"
                          class="{{ request()->is('marcojuridico') ? 'active' : '' }}">Marco Jurídico</a></li>
-                 <li><a href="{{ url('/regionalizacion') }}"
+                  <li><a href="{{ url('/regionalizacion') }}"
                          class="{{ request()->is('regionalizacion') ? 'active' : '' }}">Regionalización</a></li>
                  <li class="dropdown">
                      <a href="#"
@@ -30,8 +30,7 @@
                      <ul class="dropdown-content">
                          <li><a href="{{ url('/ped') }}">Plan Estatal de Desarrollo</a></li>
                          <li><a href="{{ url('/ped-programas') }}">Programas Derivados</a></li>
-                         <li><a href="{{ url('/ped-programas/capacitacion') }}">Capacitación Programas Derivados</a>
-                         </li>
+                         <li><a href="{{ url('/ped-programas/capacitacion') }}">Capacitacion Programas Derivados</a></li>
                          <li><a href="{{ url('/copladep') }}">COPLADEP</a></li>
                          <li><a href="{{ url('/programas-estatales') }}">Programas Estatales</a></li>
                          <li><a href="{{ url('/subcomites') }}">Subcomités</a></li>

@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\Subcomite;
@@ -11,6 +11,14 @@ use App\Traits\UpdatesPublicado;
 
 class SubcomiteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-subcomite|crear-subcomite|editar-subcomite|borrar-subcomite', ['only' => ['index']]);
+        $this->middleware('permission:crear-subcomite', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-subcomite', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-subcomite', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los subcomités, paginado cada 1000 registros.
      * Envia tambien los planes estatales para su uso en la vista.

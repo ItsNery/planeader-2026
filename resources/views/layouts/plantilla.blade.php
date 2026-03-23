@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') | Portal de Planeación para el Desarrollo</title>
     <meta content='width=device-width, initial-scale=1' name='viewport'>
-    <meta name="description" content="@yield('meta-description', 'Página informativa del Portal de Planeación para el Desarrollo del Estado de Puebla')">
+    <meta name="description" content="@yield('meta-description', 'Página informativa del Sistema Estatal de Planeación Democrática del Estado de Puebla')">
     <meta name="keywords" content="@yield('keywords', 'Planeación Democrática, Plan Estatal de Desarrollo, Puebla, PLANEADER, Gobierno, Estado de Puebla, Planeación Democrática, Sistema Estatal, Desarrollo Estatal, Planeación del Desarrollo, Gobierno de Puebla, Plan Estatal de Desarrollo, Sistema de Planeación, Planeación en Puebla, Desarrollo en Puebla, Política Pública, Gestión Pública, Administración Estatal, Planeación Estratégica, Participación Ciudadana, Transparencia, Rendición de Cuentas')">
     <meta name="author" content="Ing. Nery Pozos">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -144,7 +144,7 @@
 
     <main>
         {{-- @include('layouts.headers') --}}
-        @include('layouts.headers-nuevo')
+        @include('layouts.headers')
         <!-- Modal del Buscador -->
         {{-- <div id="customSearchModal" class="custom-modal-search">
                 <div class="custom-modal-content">
@@ -159,7 +159,7 @@
                 </div>
             </div> --}}
         @yield('content')
-        @include('layouts.carrusel_sitios_nuevo')
+        @include('layouts.carrusel_sitios')
         @include('layouts.footer')
         <button id="scrollTopBtn" title="Volver arriba">
             <svg width="100%" height="100%" viewBox="0 0 40 40">
@@ -177,9 +177,7 @@
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/aos.js') }}"></script>
-    <script src="{{ asset('js/owl.carousel.min.js') }}"
-        integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{ asset('js/owl.carousel.min.js') }}" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     {{-- <script src="{{ asset('js/scripts.js') }}"></script> --}}
 </body>
 

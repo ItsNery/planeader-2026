@@ -20,7 +20,7 @@
                 {{-- <img src="/path/to/your/logos_dependencia_16_9.png" alt="Logos Dependencia" class="logo-img"> --}}
             </div>
 
-            <h2 class="text-center form-title">Programa de Capacitación Municipal<br>Segundo Semestre<br> Día 1</h2>
+            <h2 class="text-center form-title">Programa de Capacitación Municipal<br>Segundo Semestre<br> Día 2</h2>
 
             <form method="POST" action="{{ route('registro.store') }}" novalidate id="miFormulario"> @csrf @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">

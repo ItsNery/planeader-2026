@@ -8,7 +8,7 @@
                 <a href="https://agenda2030.puebla.gob.mx" rel="noopener">
                     <img title="Logo de Portal Agenda 2030 Puebla" alt="Logo de Portal Agenda 2030 Puebla"
                         class="img-fluid mx-auto imagen_sitiosinteres"
-                        src=" {{ asset('img/sitiosinteres/Puebla_A2030.svg') }}">
+                        src=" {{ asset('img/sitiosinteres/logo-agenda.png') }}">
                 </a>
                 <h5 class="mt-3 texto-color1">Agenda 2030</h5>
             </div>

@@ -1,5 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom sticky-top">
     <div class="container">
+        {{-- local --}}
         <!-- Logo -->
         <a class="navbar-brand me-4" href="/">
 
@@ -13,111 +14,166 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav me-auto">
-                <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                     {{ __('Inicio') }}
-                </x-jet-nav-link>
+                </x-nav-link>
 
                 <!-- Documentos Dropdown -->
-                <x-jet-dropdown id="docsDropdown" :active="request()->routeIs([
-                    'panel-documentos-subcomites*',
-                    'panel-documentos-copladep*',
-                    'panel-marco-juridico*',
-                    'panel-documentos-apoyo-coplademun*',
-                    'panel-documentos-metodologicos*',
-                ])">
-                    <x-slot name="trigger">
-                        {{ __('Documentos') }}
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-subcomites.index') }}">
-                            {{ __('Docs. Subcomités') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-copladep.index') }}">
-                            {{ __('Docs. Copladep') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
-                            {{ __('Marco Jurídico') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-apoyo-coplademun.index') }}">
-                            {{ __('Apoyo Coplademun') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
-                            {{ __('Metodológicos') }}
-                        </x-jet-dropdown-link>
-                    </x-slot>
-                </x-jet-dropdown>
+                @canany(['ver-doc-subcomite', 'ver-doc-copladep', 'ver-marco-juridico', 'ver-doc-apoyo',
+                    'ver-doc-metodologico', 'ver-doc-sesion'])
+                    <x-dropdown id="docsDropdown" :active="request()->routeIs([
+                        'panel-documentos-subcomites*',
+                        'panel-documentos-copladep*',
+                        'panel-marco-juridico*',
+                        'panel-documentos-apoyo-coplademun*',
+                        'panel-documentos-metodologicos*',
+                        // 'panel-documentos-sesiones*',
+                    ])">
+                        <x-slot name="trigger">
+                            {{ __('Documentos') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-doc-subcomite')
+                                <x-dropdown-link href="{{ route('panel-documentos-subcomites.index') }}">
+                                    {{ __('Docs. Subcomités') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-doc-copladep')
+                                <x-dropdown-link href="{{ route('panel-documentos-copladep.index') }}">
+                                    {{ __('Docs. Copladep') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-marco-juridico')
+                                <x-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
+                                    {{ __('Marco Jurídico') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-doc-apoyo')
+                                <x-dropdown-link href="{{ route('panel-documentos-apoyo-coplademun.index') }}">
+                                    {{ __('Apoyo Coplademun') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-doc-metodologico')
+                                <x-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
+                                    {{ __('Metodológicos') }}
+                                </x-dropdown-link>
+                            @endcan
+                            {{-- @can('ver-doc-sesion')
+                                <x-dropdown-link href="{{ route('panel-documentos-sesiones.index') }}">
+                                    {{ __('Docs. Sesiones') }}
+                                </x-dropdown-link>
+                            @endcan --}}
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
 
                 <!-- Planeación Dropdown -->
-                <x-jet-dropdown id="planeacionDropdown" :active="request()->routeIs([
-                    'panel-planes-estatales*',
-                    'panel-planes-municipales*',
-                    'panel-herramientas*',
-                    'capacitaciones*',
-                    'panel-subcomites*',
-                ])">
-                    <x-slot name="trigger">
-                        {{ __('Planeación') }}
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-jet-dropdown-link href="{{ route('panel-planes-estatales.index') }}">
-                            {{ __('Planes Estatales') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-planes-municipales.index') }}">
-                            {{ __('Planes Municipales') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-herramientas.index') }}">
-                            {{ __('Herramientas de planeación') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('capacitaciones.index') }}">
-                            {{ __('Capacitaciones municipales') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-subcomites.index') }}">
-                            {{ __('Subcomités') }}
-                        </x-jet-dropdown-link>
-                    </x-slot>
-                </x-jet-dropdown>
+                @canany(['ver-plan-estatal', 'ver-plan-municipal', 'ver-herramienta', 'ver-capacitacion',
+                    'ver-subcomite'])
+                    <x-dropdown id="planeacionDropdown" :active="request()->routeIs([
+                        'panel-planes-estatales*',
+                        'panel-planes-municipales*',
+                        'panel-herramientas*',
+                        'capacitaciones*',
+                        'panel-subcomites*',
+                    ])">
+                        <x-slot name="trigger">
+                            {{ __('Planeación') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-plan-estatal')
+                                <x-dropdown-link href="{{ route('panel-planes-estatales.index') }}">
+                                    {{ __('Planes Estatales') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-plan-municipal')
+                                <x-dropdown-link href="{{ route('panel-planes-municipales.index') }}">
+                                    {{ __('Planes Municipales') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-herramienta')
+                                <x-dropdown-link href="{{ route('panel-herramientas.index') }}">
+                                    {{ __('Herramientas de planeación') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-capacitacion')
+                                <x-dropdown-link href="{{ route('capacitaciones.index') }}">
+                                    {{ __('Capacitaciones municipales') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-subcomite')
+                                <x-dropdown-link href="{{ route('panel-subcomites.index') }}">
+                                    {{ __('Subcomités') }}
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
 
                 <!-- Programas Dropdown -->
-                <x-jet-dropdown id="programasDropdown" :active="request()->routeIs(['panel-programas-derivados*', 'panel-programas-estatales*'])">
-                    <x-slot name="trigger">
-                        {{ __('Programas') }}
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-jet-dropdown-link href="{{ route('panel-programas-derivados.index') }}">
-                            {{ __('Derivados') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-programas-estatales.index') }}">
-                            {{ __('Estatales') }}
-                        </x-jet-dropdown-link>
+                @canany(['ver-programa-derivado', 'ver-programa-estatales'])
+                    <x-dropdown id="programasDropdown" :active="request()->routeIs(['panel-programas-derivados*', 'panel-programas-estatales*'])">
+                        <x-slot name="trigger">
+                            {{ __('Programas') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-programa-derivado')
+                                <x-dropdown-link href="{{ route('panel-programas-derivados.index') }}">
+                                    {{ __('Derivados') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-programa-estatales')
+                                <x-dropdown-link href="{{ route('panel-programas-estatales.index') }}">
+                                    {{ __('Estatales') }}
+                                </x-dropdown-link>
+                            @endcan
 
-                    </x-slot>
-                </x-jet-dropdown>
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
 
                 <!-- Gestión Dropdown -->
-                <x-jet-dropdown id="gestionDropdown" :active="request()->routeIs(['panel-banners*', 'panel-contacto*', 'panel-admin*'])">
-                    <x-slot name="trigger">
-                        {{ __('Gestión') }}
-                    </x-slot>
-                    <x-slot name="content">
-
-                        <x-jet-dropdown-link href="{{ route('panel-banners.index') }}">
-                            {{ __('Banners') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-contacto.index') }}">
-                            {{ __('Mensajes de contacto') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-admin.index') }}">
-                            {{ __('Usuarios') }}
-                        </x-jet-dropdown-link>
-                    </x-slot>
-                </x-jet-dropdown>
+                @canany(['ver-banner', 'ver-contacto', 'ver-usuario'])
+                    <x-dropdown id="gestionDropdown" :active="request()->routeIs([
+                        'panel-banners*',
+                        'panel-contacto*',
+                        'panel-admin*',
+                        'panel-roles*',
+                    ])">
+                        <x-slot name="trigger">
+                            {{ __('Gestión') }}
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('ver-banner')
+                                <x-dropdown-link href="{{ route('panel-banners.index') }}">
+                                    {{ __('Banners') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-contacto')
+                                <x-dropdown-link href="{{ route('panel-contacto.index') }}">
+                                    {{ __('Mensajes de contacto') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-usuario')
+                                <x-dropdown-link href="{{ route('panel-admin.index') }}">
+                                    {{ __('Usuarios') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-rol')
+                                <x-dropdown-link href="{{ route('panel-roles.index') }}">
+                                    {{ __('Roles y Permisos') }}
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
+                @endcanany
             </ul>
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav align-items-baseline">
                 <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                    <x-jet-dropdown id="teamManagementDropdown">
+                    <x-dropdown id="teamManagementDropdown">
                         <x-slot name="trigger">
                             {{ Auth::user()->currentTeam->name }}
 
@@ -136,14 +192,14 @@
                             </h6>
 
                             <!-- Team Settings -->
-                            <x-jet-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
+                            <x-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
                                 {{ __('Team Settings') }}
-                            </x-jet-dropdown-link>
+                            </x-dropdown-link>
 
                             @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                <x-jet-dropdown-link href="{{ route('teams.create') }}">
+                                <x-dropdown-link href="{{ route('teams.create') }}">
                                     {{ __('Create New Team') }}
-                                </x-jet-dropdown-link>
+                                </x-dropdown-link>
                             @endcan
 
                             <hr class="dropdown-divider">
@@ -154,15 +210,15 @@
                             </h6>
 
                             @foreach (Auth::user()->allTeams() as $team)
-                                <x-jet-switchable-team :team="$team" />
+                                <x-switchable-team :team="$team" />
                             @endforeach
                         </x-slot>
-                    </x-jet-dropdown>
+                    </x-dropdown>
                 @endif
 
                 <!-- Settings Dropdown -->
                 @auth
-                    <x-jet-dropdown id="settingsDropdown">
+                    <x-dropdown id="settingsDropdown">
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <img class="rounded-circle" width="32" height="32"
@@ -185,29 +241,29 @@
                                 {{ __('Gestionar cuenta') }}
                             </h6>
 
-                            <x-jet-dropdown-link href="{{ route('profile.show') }}">
+                            <x-dropdown-link href="{{ route('profile.show') }}">
                                 {{ __('Perfil') }}
-                            </x-jet-dropdown-link>
+                            </x-dropdown-link>
 
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                <x-jet-dropdown-link href="{{ route('api-tokens.index') }}">
+                                <x-dropdown-link href="{{ route('api-tokens.index') }}">
                                     {{ __('API Tokens') }}
-                                </x-jet-dropdown-link>
+                                </x-dropdown-link>
                             @endif
 
                             <hr class="dropdown-divider">
 
                             <!-- Authentication -->
-                            <x-jet-dropdown-link href="{{ route('logout') }}"
+                            <x-dropdown-link href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
-                                                         document.getElementById('logout-form').submit();">
+                                                             document.getElementById('logout-form').submit();">
                                 {{ __('Cerrar sesión') }}
-                            </x-jet-dropdown-link>
+                            </x-dropdown-link>
                             <form method="POST" id="logout-form" action="{{ route('logout') }}">
                                 @csrf
                             </form>
                         </x-slot>
-                    </x-jet-dropdown>
+                    </x-dropdown>
                 @endauth
             </ul>
         </div>

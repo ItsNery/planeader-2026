@@ -34,7 +34,7 @@
     /* --mainColor: #68132D; */
     --mainColor: #861E34;
     /* --mainColor: grey; */
-    /* --gobierno: #920B32; comentado el 12 de mayo por nuevo ped */
+    /* --gobierno: #920B32; comentado el 12 de mayo por nuevo ped */ 
     --gobierno: #AF1731;
     /* --gobierno: #b9cadc; */
     --secondColor: #c2ba98;
@@ -3145,7 +3145,7 @@ a .tarjeta_histder {
 }
 
 .bg-breadcrumb-regionalizacion {
-    background: linear-gradient(rgba(255, 255, 255, 0.463), rgba(255, 255, 255, 0.605)), url(../../imagen/fondo-regionalizacion.jpg);
+     background: linear-gradient(rgba(255, 255, 255, 0.463), rgba(255, 255, 255, 0.605)), url(../../imagen/fondo-regionalizacion.jpg);
     /* background: linear-gradient(rgba(224, 217, 217, 0), rgba(220, 137, 166, 0.8)), url(../../imagen/fondo-regionalizacion.jpg); */
     background-position: center center;
     background-repeat: no-repeat;
@@ -3828,7 +3828,6 @@ a .tarjeta_histder {
 #buscar-regiones::placeholder {
     color: #999;
 }
-
 /* Seccion para redirigir al nuevo PED */
 .ped-section {
     height: calc(100vh - 100px);
@@ -3901,8 +3900,63 @@ a .tarjeta_histder {
     }
 }
 
-.imagen-banner-planeader {
+.imagen-banner-planeader{
     aspect-ratio: 16/4;
     object-fit: cover;
 }
+/* Estilos de carrusel de regionales dentro de primera sesion ordinaria 2026 */
 
+.coverflow-carousel {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+/* Estilos para cada slide */
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+    /* width: 280px; */
+    height: 380px;
+    max-width: 90vw;
+    max-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-box-reflect: below 1px linear-gradient(transparent, transparent, #0006);
+}
+
+.swiper-slide a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Cuando el slide está activo (el del centro), puedes hacerlo un poco más grande */
+.swiper-slide-active {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+
+/* Personalización de la paginación y navegación */
+.swiper-pagination-bullet-active {
+    background-color: #007aff !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: #007aff !important;
+    --swiper-navigation-size: 30px;
+}

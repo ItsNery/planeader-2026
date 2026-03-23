@@ -14,8 +14,7 @@
 @section('css')
 @endsection
 @section('content')
-    <!-- Chatra {literal} -->
-    <script>
+    {{-- <script>
         (function(d, w, c) {
             w.ChatraID = 'DGbhKob3ckcWLhwPx';
             var s = d.createElement('script');
@@ -26,16 +25,13 @@
             s.src = 'https://call.chatra.io/chatra.js';
             if (d.head) d.head.appendChild(s);
         })(document, window, 'Chatra');
-    </script>
-    <!-- /Chatra {/literal} -->
+    </script> --}}
 
     <section class="carrusel">
         <div class="container-fluid p-0">
             <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
-                    <!-- Verificar si hay banners dinámicos -->
                     @if ($banners && count($banners) > 0)
-                        <!-- Banners dinámicos -->
                         @foreach ($banners as $banner)
                             <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
                                 <a href="{{ $banner->enlace }}" target="_blank" title="{{ $banner->nombre }}" rel="noopener">
@@ -45,7 +41,6 @@
                             </div>
                         @endforeach
                     @else
-                        <!-- Banner estático si no hay banners dinámicos -->
                         <div class="carousel-item active">
                             <a href="#" rel="noopener" title="Baner por defecto del Planeader">
                                 <img class="w-100 imagen-banner-planeader" src="/baners/20240411231551.png" alt="Image">
@@ -78,8 +73,11 @@
                     </div>
 
                     <div class="boton-ped mb-4">
-                        <img src="{{ asset('img/logo-ped.png') }}" alt="Imagotipo del Plan Estatal de Desarrollo"
-                            title="Imagotipo del PED" class="img-fluid">
+                        <video autoplay loop muted playsinline class="img-fluid">
+                            <source src="{{ asset('video/hero-video.mp4') }}" type="video/mp4">
+                            <img src="{{ asset('img/logo-ped.png') }}" alt="Imagotipo del Plan Estatal de Desarrollo"
+                                title="Imagotipo del PED" class="img-fluid">
+                        </video>
                         <p class="mt-3">
                             Documento rector que establece los principios básicos sobre los cuales se llevará a cabo la
                             Planeación del Desarrollo en el estado de Puebla y que orienta el funcionamiento de la
@@ -145,7 +143,7 @@
                 <div class="col-12 col-md-4 mb-4">
                     <div class="tarjeta-uniforme h-100">
                         <div class="icono-seccion">
-                            <img src="{{ asset('img/iconos-inicio/Copladep.png') }}" alt="Icono del COPLADEP">
+                            <img src="{{ asset('img/iconos-inicio/Copladep-min.png') }}" alt="Icono del COPLADEP">
                         </div>
                         <div class="titulo-inicio-2">
                             <h3>COPLADEP</h3>
@@ -168,7 +166,7 @@
                             <img src="{{ asset('img/iconos-inicio/Subcomites.png') }}" alt="Icono de Subcomités">
                         </div>
                         <div class="titulo-inicio-2">
-                            <h3>Subcomites</h3>
+                            <h3>Subcomités</h3>
                             <p>
                                 Órganos auxiliares del COPLADEP: Subcomités Sectoriales, Especiales y Regional
                             </p>

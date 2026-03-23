@@ -1,5 +1,6 @@
 <?php
-
+// local
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CapacitacionController;
@@ -20,7 +21,9 @@ use App\Http\Controllers\HerramientaPlaneacionController;
 use App\Http\Controllers\PlanEstatalAnexoController;
 use App\Http\Controllers\DocumentoApoyoCoplademunController;
 use App\Http\Controllers\DocumentoMetodologicoController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DocumentoSesionController;
+use App\Http\Controllers\RoleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -51,9 +54,10 @@ Route::get('/ped', function () {
 //     return view('subcomites');
 // });
 
-Route::get('/copladep', function () {
-    return view('copladep');
-});
+// Route::get('/copladep', function () {
+//     return view('copladep');
+// });
+Route::get('/copladep/primera-sesion-ordinaria', [DocumentoSesionController::class, 'mostrarPrimeraSesion']);
 
 Route::get('/ped-programas', [ProgramaDerivadoController::class, 'mostrarProgramasDerivados']);
 
@@ -146,12 +150,12 @@ Route::get('/coplademun/registro', [RegistroController::class, 'create'])->name(
 Route::post('/coplademun/registro', [RegistroController::class, 'store'])->name('registro.store');
 
 // NUEVA RUTA: Ruta para MOSTRAR el listado de registrados (GET)
-Route::get('/coplademun/listado', [RegistroController::class, 'index'])->name('registros.index'); 
+Route::get('/coplademun/listado', [RegistroController::class, 'index'])->name('registros.index');
 
 // --- Fin de Rutas para el registro de COPLADEMUN ---
 // Rutas protegidas
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('panel-marco-juridico', MarcoJuridicoController::class);
     Route::resource('panel-documentos-subcomites', DocumentoSubcomiteController::class);
     Route::resource('panel-documentos-copladep', DocumentoCopladepController::class);
@@ -189,10 +193,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('panel-herramientas-anexo/{id}', [HerramientaPlaneacionController::class, 'destroyAnexo'])->name('panel-herramientas.destroyAnexo');
     Route::patch('/herramienta-planeacion/{id}/publicado', [HerramientaPlaneacionController::class, 'updatePublicado'])->name('update-publicado-herramienta-planeacion');
     Route::resource('panel-admin', AdminUserController::class);
+    Route::resource('panel-roles', RoleController::class);
     Route::resource('panel-programas-estatales', ProgramaEstatalController::class);
     Route::patch('/programa-estatal/{id}/publicado', [ProgramaEstatalController::class, 'updatePublicado'])->name('update-publicado-programa-estatal');
     Route::resource('panel-documentos-apoyo-coplademun', DocumentoApoyoCoplademunController::class)->names('panel-documentos-apoyo-coplademun')->parameters(['panel-documentos-apoyo-coplademun' => 'documento']);
     Route::patch('/documento-apoyo-coplademun/{id}/publicado', [DocumentoApoyoCoplademunController::class, 'updatePublicado'])->name('update-publicado-documento-apoyo-coplademun');
+    Route::resource('panel-documentos-sesiones', DocumentoSesionController::class);
+    Route::patch('/documento-sesion/{id}/publicado', [DocumentoSesionController::class, 'updatePublicado'])->name('update-publicado-documento-sesion');
     Route::get('panel-planes-estatales/{planId}/anexos', [PlanEstatalAnexoController::class, 'index'])->name('panel-planes-estatales-anexos.index');
     Route::get('panel-planes-estatales/{planId}/anexos/create', [PlanEstatalAnexoController::class, 'create'])->name('panel-planes-estatales-anexos.create');
     Route::post('panel-planes-estatales/{planId}/anexos', [PlanEstatalAnexoController::class, 'store'])->name('panel-planes-estatales-anexos.store');

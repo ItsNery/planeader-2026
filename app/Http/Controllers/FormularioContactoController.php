@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\FormularioContacto;
@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class FormularioContactoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-contacto|borrar-contacto', ['only' => ['index']]);
+        $this->middleware('permission:borrar-contacto', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los documentos de los  mensajes de contacto paginado a 1000 registros.
      *

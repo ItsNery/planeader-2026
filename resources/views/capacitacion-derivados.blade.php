@@ -45,7 +45,7 @@
                             </a>
                         </div>
                     </div>
-                    {{-- </div>
+                {{-- </div>
                 <div class="container px-4 col-12 col-lg-3 col-md-6">
                     <div class="tarjeta-marco">
                         <div class="imagen">
@@ -70,8 +70,8 @@
                         </div>
                     </div>
                 </div> --}}
-                </div>
             </div>
+        </div>
     </section>
 @endsection
 

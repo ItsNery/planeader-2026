@@ -58,6 +58,7 @@ return [
             'url' => env('APP_URL') . '/documentos/capacitacion-municipal',
             'visibility' => 'public',
         ],
+
     ],
 
     /*

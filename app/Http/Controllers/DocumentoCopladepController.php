@@ -1,5 +1,5 @@
 <?php
-
+// local
 namespace App\Http\Controllers;
 
 use App\Models\DocumentoCopladep;
@@ -11,6 +11,14 @@ use Carbon\Carbon;
 
 class DocumentoCopladepController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-doc-copladep|crear-doc-copladep|editar-doc-copladep|borrar-doc-copladep', ['only' => ['index']]);
+        $this->middleware('permission:crear-doc-copladep', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-doc-copladep', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-doc-copladep', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los documentos del COPLADEP.
      *

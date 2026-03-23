@@ -1,50 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // =========================================================================
-    // 1. CONFIGURACIÓN
-    // =========================================================================
+    // URLS y configuración general
     const url = "https://geoportal.puebla.gob.mx/",
-        urlGeoserver = `${url}geoserver/wms`;
-
-    const baseUrlWFS = `${url}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json`;
+        urlGeoserver = `${url}geoserver/wms`,
+        urlShapeGeo = `${url}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json&typeName=`;
 
     const configCapas = {
-        Microrregiones: {
-            id_field: "id_micro",
-            layer_name: "Microrregiones_2026",
-        },
-        Macrorregiones: {
-            id_field: "id_macro",
-            layer_name: "Macrorregiones_2026",
-        },
+        Microrregiones: { id_field: "id_micro", layer_name: "Microrregiones_2026" },
+        Macrorregiones: { id_field: "id_macro", layer_name: "Macrorregiones_2026" },
     };
 
-    // Variables
+    // Declaración de variables que usaremos
     let selectLayer = null;
     let capaGeneral = null;
     let municipiosLayer = null;
-    let capaActiva = "Macrorregiones";
-
+    let capaActiva = "Macrorregiones_2026";
     const geometriasMicro = new Map();
     const geometriasMacro = new Map();
-    const cacheCapasPrincipales = {};
-    let hoverLayer = null;
-    let bloqueosDeEvento = false;
-    const loader = document.getElementById("loader-mapa");
+    let hoverLayer = null; // La declaramos aquí, pero la inicializamos después del mapa
 
+    // Inicialización del mapa
     const map = L.map("mapa", {
         zoom: 8,
         minZoom: 8,
     }).setView([19.35, -97.8], 8);
 
+    // =========================================================================
+    //Movemos la inicialización de la capa hover AQUÍ, después de crear el mapa
     hoverLayer = L.layerGroup().addTo(map);
-
+    // Antes, esta línea estaba arriba y causaba el error porque 'map' no existía aún.
     // =========================================================================
-    // 2. CARGA DE MUNICIPIOS
-    // =========================================================================
-    const urlMuni = `${baseUrlWFS}&typeName=21mun&t=${Date.now()}`;
 
-    // console.log("🔄 Descargando municipios...");
-    fetch(urlMuni)
+    // Carga de la capa de municipios (siempre visible)
+    fetch(`${urlShapeGeo}21mun`)
         .then((response) => response.json())
         .then((data) => {
             municipiosLayer = L.geoJSON(data, {
@@ -56,221 +43,169 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 interactive: false,
             }).addTo(map);
-            // console.log("✅ Municipios cargados.");
         })
-        .catch((error) => console.error("❌ Error municipios:", error));
+        .catch((error) => console.error("Error cargando municipios:", error));
 
-    // =========================================================================
-    // 3. PRECARGA (SOPORTE MULTI-GEOMETRÍA)
-    // =========================================================================
+    // --- FUNCIONES ---
 
-    function precargarGeometrias(claveCapa, mapaDeAlmacenamiento) {
-        const config = configCapas[claveCapa];
-        const urlPrecarga = `${baseUrlWFS}&typeName=${config.layer_name}`;
-
-        fetch(urlPrecarga)
+    /**
+     * Pide todas las geometrías de una capa y las guarda en un Map para acceso rápido.
+     */
+    function precargarGeometrias(nombreCapa, mapaDeAlmacenamiento, idField) {
+        fetch(`${urlShapeGeo}${nombreCapa}`)
             .then((response) => response.json())
             .then((data) => {
-                if (data && data.features) {
-                    let contadorFragmentos = 0;
-
-                    data.features.forEach((feature) => {
-                        const id = feature.properties[config.id_field];
-
-                        if (id) {
-                            const idStr = String(id);
-
-                            // Guardamos un ARRAY de geometrías, no solo una
-                            if (mapaDeAlmacenamiento.has(idStr)) {
-                                // Si ya existe, agregamos este nuevo pedazo al array
-                                const geometriasExistentes =
-                                    mapaDeAlmacenamiento.get(idStr);
-                                geometriasExistentes.push(feature.geometry);
-                                contadorFragmentos++; // Contamos fragmentos extra
-                            } else {
-                                // Si es nuevo, iniciamos el array
-                                mapaDeAlmacenamiento.set(idStr, [
-                                    feature.geometry,
-                                ]);
-                            }
-                        }
-                    });
-                    // console.log(
-                    //     `✅ ${claveCapa}: Procesadas. Se encontraron ${contadorFragmentos} fragmentos adicionales (islas o duplicados).`,
-                    // );
-                }
+                data.features.forEach((feature) => {
+                    const id = feature.properties[idField];
+                    const geometria = feature.geometry;
+                    if (id && geometria) {
+                        mapaDeAlmacenamiento.set(String(id), geometria); // Guardamos ID como string por consistencia
+                    }
+                });
+                // console.log(`Geometrías para ${nombreCapa} precargadas.`);
             })
             .catch((error) =>
-                console.warn(`Error precarga ${claveCapa}`, error),
+                console.error(
+                    `Error precargando geometrías para ${nombreCapa}:`,
+                    error
+                )
             );
     }
 
-    // =========================================================================
-    // 4. FUNCIONES DEL MAPA
-    // =========================================================================
-
-    function cargarCapaPrincipal(claveCapa) {
-        const config = configCapas[claveCapa];
-        if (loader) loader.style.display = "flex";
-
+    /**
+     * Carga la capa principal gris de fondo (Micro o Macro)
+     */
+    function cargarCapaPrincipal(nombreCapa) {
         if (capaGeneral) {
             map.removeLayer(capaGeneral);
-            capaGeneral = null;
         }
-
-        if (cacheCapasPrincipales[claveCapa]) {
-            renderizarCapa(cacheCapasPrincipales[claveCapa]);
-            if (loader) loader.style.display = "none";
-            return;
-        }
-
-        const urlFondo = `${baseUrlWFS}&typeName=${config.layer_name}&t=${Date.now()}`;
-
-        fetch(urlFondo)
+        fetch(`${urlShapeGeo}${nombreCapa}`)
             .then((response) => response.json())
             .then((data) => {
-                cacheCapasPrincipales[claveCapa] = data;
-                renderizarCapa(data);
-            })
-            .catch((error) => console.error(error))
-            .finally(() => {
-                if (loader) loader.style.display = "none";
-            });
-    }
+                capaGeneral = L.geoJSON(data, {
+                    style: {
+                        color: "var(--color6)",
+                        weight: 2,
+                        opacity: 1,
+                        fillColor: "#a2a2a2",
+                        fillOpacity: 1,
+                    },
+                    interactive: false,
+                }).addTo(map);
 
-    function renderizarCapa(dataGeoJSON) {
-        capaGeneral = L.geoJSON(dataGeoJSON, {
-            style: {
-                color: "var(--color6)",
-                weight: 2,
-                opacity: 1,
-                fillColor: "#a2a2a2",
-                fillOpacity: 1,
-            },
-            interactive: false,
-        }).addTo(map);
-        if (municipiosLayer) municipiosLayer.bringToFront();
-    }
-
-    function seleccionarRegion(idRegion, claveCapa) {
-        const config = configCapas[claveCapa];
-        const idStr = String(idRegion);
-
-        // 1. Obtener las geometrías del caché que ya llenamos en precargarGeometrias
-        const mapaDeUso =
-            claveCapa === "Microrregiones" ? geometriasMicro : geometriasMacro;
-        const geometrias = mapaDeUso.get(idStr);
-
-        if (!geometrias || geometrias.length === 0) {
-            // console.warn(
-            //     `⚠️ No se encontró geometría en caché para el ID: ${idStr} en ${claveCapa}`,
-            // );
-            return;
-        }
-
-        // 2. Limpieza de capa previa
-        if (selectLayer) {
-            bloqueosDeEvento = true;
-            map.removeLayer(selectLayer);
-            selectLayer = null;
-            bloqueosDeEvento = false;
-        }
-
-        // 3. Dibujar las geometrías desde el caché (Soporta multipartes/fragmentos)
-        const grupoGeometrias = L.featureGroup();
-
-        // L.geoJSON puede recibir un array de geometrías directamente
-        L.geoJSON(geometrias, {
-            style: {
-                color: "#ffffff",
-                weight: 2,
-                opacity: 1,
-                fillColor: "var(--color7)",
-                fillOpacity: 0.6,
-            },
-        }).addTo(grupoGeometrias);
-
-        selectLayer = grupoGeometrias.addTo(map);
-
-        // Ajustar vista y traer municipios al frente
-        if (municipiosLayer) municipiosLayer.bringToFront();
-        map.fitBounds(selectLayer.getBounds(), {
-            animate: true,
-            duration: 0.8,
-        });
-
-        // 4. Obtener la información (esto sí requiere fetch porque es info de BD)
-        getInfoRegion(idRegion, claveCapa).then((info) => {
-            if (info && selectLayer) {
-                const titulo =
-                    claveCapa === "Microrregiones"
-                        ? `Microrregión ${info.nombre}`
-                        : `Macrorregión ${info.nombre}`;
-
-                let lista =
-                    "<li class='custom-popup-list-item'>Sin municipios</li>";
-                if (info.municipios?.length > 0) {
-                    lista = info.municipios
-                        .map(
-                            (m) =>
-                                `<li class='custom-popup-list-item '><i class="fas fa-map-marker-alt me-3"></i> ${m.nombre_municipio}</li>`,
-                        )
-                        .join("");
+                if (municipiosLayer) {
+                    municipiosLayer.bringToFront();
                 }
-                const content = `<div class="custom-popup-container">
-                                <div class="custom-popup-header"><h4 class="custom-popup-title">${titulo}</h4></div>
-                                <div class="custom-popup-body"><ul class="custom-popup-list">${lista}</ul></div>
-                             </div>`;
-
-                bloqueosDeEvento = true;
-                selectLayer.bindPopup(content).openPopup();
-                setTimeout(() => {
-                    bloqueosDeEvento = false;
-                }, 300);
-            }
-        });
-        // 4. Obtener la información
+            })
+            .catch((error) =>
+                console.error(`Error cargando capa ${nombreCapa}:`, error)
+            );
     }
 
-    async function getInfoRegion(id, claveCapa) {
+    /**
+     * Resalta la región seleccionada al hacer clic y muestra el popup
+     */
+    function seleccionarRegion(idRegion, nombreCapa) {
+        // Lógica de `seleccionarRegion` (sin cambios)
+        const config = configCapas[nombreCapa];
+        const urlSearch = `${urlShapeGeo}${config.layer_name}&CQL_FILTER=${config.id_field}=%27${idRegion}%27`;
+
+        fetch(urlSearch)
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data.features || data.features.length === 0) {
+                    Swal.fire(
+                        "Error",
+                        `No se encontró la geometría para la región ${idRegion}.`,
+                        "error"
+                    );
+                    return;
+                }
+                const layerGeoJSON = data.features[0];
+
+                if (selectLayer) {
+                    map.removeLayer(selectLayer);
+                }
+
+                selectLayer = L.geoJSON(layerGeoJSON.geometry, {
+                    style: {
+                        color: "#ffffff",
+                        weight: 2,
+                        opacity: 1,
+                        fillColor: "var(--color7)",
+                        fillOpacity: 0.6,
+                    },
+                }).addTo(map);
+
+                if (municipiosLayer) {
+                    municipiosLayer.bringToFront();
+                }
+
+                map.fitBounds(selectLayer.getBounds(), {
+                    animate: true,
+                    duration: 1,
+                });
+
+                getInfoRegion(idRegion, nombreCapa).then((info) => {
+                    if (info) {
+                        const tituloPopup =
+                            nombreCapa === "Microrregiones_2026"
+                                ? `Microrregión ${info.nombre}`
+                                : `Macrorregión ${info.nombre}`;
+                        let municipiosList =
+                            "<li class='custom-popup-list-item'>No hay municipios disponibles</li>";
+                        if (info.municipios && info.municipios.length > 0) {
+                            municipiosList = info.municipios
+                                .map(
+                                    (m) =>
+                                        `<li class='custom-popup-list-item'><i class="fas fa-map-marker-alt"></i><span class="municipio-nombre ms-2">${m.nombre_municipio}</span></li>`
+                                )
+                                .join("");
+                        }
+                        const popupContent = `<div class="custom-popup-container"><div class="custom-popup-header"><h4 class="custom-popup-title">${tituloPopup}</h4></div><div class="custom-popup-body"><h5 class="custom-popup-subtitle">Municipios:</h5><ul class="custom-popup-list">${municipiosList}</ul></div></div>`;
+                        L.popup()
+                            .setLatLng(selectLayer.getBounds().getCenter())
+                            .setContent(popupContent)
+                            .openOn(map);
+                    }
+                });
+            })
+            .catch((error) =>
+                Swal.fire(
+                    "Error",
+                    `Error al cargar la región: ${error}`,
+                    "error"
+                )
+            );
+    }
+
+    /**
+     * Obtiene la info (nombre y municipios) de una región desde el backend
+     */
+    async function getInfoRegion(id_region, nombreCapa) {
+        // Lógica de `getInfoRegion` (sin cambios)
         try {
-            const res = await fetch(`get_info_region/${claveCapa}/${id}`);
-            return await res.json();
-        } catch (e) {
+            const response = await fetch(
+                `get_info_region/${nombreCapa}/${id_region}`
+            );
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("Error en getInfoRegion:", error);
+            Swal.fire(
+                "Error",
+                `No se pudo cargar la información de la región: ${error.message}`,
+                "error"
+            );
             return null;
         }
     }
 
-    // =========================================================================
-    // 5. EVENTOS (MODIFICADO PARA MULTI-GEOMETRÍA)
-    // =========================================================================
-// =========================================================================
-    // BLOQUEO ABSOLUTO DE EVENTOS HACIA EL MAPA
-    // =========================================================================
-    map.on('popupopen', function(e) {
-        const popupNode = e.popup.getElement(); 
+    // --- LÓGICA DE EVENTOS ---
 
-        if (popupNode) {
-            // Detiene clics y doble clics generales en el globo
-            L.DomEvent.disableClickPropagation(popupNode);
-            L.DomEvent.disableScrollPropagation(popupNode);
-
-            // Busca específicamente tu contenedor con la lista
-            const scrollContainer = popupNode.querySelector('.custom-popup-container');
-            
-            if (scrollContainer) {
-                // Frenamos el evento de la rueda del ratón (scroll) puro
-                scrollContainer.addEventListener('wheel', function(event) {
-                    event.stopPropagation();
-                });
-                
-                // Frenamos el evento táctil (para móviles)
-                scrollContainer.addEventListener('touchmove', function(event) {
-                    event.stopPropagation();
-                });
-            }
-        }
-    });
+    // Eventos para los TABS
     document
         .querySelectorAll("#regionalizacionTab .nav-link")
         .forEach((tab) => {
@@ -278,74 +213,94 @@ document.addEventListener("DOMContentLoaded", function () {
                 capaActiva = this.dataset.capa;
                 cargarCapaPrincipal(capaActiva);
                 if (selectLayer) {
-                    bloqueosDeEvento = true;
                     map.removeLayer(selectLayer);
                     selectLayer = null;
-                    bloqueosDeEvento = false;
                 }
                 map.setView([19.35, -97.8], 8);
             });
         });
 
+    // Eventos para los ITEMS DE LA LISTA
     document.querySelectorAll(".item-region").forEach((el) => {
+        // Evento de CLIC
         el.addEventListener("click", () => {
-            seleccionarRegion(el.dataset.id, el.dataset.capa);
+            const idRegion = el.dataset.id;
+            const tipoCapa = el.dataset.capa;
+            seleccionarRegion(idRegion, tipoCapa);
         });
 
+        // Evento HOVER (mouseenter)
         el.addEventListener("mouseenter", () => {
-            const mapGeo =
-                el.dataset.capa === "Microrregiones"
+            const idRegion = el.dataset.id;
+            const tipoCapa = el.dataset.capa;
+            const almacenGeometrias =
+                tipoCapa === "Microrregiones"
                     ? geometriasMicro
                     : geometriasMacro;
-            const idHtml = String(el.dataset.id);
+            const geometria = almacenGeometrias.get(idRegion);
 
-            // Ahora obtenemos un ARRAY de geometrías
-            const geometrias = mapGeo.get(idHtml);
-
-            if (geometrias && geometrias.length > 0) {
-                // console.log(
-                //     `Highlighting ID: ${idHtml}. Fragments found: ${geometrias.length}`,
-                // );
-                // Recorremos el array y pintamos cada pedazo
-                geometrias.forEach((geo) => {
-                    const h = L.geoJSON(geo, {
-                        style: {
-                            color: "black",
-                            weight: 2,
-                            fillColor: "#F7DC6F",
-                            fillOpacity: 0.5,
-                        },
-                        interactive: false,
-                    });
-                    hoverLayer.addLayer(h);
+            if (geometria) {
+                const highlight = L.geoJSON(geometria, {
+                    style: {
+                        color: "black",
+                        weight: 2,
+                        fillColor: "#F7DC6F",
+                        fillOpacity: 0.5,
+                    },
+                    interactive: false,
                 });
+                hoverLayer.addLayer(highlight);
             }
         });
 
-        el.addEventListener("mouseleave", () => hoverLayer.clearLayers());
+        // Evento HOVER (mouseleave)
+        el.addEventListener("mouseleave", () => {
+            hoverLayer.clearLayers();
+        });
     });
 
+    // Evento de click en el mapa
     map.on("click", function (e) {
+        // Obtenemos la configuración de la capa activa (Micro o Macro)
         const config = configCapas[capaActiva];
+
+        // Construimos la URL para la petición GetFeatureInfo
         const wmsUrl =
             `${urlGeoserver}?service=WMS&version=1.1.1&request=GetFeatureInfo` +
-            `&LAYERS=${config.layer_name}&QUERY_LAYERS=${config.layer_name}` +
-            `&INFO_FORMAT=application/json&SRS=EPSG:4326` +
-            `&BBOX=${map.getBounds().toBBoxString()}&WIDTH=${map.getSize().x}&HEIGHT=${map.getSize().y}` +
-            `&X=${Math.round(e.containerPoint.x)}&Y=${Math.round(e.containerPoint.y)}`;
+            `&LAYERS=${config.layer_name}` +
+            `&QUERY_LAYERS=${config.layer_name}` +
+            `&INFO_FORMAT=application/json` +
+            `&SRS=EPSG:4326&STYLES=` +
+            `&BBOX=${map.getBounds().toBBoxString()}` + // El área visible del mapa
+            `&WIDTH=${map.getSize().x}` + // El ancho del mapa en píxeles
+            `&HEIGHT=${map.getSize().y}` + // El alto del mapa en píxeles
+            `&X=${Math.round(e.containerPoint.x)}` + // La coordenada X del clic
+            `&Y=${Math.round(e.containerPoint.y)}`; // La coordenada Y del clic
 
         fetch(wmsUrl)
-            .then((r) => r.json())
-            .then((d) => {
-                if (d.features?.length > 0) {
-                    const id = d.features[0].properties[config.id_field];
-                    if (id) seleccionarRegion(id, capaActiva);
+            .then((response) => response.json())
+            .then((data) => {
+                // Si el servidor encontró una región en ese punto...
+                if (data.features && data.features.length > 0) {
+                    const properties = data.features[0].properties;
+                    // Obtenemos el ID de la región usando el nombre del campo correcto
+                    const idRegion = properties[config.id_field];
+                    if (idRegion) {
+                        // Reutilizamos la función que ya teníamos para resaltar y mostrar el popup
+                        seleccionarRegion(idRegion, capaActiva);
+                    }
                 }
+            })
+            .catch((error) => {
+                console.log(
+                    "Clic fuera de una región o error en GetFeatureInfo:",
+                    error
+                );
             });
     });
 
+    // Evento al cerrar un popup
     map.on("popupclose", function () {
-        if (bloqueosDeEvento) return;
         if (selectLayer) {
             map.removeLayer(selectLayer);
             selectLayer = null;
@@ -353,8 +308,9 @@ document.addEventListener("DOMContentLoaded", function () {
         map.setView([19.35, -97.8], 8);
     });
 
-    // ARRANQUE
+    // --- CARGA INICIAL ---
+
     cargarCapaPrincipal(capaActiva);
-    precargarGeometrias("Microrregiones", geometriasMicro);
-    precargarGeometrias("Macrorregiones", geometriasMacro);
+    precargarGeometrias("Microrregiones_2026", geometriasMicro, "id_micro");
+    precargarGeometrias("Macrorregiones_2026", geometriasMacro, "id_macro");
 });

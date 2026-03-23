@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+// local
 use App\Models\Capacitacion;
 use App\Models\Documento;
 use App\Models\DocumentoCapacitacion;
@@ -15,6 +15,15 @@ use App\Traits\UpdatesPublicado;
 class CapacitacionController extends Controller
 {
     use UpdatesPublicado;
+
+    public function __construct()
+    {
+        $this->middleware('permission:ver-capacitacion|crear-capacitacion|editar-capacitacion|borrar-capacitacion', ['only' => ['index']]);
+        $this->middleware('permission:crear-capacitacion', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-capacitacion', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-capacitacion', ['only' => ['destroy', 'destroyDocumento']]);
+    }
+
     /**
      * Muestra un listado de las capacitaciones.
      *
@@ -31,7 +40,7 @@ class CapacitacionController extends Controller
      *
      * @return \Illuminate\View\View
      */
-        public function create()
+    public function create()
     {
         return view('panel-capacitaciones.form', [
             'capacitacione' => new Capacitacion()
@@ -108,9 +117,9 @@ class CapacitacionController extends Controller
      * @return \Illuminate\View\View
      */
     public function edit(Capacitacion $capacitacione)
-{
-    return view('panel-capacitaciones.form', compact('capacitacione'));
-}
+    {
+        return view('panel-capacitaciones.form', compact('capacitacione'));
+    }
 
     /**
      * Valida y actualiza una capacitación existente en la base de datos.
@@ -184,7 +193,7 @@ class CapacitacionController extends Controller
 
                     if ($request->hasFile("documentos.$index.archivo")) {
                         Storage::disk('capacitaciones_public')->delete($documento->ruta_archivo);
-                        
+
                         $file = $request->file("documentos.$index.archivo");
                         $nombreArchivoUnico = Str::slug($capacitacione->nombre . ' ' . $documento->nombre_display) . '.' . $file->getClientOriginalExtension();
                         $documento->ruta_archivo = $file->storeAs('.', $nombreArchivoUnico, 'capacitaciones_public');
@@ -230,7 +239,7 @@ class CapacitacionController extends Controller
 
         return redirect()->route('capacitaciones.index')->with('success', 'Capacitación y todos sus documentos han sido eliminados.');
     }
-    
+
     /**
      * Elimina un documento de capacitación de la base de datos y su archivo asociado.
      *

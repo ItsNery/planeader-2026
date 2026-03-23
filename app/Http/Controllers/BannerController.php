@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+// local
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -10,6 +10,14 @@ use Illuminate\Http\RedirectResponse;
 
 class BannerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-banner|crear-banner|editar-banner|borrar-banner', ['only' => ['index']]);
+        $this->middleware('permission:crear-banner', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-banner', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:borrar-banner', ['only' => ['destroy']]);
+    }
+
     /**
      * Muestra un listado paginado de los banners.
      *

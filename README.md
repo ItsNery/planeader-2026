@@ -1,101 +1,142 @@
-# Planeader
+# Planeader (Portal de Planeación para el Desarrollo)
 
-Sistema de Gestión de Planeación y Desarrollo Estatal y Municipal.
+Sistema web del Portal de Planeación para el Desarrollo del Estado de Puebla, construido con Laravel 12. Facilita la consulta y gestión de planes de desarrollo (estatales y municipales), programas derivados, subcomités y documentos metodológicos, integrando un panel administrativo robusto con control de acceso por roles y permisos.
 
-## Descripcion
+## 1. Objetivo del proyecto
 
-Planeader es una plataforma web desarrollada en Laravel diseñada para facilitar la administración, publicación y consulta de instrumentos de planeación, como el Plan Estatal de Desarrollo (PED), Planes Municipales, programas derivados y documentos de los comités de planeación (COPLADEP y COPLADEMUN).
+Este proyecto centraliza la información estratégica de planeación del estado de Puebla:
 
-La aplicación cuenta con un portal público para la ciudadanía y un panel administrativo completo para la gestión de contenidos.
+1. **Sitio público:** Para la transparencia y consulta ciudadana de planes estatales, municipales, programas derivados e información de COPLADEP y COPLADEMUN.
+2. **Panel privado:** Para la administración descentralizada de contenidos, documentos institucionales, usuarios y roles.
 
-## Caracteristicas Principales
+La aplicación permite:
+- Visualizar el Plan Estatal de Desarrollo (PED) y sus anexos.
+- Gestionar y consultar Planes Municipales de Desarrollo mediante un mapa interactivo (Regionalización).
+- Administrar el Consejo de Planeación para el Desarrollo (COPLADEP) y comités municipales (COPLADEMUN).
+- Publicar documentos metodológicos, herramientas de planeación y marco jurídico.
+- Registrar capacitaciones municipales y gestionar el historial de sesiones.
+- Realizar encuestas de satisfacción y captar mensajes de contacto.
 
-- **Gestion de Documentos:** Administración de documentos metodológicos, marcos jurídicos y herramientas de planeación.
-- **Comites de Planeación:** Secciones dedicadas para COPLADEP y COPLADEMUN, incluyendo registro de usuarios y repositorio de documentos.
-- **Planes de Desarrollo:** Visualización y descarga de Planes Estatales y Municipales.
-- **Buscador y Regionalización:** Herramientas para filtrar información por regiones y municipios.
-- **Capacitación:** Módulo para la difusión de cursos y materiales de capacitación municipal.
-- **Panel Administrativo:** Interfaz segura gestionada con Laravel Jetstream y Livewire para el control total (CRUD) de los módulos.
-- **Participacion Ciudadana:** Integración de formularios de contacto y consultas ciudadanas.
+## 2. Stack tecnológico
 
-## Tecnologias Utilizadas
+- PHP `^8.2`
+- Laravel `^12.0`
+- Laravel Jetstream `^5.5` (Livewire stack)
+- Livewire `^3.3`
+- MySQL / MariaDB
+- Spatie `laravel-permission` para roles y permisos
+- Laravel Mix `^6`
+- Bootstrap `^5.1`
+- Alpine.js (integrado con Livewire)
 
-- **Backend:** PHP ^7.3 | ^8.0, Laravel 8.75
-- **Frontend:** Blade, Livewire 2.5, Tailwind CSS
-- **Autenticación:** Laravel Jetstream, Laravel Sanctum
-- **Base de Datos:** MySQL (Compatible con MariaDB)
-- **HTTP Client:** Guzzle
-- **Seguridad:** No Captcha
+## 3. Arquitectura general
 
-## Requisitos del Sistema
+La aplicación está dividida en capas funcionales:
 
-Asegurate de tener instalado lo siguiente antes de comenzar:
+- **Capa pública:** Muestra planes, programas, documentos descargables y herramientas de consulta.
+- **Capa administrativa:** Panel bajo `/dashboard` para CRUD de catálogos, documentos y configuración.
+- **Capa de persistencia:** MySQL/MariaDB + almacenamiento en `storage/app/public`.
 
-- [PHP](https://www.php.net/) >= 7.3
-- [Composer](https://getcomposer.org/)
-- [Node.js](https://nodejs.org/) & NPM
+### Módulos principales
 
-## Instalacion
+| Módulo | Tipo | Responsable | Función |
+|---|---|---|---|
+| Inicio | Público | `InicioController` | Banners de inicio y secciones institucionales |
+| PED | Público | `PlanEstatalController` | Muestra el Plan Estatal de Desarrollo y anexos |
+| Programas | Público | `ProgramaDerivadoController` | Consulta de programas derivados del PED |
+| Planes Municipales| Público | `PlanMunicipalController` | Mapa interactivo y descarga de planes locales |
+| Subcomités | Público | `SubcomiteController` | Información y documentos de subcomités sectoriales |
+| COPLADEP | Público | `DocumentoCopladepController`| Sesiones y documentos del consejo estatal |
+| COPLADEMUN | Público | `DocumentoApoyoCoplademunController` | Apoyo técnico para comités municipales |
+| Regionalización | Público | `InicioController` | Mapeo por microrregiones y macrorregiones |
+| Marco Jurídico | Público | `MarcoJuridicoController` | Repositorio legal (PDFs y enlaces) |
+| Dashboard | Privado | `DashboardController` | Resumen operativo para administradores |
+| Usuarios | Privado | `AdminUserController` | Gestión de cuentas de usuario |
+| Roles | Privado | `RoleController` | Configuración de roles y permisos de Spatie |
 
-Sigue estos pasos para desplegar el proyecto en tu entorno local:
+## 4. Estructura funcional del sitio
 
-1.  **Clonar el repositorio**
+### Rutas web públicas
 
-    ```bash
-    git clone <URL_DEL_REPOSITORIO>
-    cd planeader
-    ```
+- `/` -> Inicio
+- `/ped` -> Plan Estatal de Desarrollo
+- `/ped-programas` -> Programas derivados
+- `/subcomites` -> Directorio y detalle de subcomités
+- `/planesmunicipales` -> Consulta de planes locales
+- `/regionalizacion` -> Herramienta de mapeo regional
+- `/marcojuridico` -> Sección legal
+- `/capacitacion-municipal` -> Listado de capacitaciones
 
-2.  **Instalar dependencias de PHP**
+### Rutas administrativas
 
-    ```bash
-    composer install
-    ```
+Bajo el middleware `auth`, todas las rutas de gestión usan el prefijo `panel-`:
 
-3.  **Configurar variables de entorno**
-    Duplica el archivo de configuración de ejemplo y ajústalo a tu entorno local (Base de datos, URL, etc.).
+- `/dashboard` -> Resumen administrativo
+- `/panel-planes-estatales`
+- `/panel-planes-municipales`
+- `/panel-programas-derivados`
+- `/panel-subcomites`
+- `/panel-documentos-copladep`
+- `/panel-admin` (Usuarios)
 
-    ```bash
-    cp .env.example .env
-    ```
+## 5. Flujo funcional por módulo
 
-4.  **Generar llave de la aplicación**
+### 5.1 Planes Municipales (Mapa)
+Archivos: `PlanMunicipalController`, `CatMunicipio`, `regionalizacion.blade.php`.
+Acción: Mediante un mapa interactivo (o selectores), el usuario selecciona un municipio para obtener su PMD (PDF) y ficha técnica.
+Regla: Los planes deben estar marcados como "Publicados" para aparecer en el sitio público.
 
-    ```bash
-    php artisan key:generate
-    ```
+### 5.2 Almacenamiento Dinámico
+El sistema gestiona archivos vinculados a modelos específicos.
+- Los documentos de subcomités se guardan en `storage/app/public/documentos_subcomites`.
+- Los planes se guardan en `storage/app/public/planes_municipales`.
 
-5.  **Base de Datos**
-    Asegurate de crear una base de datos vacía y configurar las credenciales en el archivo `.env`. Luego ejecuta las migraciones:
+### 5.3 Control de Acceso (RBAC)
+Usa Spatie Permissions con los siguientes roles base:
+- `super-admin`: Acceso total.
+- `admin`: Gestión de contenidos.
+- `editor`: Puede crear y editar pero no borrar (según configuración de seeder).
+- `consultor`: Solo lectura.
 
-    ```bash
-    php artisan migrate
-    ```
+## 6. Gráficos de decisión
 
-6.  **Instalar dependencias de Frontend**
-    Compila los activos (CSS/JS).
-
-    ```bash
-    npm install && npm run dev
-    ```
-
-7.  **Crear enlace simbólico (Storage)**
-    Necesario para la visualización de imágenes y documentos cargados.
-    ```bash
-    php artisan storage:link
-    ```
-
-## Uso
-
-Para iniciar el servidor local de desarrollo:
-
-```bash
-php artisan serve
+### 6.1 Publicación de Documentos
+```mermaid
+flowchart TD
+    A[Admin sube archivo] --> B{Validación de tipo PDF?}
+    B -- No --> C[Error: Solo PDF permitido]
+    B -- Si --> D[Guardar en storage/app/public]
+    D --> E[Registrar en DB con estado Borrador]
+    E --> F[Admin cambia estado a Publicado]
+    F --> G[Visible en portal público]
 ```
 
-- **Portal Público:** Accede a `http://localhost:8000`
-- **Panel Administrativo:** Accede a `http://localhost:8000/login` o `/dashboard` tras iniciar sesión.
+## 7. Modelo de datos (Tablas principales)
 
-## Licencia
+| Tabla | Descripción |
+|---|---|
+| `users` | Usuarios y perfiles |
+| `planes_estatales` | Datos del PED |
+| `planes_municipales`| Datos de planes locales |
+| `subcomites` | Estructura de subcomités |
+| `cat_municipios` | Catálogo geográfico de Puebla |
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+## 8. Almacenamiento de archivos
+
+Es CRÍTICO ejecutar:
+```bash
+php artisan storage:link
+```
+Esto habilita la descarga de documentos desde `public/storage`.
+
+## 9. Instalación
+
+1. `composer install`
+2. `npm install`
+3. `cp .env.example .env` (y configurar DB)
+4. `php artisan migrate --seed`
+5. `php artisan storage:link`
+6. `npm run dev`
+
+---
+*Este portal es una herramienta clave para el seguimiento de la planeación democrática en el Estado de Puebla.*

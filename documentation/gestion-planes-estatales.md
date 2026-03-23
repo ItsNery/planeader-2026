@@ -10,7 +10,7 @@ Este módulo permite a los administradores gestionar los "Planes Estatales de De
 ## 2. Flujo Principal y Casos de Uso
 
 ### a. Listado de Planes (Admin)
-* **Ruta principal:** Asociada al nombre de ruta `panel-planes-estatales.index`.
+* **Ruta principal:** Asociada al nombre de ruta `panel-planesestatales.index`.
 * **Descripción:** Muestra un listado de todos los planes estatales. Los planes se ordenan en la vista según el año de inicio de su período de gobierno.
 
 ### b. Creación de un Nuevo Plan
@@ -43,9 +43,9 @@ Este módulo permite a los administradores gestionar los "Planes Estatales de De
 * **Trait:** `App\Traits\UpdatesPublicado`.
 * **Relaciones:** El modelo `PlanEstatal` tiene una relación de uno a muchos (`hasMany`) con el modelo `ProgramaEstatal`.
 * **Vistas (Blade):**
-    * `resources/views/panel-planes-estatales/index.blade.php`.
-    * `resources/views/panel-planes-estatales/crear.blade.php`.
-    * `resources/views/panel-planes-estatales/editar.blade.php`.
+    * `resources/views/panel-planesestatales/index.blade.php`.
+    * `resources/views/panel-planesestatales/crear.blade.php`.
+    * `resources/views/panel-planesestatales/editar.blade.php`.
     * `resources/views/planestatal.blade.php` (Vista pública).
 
 ## 4. Lógica de Negocio y Reglas Importantes

@@ -28,7 +28,6 @@ function pageLoaded() {
   let loaderSection = document.querySelector(".loader-section");
   loaderSection.classList.add("loaded");
 }
-// boton de volver a arriba
 document.onload = pageLoaded();
 let mybutton = document.getElementById("myBtn");
 window.onscroll = function () {

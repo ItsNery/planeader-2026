@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Gate;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,10 +25,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // setlocale(LC_ALL, 'es_ES');
-        // if (config('app.env') === 'production') {
-        //     \URL::forceScheme('https');
-        // }
+        setlocale(LC_ALL, 'es_ES');
+        if (config('app.env') === 'production') {
+            \URL::forceScheme('https');
+        }
+        Gate::before(function ($user, $ability) {
+            return $user->email == 'estadistica@puebla.gob.mx' ?? null;
+        });
         Schema::defaultStringLength(191);
     }
 }

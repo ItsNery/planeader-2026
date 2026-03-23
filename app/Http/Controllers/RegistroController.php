@@ -13,6 +13,11 @@ use Illuminate\Validation\Rule;
 
 class RegistroController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-registro-capacitacion', ['only' => ['index']]);
+    }
+
     /**
      * Muestra una lista paginada de registros de capacitación, divididos por rangos de fechas específicos.
      *

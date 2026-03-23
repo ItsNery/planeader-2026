@@ -25,14 +25,12 @@
                         Programas Derivados
                     </div>
                     <div class="subtitulo-seccion">
-                        Próximamente
+                    <a href="https://ped2024-2030.puebla.gob.mx/programas/" title="Programas Derivados" rel="noopener">Conócelos</a>
                     </div>
                 </div>
             </div>
         </div>
     </section> --}}
-    {{-- Se comenta en espera de los nuevos Programas Derivados --}}
-    {{-- La sección ya está lista para su implementación, recuerda copiar el diseño de la vista de Programas Estatales --}}
     <section class="programas-derivados bckgrnd-gradient-plan">
         <div class="container derivadosnew">
             <div class="container py-5">
@@ -41,15 +39,15 @@
                     </p>
                 </div>
             </div>
+            <div class="container mb-5">
+                <a href="https://ped2024-2030.puebla.gob.mx/programas/" target="_blank" ref="noopener"
+                    title="Programas Derivados" class="subtitulo-seccion">
+                    Conócelos
+                </a>
+            </div>
             @if ($programasDerivados->isEmpty())
-                <div class="container">
-                    <a href="https://ped2024-2030.puebla.gob.mx/programas/" target="_blank" ref="noopener"
-                        title="Programas Derivados" class="subtitulo-seccion">
-                        Conócelos
-                    </a>
-                </div>
             @else
-                <ul class="nav nav-tabs justify-content-center" id="programasActualesTab" role="tablist">
+                <ul class="nav nav-tabs justify-content-center mt-5" id="programasActualesTab" role="tablist">
                     @foreach ($programasDerivadosActuales as $tipo => $programas)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link @if ($loop->first) active @endif"
@@ -84,7 +82,7 @@
                                                 </div>
 
                                                 <a class="tarjeta_histder-button no_s js-ver-documento" rel="noopener"
-                                                    href="#"
+                                                    href="{{ asset('progderi/' . $programa->ruta_documento) }}" target="_blank"
                                                     data-src="{{ asset('progderi/' . $programa->ruta_documento) }}"
                                                     data-title="{{ $programa->nombre }}">
                                                     Consultar
@@ -267,8 +265,9 @@
             const closeModalButton = document.querySelector('#myModal .close-btn');
 
             // --- Lógica para ABRIR el modal (unificada) ---
-            const openModalTriggers = document.querySelectorAll(
-                '.tarjeta_histder-button, .elemento img, .js-ver-documento');
+            // const openModalTriggers = document.querySelectorAll(
+            //     '.tarjeta_histder-button, .elemento img, .js-ver-documento');
+            const openModalTriggers = document.querySelectorAll('.tarjeta_histder-button:not(.no_s), .elemento img:not(.no_s), .js-ver-documento:not(.no_s)');
 
             openModalTriggers.forEach(trigger => {
                 trigger.addEventListener('click', function(event) {

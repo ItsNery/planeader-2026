@@ -61,10 +61,10 @@
                         <i class="fa fa-gavel mr-2" rel="noopener"></i>
                         Marco Jurídico
                     </a>
-                    <a class="text-white-50 mb-2" href="{{ url('/regionalizacion') }}">
+                      <a class="text-white-50 mb-2" href="{{ url('/regionalizacion') }}">
                         <i class="fa fa-globe mr-2" rel="noopener"></i>
                         Regionalización
-                    </a>
+                    </a> 
                     <a class="text-white-50 mb-2" href="#" data-bs-toggle="collapse"
                         data-bs-target="#planeacionEstatalSubMenu" aria-expanded="false"
                         aria-controls="planeacionEstatalSubMenu" rel="noopener">
@@ -85,6 +85,11 @@
                         <a class="text-white-50 ml-4 mb-2" href="{{ url('/copladep') }}" rel="noopener">
                             <i class="fa fa-angle-right mr-2"></i>
                             COPLADEP
+                        </a>
+                        <br>
+                        <a class="text-white-50 ml-4 mb-2" href="{{ url('/ped-programas/capacitacion') }}" rel="noopener">
+                            <i class="fa fa-angle-right mr-2"></i>
+                            Capacitacion Programas Derivados
                         </a>
                         <br>
                         <a class="text-white-50 ml-4 mb-2" href="{{ url('/subcomites') }}" rel="noopener">
@@ -198,7 +203,7 @@
                     <i class="fa fa-phone-alt mr-2"></i>
                     <a class="no_s text-inherit" href="tel:2222297000">
                         222 229
-                        7000 Ext. 5012
+                        7000
                     </a>
                 </p>
                 <p>
