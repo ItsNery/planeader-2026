@@ -19,6 +19,9 @@ jobs:
 
           git fetch origin
           git reset --hard origin/beta
+
+          sudo chown -R user_planeacion:www-data storage bootstrap/cache
+          sudo chmod -R g+s storage bootstrap/cache
           npm install --legacy-peer-deps
           npm run prod
 
@@ -41,8 +44,6 @@ jobs:
           mkdir -p storage/framework/views
           mkdir -p storage/framework/cache
           mkdir -p storage/framework/sessions
-          sudo chown -R user_planeacion:www-data storage bootstrap/cache
-          sudo chmod -R 775 storage bootstrap/cache
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'
