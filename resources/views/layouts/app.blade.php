@@ -26,7 +26,7 @@
 </head>
 
 <body class="font-sans antialiased bg-light">
-    <x-jet-banner />
+    <x-banner />
     @livewire('navigation-menu')
 
     <!-- Page Heading -->

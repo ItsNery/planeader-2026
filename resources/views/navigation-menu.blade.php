@@ -13,12 +13,12 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav me-auto">
-                <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                     {{ __('Inicio') }}
-                </x-jet-nav-link>
+                </x-nav-link>
 
                 <!-- Documentos Dropdown -->
-                <x-jet-dropdown id="docsDropdown" :active="request()->routeIs([
+                <x-dropdown id="docsDropdown" :active="request()->routeIs([
         'panel-documentos-subcomites*',
         'panel-documentos-copladep*',
         'panel-marco-juridico*',
@@ -29,26 +29,26 @@
                         {{ __('Documentos') }}
                     </x-slot>
                     <x-slot name="content">
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-subcomites.index') }}">
+                        <x-dropdown-link href="{{ route('panel-documentos-subcomites.index') }}">
                             {{ __('Docs. Subcomités') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-copladep.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-documentos-copladep.index') }}">
                             {{ __('Docs. Copladep') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
                             {{ __('Marco Jurídico') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-apoyo-coplademun.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-documentos-apoyo-coplademun.index') }}">
                             {{ __('Apoyo Coplademun') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
                             {{ __('Metodológicos') }}
-                        </x-jet-dropdown-link>
+                        </x-dropdown-link>
                     </x-slot>
-                </x-jet-dropdown>
+                </x-dropdown>
 
                 <!-- Planeación Dropdown -->
-                <x-jet-dropdown id="planeacionDropdown" :active="request()->routeIs([
+                <x-dropdown id="planeacionDropdown" :active="request()->routeIs([
         'panel-planes-estatales*',
         'panel-planes-municipales*',
         'panel-herramientas*',
@@ -59,65 +59,65 @@
                         {{ __('Planeación') }}
                     </x-slot>
                     <x-slot name="content">
-                        <x-jet-dropdown-link href="{{ route('panel-planes-estatales.index') }}">
+                        <x-dropdown-link href="{{ route('panel-planes-estatales.index') }}">
                             {{ __('Planes Estatales') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-planes-municipales.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-planes-municipales.index') }}">
                             {{ __('Planes Municipales') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-herramientas.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-herramientas.index') }}">
                             {{ __('Herramientas de planeación') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('capacitaciones.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('capacitaciones.index') }}">
                             {{ __('Capacitaciones municipales') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-subcomites.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-subcomites.index') }}">
                             {{ __('Subcomités') }}
-                        </x-jet-dropdown-link>
+                        </x-dropdown-link>
                     </x-slot>
-                </x-jet-dropdown>
+                </x-dropdown>
 
                 <!-- Programas Dropdown -->
-                <x-jet-dropdown id="programasDropdown" :active="request()->routeIs(['panel-programas-derivados*', 'panel-programas-estatales*'])">
+                <x-dropdown id="programasDropdown" :active="request()->routeIs(['panel-programas-derivados*', 'panel-programas-estatales*'])">
                     <x-slot name="trigger">
                         {{ __('Programas') }}
                     </x-slot>
                     <x-slot name="content">
-                        <x-jet-dropdown-link href="{{ route('panel-programas-derivados.index') }}">
+                        <x-dropdown-link href="{{ route('panel-programas-derivados.index') }}">
                             {{ __('Derivados') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-programas-estatales.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-programas-estatales.index') }}">
                             {{ __('Estatales') }}
-                        </x-jet-dropdown-link>
+                        </x-dropdown-link>
 
                     </x-slot>
-                </x-jet-dropdown>
+                </x-dropdown>
 
                 <!-- Gestión Dropdown -->
-                <x-jet-dropdown id="gestionDropdown" :active="request()->routeIs(['panel-banners*', 'panel-contacto*', 'panel-admin*'])">
+                <x-dropdown id="gestionDropdown" :active="request()->routeIs(['panel-banners*', 'panel-contacto*', 'panel-admin*'])">
                     <x-slot name="trigger">
                         {{ __('Gestión') }}
                     </x-slot>
                     <x-slot name="content">
 
-                        <x-jet-dropdown-link href="{{ route('panel-banners.index') }}">
+                        <x-dropdown-link href="{{ route('panel-banners.index') }}">
                             {{ __('Banners') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-contacto.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-contacto.index') }}">
                             {{ __('Mensajes de contacto') }}
-                        </x-jet-dropdown-link>
-                        <x-jet-dropdown-link href="{{ route('panel-admin.index') }}">
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('panel-admin.index') }}">
                             {{ __('Usuarios') }}
-                        </x-jet-dropdown-link>
+                        </x-dropdown-link>
                     </x-slot>
-                </x-jet-dropdown>
+                </x-dropdown>
             </ul>
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav align-items-baseline">
                 <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                    <x-jet-dropdown id="teamManagementDropdown">
+                    <x-dropdown id="teamManagementDropdown">
                         <x-slot name="trigger">
                             {{ Auth::user()->currentTeam->name }}
 
@@ -136,14 +136,14 @@
                             </h6>
 
                             <!-- Team Settings -->
-                            <x-jet-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
+                            <x-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
                                 {{ __('Team Settings') }}
-                            </x-jet-dropdown-link>
+                            </x-dropdown-link>
 
                             @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                <x-jet-dropdown-link href="{{ route('teams.create') }}">
+                                <x-dropdown-link href="{{ route('teams.create') }}">
                                     {{ __('Create New Team') }}
-                                </x-jet-dropdown-link>
+                                </x-dropdown-link>
                             @endcan
 
                             <hr class="dropdown-divider">
@@ -154,15 +154,15 @@
                             </h6>
 
                             @foreach (Auth::user()->allTeams() as $team)
-                                <x-jet-switchable-team :team="$team" />
+                                <x-switchable-team :team="$team" />
                             @endforeach
                         </x-slot>
-                    </x-jet-dropdown>
+                    </x-dropdown>
                 @endif
 
                 <!-- Settings Dropdown -->
                 @auth
-                    <x-jet-dropdown id="settingsDropdown">
+                    <x-dropdown id="settingsDropdown">
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <img class="rounded-circle" width="32" height="32" src="{{ Auth::user()->profile_photo_url }}"
@@ -185,28 +185,28 @@
                                 {{ __('Gestionar cuenta') }}
                             </h6>
 
-                            <x-jet-dropdown-link href="{{ route('profile.show') }}">
+                            <x-dropdown-link href="{{ route('profile.show') }}">
                                 {{ __('Perfil') }}
-                            </x-jet-dropdown-link>
+                            </x-dropdown-link>
 
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                <x-jet-dropdown-link href="{{ route('api-tokens.index') }}">
+                                <x-dropdown-link href="{{ route('api-tokens.index') }}">
                                     {{ __('API Tokens') }}
-                                </x-jet-dropdown-link>
+                                </x-dropdown-link>
                             @endif
 
                             <hr class="dropdown-divider">
 
                             <!-- Authentication -->
-                            <x-jet-dropdown-link href="{{ route('logout') }}" onclick="event.preventDefault();
+                            <x-dropdown-link href="{{ route('logout') }}" onclick="event.preventDefault();
                                                              document.getElementById('logout-form').submit();">
                                 {{ __('Cerrar sesión') }}
-                            </x-jet-dropdown-link>
+                            </x-dropdown-link>
                             <form method="POST" id="logout-form" action="{{ route('logout') }}">
                                 @csrf
                             </form>
                         </x-slot>
-                    </x-jet-dropdown>
+                    </x-dropdown>
                 @endauth
             </ul>
         </div>
