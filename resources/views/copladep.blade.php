@@ -86,9 +86,8 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <img src="{{ asset('img/integrantes-copladep.png') }}" alt="" class="w-100 img-rounded">
+                    <img src="{{ asset('img/integrantes-copladep.png') }}" alt="Esquema de conformación del COPLADEP" title="Conformación del Copladep" class="esquema-visual">
                 </div>
-
             </div>
         </div>
         <div class="container-fluid services py-5">
@@ -214,7 +213,7 @@
             const closeModalButton = document.querySelector('#myModal .close-btn');
 
             // --- Lógica para ABRIR el modal ---
-            const openModalTriggers = document.querySelectorAll('.js-open-modal');
+            const openModalTriggers = document.querySelectorAll('.document-item__name');
 
             openModalTriggers.forEach(trigger => {
                 trigger.addEventListener('click', function() {
