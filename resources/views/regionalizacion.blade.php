@@ -16,6 +16,22 @@
 @endsection
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.css" />
+    <style>
+        #mi-minimapa-estatico {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            background: white;
+            pointer-events: none;
+        }
+    </style>
 @endsection
 @section('content')
     <section class="contenedor-imagen-regionalizacion">
@@ -23,14 +39,14 @@
     </section>
     <section class="regionalizacion">
         <div class="container">
-            <!-- <p class="corra-light text-justify my-5">
+            <p class="corra-light text-justify my-5">
                 Bienvenidos a la sección de Regionalización del Portal de Planeación para el Desarrollo del Estado
                 de Puebla. Aquí podrás explorar un mapa interactivo que te permitirá conocer de manera sencilla las
                 distintas regiones del estado y los municipios que las componen. Nuestro objetivo es facilitar la
                 identificación de cada región y promover un entendimiento más claro de la estructura territorial de
                 Puebla para fomentar un desarrollo equilibrado y sostenible.
-            </p> -->
-            {{-- <div class="row my-5">
+            </p>
+            <div class="row my-5">
                 <div class="col-md-4">
                     <ul class="nav nav-tabs" id="regionalizacionTab" role="tablist">
 
@@ -49,17 +65,18 @@
                             </button>
                         </li>
                     </ul>
-
                     <div class="tab-content" id="regionalizacionTabContent">
                         <div class="tab-pane fade show active" id="macrorregiones-pane" role="tabpanel"
                             aria-labelledby="macrorregiones-tab" tabindex="0">
                             <article class="leaderboard">
                                 <header class="encabezado-regiones">
-                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" width="20%"
-                                        style="padding-left:40px; padding-top:10px;" title="Mapa de Puebla en gris"
-                                        alt="Mapa de Puebla en gris">
-                                    <h1 class="leaderboard__title"><span
-                                            class="leaderboard__title--top">Macrorregiones</span></h1>
+                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" class="mapa-gris-puebla"
+                                        title="Puebla" alt="Mapa de Puebla en gris">
+                                    <h1 class="leaderboard__title">
+                                        <span class="leaderboard__title--top">
+                                            Macrorregiones
+                                        </span>
+                                    </h1>
                                 </header>
                                 <main class="leaderboard__profiles">
                                     <div class="container">
@@ -74,9 +91,9 @@
                                             <article class="leaderboard__profile item-region"
                                                 data-id="{{ $region->id_macrorregion }}" data-capa="Macrorregiones">
                                                 <img src="{{ asset('Regiones/2026/Macro/' . $region->id_macrorregion . '.webp') }}"
-                                                    alt="{{ $region->nombre_macrorregion }}"
-                                                    class="leaderboard__picture w-50"
-                                                    title="Ubicación de la Macrorregión {{ $region->id_macrorregion }}">
+                                                    alt="Forma con la figura de la macrorregión {{ $region->nombre_macrorregion }}"
+                                                    class="leaderboard__picture w-50" loading="lazy"
+                                                    title="Ubicación de la Macrorregión {{ $region->nombre_macrorregion }}">
                                                 <span class="leaderboard__name">{{ $region->id_macrorregion }} -
                                                     {{ $region->nombre_macrorregion }}</span>
                                             </article>
@@ -89,11 +106,13 @@
                             aria-labelledby="microrregiones-tab" tabindex="0">
                             <article class="leaderboard">
                                 <header class="encabezado-regiones">
-                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" width="20%"
-                                        style="padding-left:40px; padding-top:10px;" title="Mapa de Puebla en gris"
-                                        alt="Mapa de Puebla en gris">
-                                    <h1 class="leaderboard__title"><span
-                                            class="leaderboard__title--top">Microrregiones</span></h1>
+                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" class="mapa-gris-puebla"
+                                        title="Puebla" alt="Mapa de Puebla en gris">
+                                    <h1 class="leaderboard__title">
+                                        <span class="leaderboard__title--top">
+                                            Microrregiones
+                                        </span>
+                                    </h1>
                                 </header>
                                 <main class="leaderboard__profiles">
                                     <div class="container">
@@ -108,9 +127,9 @@
                                             <article class="leaderboard__profile item-region"
                                                 data-id="{{ $region->id_microrregion }}" data-capa="Microrregiones">
                                                 <img src="{{ asset('Regiones/2026/Micro/' . $region->id_microrregion . '.webp') }}"
-                                                    alt="{{ $region->nombre_microrregion }}"
-                                                    class="leaderboard__picture w-50"
-                                                    title="Ubicación de la Región {{ $region->id_microrregion }}">
+                                                    alt="Forma con la figura de la microrregión {{ $region->nombre_microrregion }}"
+                                                    class="leaderboard__picture w-50" loading="lazy"
+                                                    title="Ubicación de la Microrregión {{ $region->nombre_microrregion }}">
                                                 <span class="leaderboard__name">{{ $region->id_microrregion }} -
                                                     {{ $region->nombre_microrregion }}</span>
                                             </article>
@@ -119,23 +138,34 @@
                                 </main>
                             </article>
                         </div>
-
-
                     </div>
                 </div>
-
                 <div class="col-md-8">
-                    <div class="mapa" id="mapa">
-                        <div class="container text-black">
-                            Seleccione una región de la lista o de clic en el mapa
-                            <a href="https://geoportal.puebla.gob.mx/" target="_blank"
-                                class="btn btn-outline-secondary btn-sm boton-geoportal">
-                                Con la tecnología del Geoportal SEI
-                            </a>
+                    <div class="mapa-wrapper" style="">
+                        <div id="loader-mapa" class="loader-overlay d-flex">
+                            <div class="spinner"></div>
+                            <p>Cargando mapa...</p>
+                        </div>
+
+                        <div class="mapa wihi100" id="mapa"></div>
+                        <div id="mi-minimapa-estatico"></div>
+
+                        <!-- CONTENEDOR FLOTANTE (ABSOLUTO) -->
+                        <div class="controles-flotantes"
+                            style="position: absolute; bottom: 10px; left: 10px; z-index: 1000; pointer-events: none;">
+                            <div class="botonera-vertical" style="pointer-events: auto;">
+                                <button class="btn-info" id="btnInfo"
+                                    title="Seleccione una región de la lista o haga clic en el mapa">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                <button class="btn-reset" id="btnResetMap" title="Restablecer vista">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div> --}}
+            </div>
         </div>
     </section>
     <section class="descarga-base">
@@ -187,6 +217,9 @@
             });
         }
     </script>
-    <script src="{{ asset('js/mapa_regionalizacion.js') }}"></script>
-    {{-- <script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
+    {{-- <script src="{{ asset('js/mapa_regionalizacion.js') }}"></script> --}}
+    <script src="{{ asset('js/mapa_regionalizacion_v2.js') }}"></script>
+    {{--
+    <script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"></script>
 @endsection
