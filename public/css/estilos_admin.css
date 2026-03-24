@@ -451,12 +451,14 @@ a {
         width: 100% !important;
     }
 }
-.table-responsive{
+
+.table-responsive {
     background-image: url('../img/fondo-dragon.png');
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
 }
+
 .tarjeta-admin {
     background-color: white;
 
@@ -634,4 +636,13 @@ select[name="publicado"]:focus {
 .mw-100px {
     max-width: 100px;
     height: auto;
+}
+
+/* Estilos de listado de copladep */
+.firma-img {
+    max-height: 50px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 2px;
 }
