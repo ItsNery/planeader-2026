@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Pefil')
+    @section('title', 'Perfil')
     <x-slot name="header">
         <h2 class="h4 font-weight-bold">
             {{ __('Perfil') }}

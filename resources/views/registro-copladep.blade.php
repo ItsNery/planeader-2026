@@ -72,7 +72,6 @@
                             <option value="" selected disabled>Seleccionar...</option>
                             <option value="Hombre" {{ old('sexo') == 'Hombre' ? 'selected' : '' }}>Hombre</option>
                             <option value="Mujer" {{ old('sexo') == 'Mujer' ? 'selected' : '' }}>Mujer</option>
-                            <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
                         </select>
                         @error('sexo')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -178,6 +177,7 @@
                 field: "text",
                 direction: "asc"
             },
+            maxOptions: null,
             placeholder: 'Busque o seleccione su municipio...'
         });
 
