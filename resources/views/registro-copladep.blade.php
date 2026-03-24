@@ -137,8 +137,8 @@
                     </div>
                     <div class="col-12">
                         <div class="mb-4 mt-4">
-                            <label class="form-label fw-bold">Firma Autógrafa</label>
-                            <p class="text-muted small mb-1">Por favor, firme en el recuadro inferior usando su ratón o
+                            <label class="form-label fw-bold">Firma o rúbrica</label>
+                            <p class="text-muted small mb-1">Por favor, firme o rubrique en el recuadro inferior usando su ratón o
                                 dedo.</p>
 
                             <div class="signature-wrapper">
