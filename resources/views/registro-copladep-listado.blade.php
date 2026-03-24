@@ -85,7 +85,7 @@
                             <th>Sexo</th>
                             <th>Correo Electrónico</th>
                             <th>Celular</th>
-                            <th>Firma</th>
+                            <th>Firma o rúbrica</th>
                             <th>Fecha de Registro</th>
                         </tr>
                     </thead>
@@ -102,7 +102,6 @@
                                 <td>{{ $registro->telefono_celular }}</td>
                                 <td class="text-center">
                                     @if($registro->firma)
-                                        {{-- El Base64 se lee directamente en el atributo src --}}
                                         <img src="{{ $registro->firma }}" alt="Firma" class="firma-img">
                                     @else
                                         <span class="badge bg-secondary">Sin firma</span>
