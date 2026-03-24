@@ -59,7 +59,7 @@
                 <div class="mb-3">
                     <label for="nombre_completo" class="form-label">Nombre completo</label>
                     <input type="text" class="form-control @error('nombre_completo') is-invalid @enderror"
-                        id="nombre_completo" name="nombre_completo" value="{{ old('nombre_completo') }}" required>
+                        id="nombre_completo" name="nombre_completo" value="{{ old('nombre_completo') }}" required maxlength="50">
                     @error('nombre_completo')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -82,7 +82,7 @@
                     <div class="col-md-6">
                         <label for="cargo" class="form-label">Cargo</label>
                         <input type="text" class="form-control @error('cargo') is-invalid @enderror" id="cargo"
-                            name="cargo" value="{{ old('cargo') }}" required>
+                            name="cargo" value="{{ old('cargo') }}" required maxlength="100">
                         @error('cargo')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -109,7 +109,7 @@
                     <label for="correo_electronico" class="form-label">Correo electrónico</label>
                     <input type="email" class="form-control @error('correo_electronico') is-invalid @enderror"
                         id="correo_electronico" name="correo_electronico" value="{{ old('correo_electronico') }}"
-                        required placeholder="ejemplo@dominio.com">
+                        required placeholder="ejemplo@dominio.com" maxlength="50">
                     @error('correo_electronico')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -120,7 +120,7 @@
                         <label for="telefono_oficina" class="form-label">Teléfono de oficina</label>
                         <input type="tel" class="form-control @error('telefono_oficina') is-invalid @enderror"
                             id="telefono_oficina" name="telefono_oficina" value="{{ old('telefono_oficina') }}"
-                            placeholder="Ej: 222 123 4567">
+                            placeholder="Ej: 222 123 4567" maxlength="20">
                         @error('telefono_oficina')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -130,7 +130,7 @@
                         <label for="telefono_celular" class="form-label">Teléfono celular</label>
                         <input type="tel" class="form-control @error('telefono_celular') is-invalid @enderror"
                             id="telefono_celular" name="telefono_celular" value="{{ old('telefono_celular') }}"
-                            placeholder="Ej: 221 123 4567">
+                            placeholder="Ej: 221 123 4567" maxlength="20">
                         @error('telefono_celular')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

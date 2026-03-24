@@ -11,6 +11,10 @@ use Carbon\Carbon;
 
 class RegistroCopladepController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index']]);
+    }
     public function index()
     {
         $registros = RegistroCopladep::with('catMunicipio')
@@ -41,12 +45,13 @@ class RegistroCopladepController extends Controller
                 ->withErrors(['error' => 'El registro solo está disponible el 10 de abril, de 8:30 AM a 3:00 PM.'])
                 ->withInput();
         }
+        
         $rules = [
-            'nombre_completo' => 'required|string|max:255|unique:registro_copladeps,nombre_completo',
+            'nombre_completo' => 'required|string|max:50|unique:registro_copladeps,nombre_completo',
             'sexo' => 'required|string|in:Hombre,Mujer,Otro',
-            'cargo' => 'required|string|max:255',
+            'cargo' => 'required|string|max:100',
             'municipio_id' => 'nullable|integer|exists:cat_municipios,id',
-            'correo_electronico' => 'required|string|email|max:255',
+            'correo_electronico' => 'required|string|email|max:50',
             'telefono_oficina' => 'nullable|string|max:20|regex:/^[0-9\s\-\+\(\)]*$/',
             'telefono_celular' => 'required|string|max:20|regex:/^[0-9\s\-\+\(\)]*$/',
             'firma' => 'nullable|string',
@@ -54,16 +59,21 @@ class RegistroCopladepController extends Controller
         $messages = [
             'nombre_completo.required' => 'El nombre completo es obligatorio.',
             'nombre_completo.unique' => 'Este nombre ya ha sido registrado.',
+            'nombre_completo.max' => 'El nombre completo no puede exceder los 50 caracteres.',
             'sexo.required' => 'Debe seleccionar un sexo.',
             'sexo.in' => 'El valor seleccionado para el sexo no es válido.',
             'cargo.required' => 'El cargo es obligatorio.',
+            'cargo.max' => 'El nombre del cargo no puede exceder los 100 caracteres.',
             'municipio_id.integer' => 'El municipio seleccionado no es válido.',
             'municipio_id.exists' => 'El municipio seleccionado no existe en nuestro catálogo.',
             'correo_electronico.required' => 'El correo electrónico es obligatorio.',
             'correo_electronico.email' => 'El formato del correo electrónico no es válido.',
+            'correo_electronico.max' => 'El correo electrónico no puede exceder los 50 caracteres.',
             'telefono_oficina.regex' => 'El formato del teléfono de oficina no es válido.',
+            'telefono_oficina.max' => 'El teléfono de oficina no puede exceder los 20 caracteres.',
             'telefono_celular.required' => 'Es necesario un número de teléfono celular.',
             'telefono_celular.regex' => 'El formato del teléfono celular no es válido.',
+            'telefono_celular.max' => 'El teléfono celular no puede exceder los 20 caracteres.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);

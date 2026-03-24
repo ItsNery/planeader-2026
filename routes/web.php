@@ -61,7 +61,6 @@ Route::get('/ped', function () {
 Route::get('/copladep/primera-sesion-ordinaria', [DocumentoSesionController::class, 'mostrarPrimeraSesion']);
 Route::get('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'create'])->name('copladep-registro.create');
 Route::post('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'store'])->name('copladep-registro.store');
-Route::get('/copladep/primera-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'index'])->name('copladep-registro.index');
 
 Route::get('/ped-programas', [ProgramaDerivadoController::class, 'mostrarProgramasDerivados']);
 
@@ -162,6 +161,7 @@ Route::get('/coplademun/listado', [RegistroController::class, 'index'])->name('r
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('panel-marco-juridico', MarcoJuridicoController::class);
     Route::resource('panel-documentos-subcomites', DocumentoSubcomiteController::class);
+    Route::get('/copladep/primera-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'index'])->name('copladep-registro.index');
     Route::resource('panel-documentos-copladep', DocumentoCopladepController::class);
     Route::resource('panel-planes-municipales', PlanMunicipalController::class);
     Route::resource('panel-planes-estatales', PlanEstatalController::class);
