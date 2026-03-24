@@ -76,8 +76,7 @@
                                         <td>
                                             <article class="leaderboard__profile" id="{{ $municipio->id }}"
                                                 data-id="{{ $municipio->id }}">
-                                                <img src="{{ asset('Municipios/iconos/' . $municipio->id . '.png') }}"
-                                                    class="w-100" loading="lazy"
+                                                <img src="{{ asset('Municipios/iconos/' . $municipio->id . '.webp') }}" loading="lazy"
                                                     alt="Figura con la forma del municipios de {{ $municipio->nombre }}"
                                                     title="{{ $municipio->nombre }}" class="leaderboard__picture">
                                                 <span class="leaderboard__name">{{ $municipio->id }}.

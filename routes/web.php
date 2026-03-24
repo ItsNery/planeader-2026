@@ -23,6 +23,7 @@ use App\Http\Controllers\DocumentoApoyoCoplademunController;
 use App\Http\Controllers\DocumentoMetodologicoController;
 use App\Http\Controllers\DocumentoSesionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RegistroCopladepController;
 
 
 /*
@@ -58,6 +59,9 @@ Route::get('/ped', function () {
 //     return view('copladep');
 // });
 Route::get('/copladep/primera-sesion-ordinaria', [DocumentoSesionController::class, 'mostrarPrimeraSesion']);
+Route::get('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'create'])->name('copladep-registro.create');
+Route::post('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'store'])->name('copladep-registro.store');
+Route::get('/copladep/primera-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'index'])->name('copladep-registro.index');
 
 Route::get('/ped-programas', [ProgramaDerivadoController::class, 'mostrarProgramasDerivados']);
 
