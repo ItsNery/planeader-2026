@@ -34,7 +34,7 @@ const styleBase = {
   color: "var(--color1, #808080)",
   weight: 1,
   opacity: 0.5,
-  fillColor: "#A9A9A9",
+  fillColor: "#a2a2a2",
   fillOpacity: 0.1,
 };
 

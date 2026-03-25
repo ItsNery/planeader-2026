@@ -26,7 +26,7 @@ class RegistroCopladepController extends Controller
 
     public function create()
     {
-        $municipios = CatMunicipio::select('nombre_municipio')->selectRaw('MIN(id) as id')->groupBy('nombre_municipio')->orderBy('nombre_municipio', 'asc')->get();
+        $municipios = CatMunicipio::select('nombre_municipio')->whereIn('id', [4, 10, 15, 19, 45, 47, 53, 39, 71, 74, 85, 94, 114, 132, 140, 154, 156, 164, 169, 174, 186, 197, 207])->selectRaw('MIN(id) as id')->groupBy('nombre_municipio')->orderBy('nombre_municipio', 'asc')->get();
         return view('registro-copladep', compact('municipios'));
     }
 

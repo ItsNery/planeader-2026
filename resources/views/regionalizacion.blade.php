@@ -24,7 +24,7 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 98;
             border: 2px solid #fff;
             border-radius: 4px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
@@ -152,7 +152,7 @@
 
                         <!-- CONTENEDOR FLOTANTE (ABSOLUTO) -->
                         <div class="controles-flotantes"
-                            style="position: absolute; bottom: 10px; left: 10px; z-index: 1000; pointer-events: none;">
+                            style="position: absolute; bottom: 10px; left: 10px; z-index: 98; pointer-events: none;">
                             <div class="botonera-vertical" style="pointer-events: auto;">
                                 <button class="btn-info" id="btnInfo"
                                     title="Seleccione una región de la lista o haga clic en el mapa">

@@ -331,7 +331,7 @@ body {
     text-decoration: none;
     color: var(--color-vino);
     /* font-weight: 550; */
-    font-family: 'Gilroy-Bold', sans-serif;
+    font-family: 'Corra-Montserra-Bold', sans-serif;
     border-bottom: 1px solid #f0f0f0;
     color: var(--color1);
 }
@@ -460,7 +460,7 @@ body {
         background-color: var(--arena);
         /* padding: 1rem 1rem; */
         border-radius: 10px;
-        color: var(--color3);
+        color: var(--color6);
     }
 
     .dropdown {
@@ -2780,11 +2780,10 @@ footer {
     }
 
     .leaderboard {
-        max-width: 890px;
         width: 100%;
         border-radius: 12px;
         padding-left: 10px;
-        height: 700px;
+        height: 650px;
         overflow-y: scroll;
 
         #searchInput {
