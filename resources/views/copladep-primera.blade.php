@@ -34,6 +34,28 @@
             <div class="container my-4">
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading0">
+                            <button class="accordion-button show" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0">
+                                Liga de registro
+                            </button>
+                        </h2>
+                        <div id="collapse0" class="accordion-collapse collapse show" aria-labelledby="heading0"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="container d-flex justify-content-center bg-light px-4 py-4">
+                                    <a href="{{ url('/copladep/primera-sesion-ordinaria/registro') }}" 
+                                    rel="noopener" 
+                                    target="_blank" 
+                                    title="Registro de asistencia"
+                                    class="btn btn-outline-primary btn-sm shadow-sm px-5 py-3 rounded-pill fw-bold text-uppercase"> 
+                                        Registro
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
                         <h2 class="accordion-header" id="heading1">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
@@ -402,6 +424,35 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading10">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                                Proyectos Transformadores del Plan Estatal de Desarrollo 2024-2030
+                            </button>
+                        </h2>
+                        <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                            </div>
+                        </div>
+                    </div>
+                     <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading11">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
+                                Guía metodológica para la construcción, seguimiento y análisis de indicadores estratégicos y tácticos
+                            </button>
+                        </h2>
+                        <div id="collapse11" class="accordion-collapse collapse" aria-labelledby="heading11"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                               <div class="container">
+                                 <img src="{{asset('documentos/primera-sesion-ordinaria-2026/Esquema_Mesa de trabajo.webp')}}" alt="" srcset="" class="w-100">
+                               </div>
                             </div>
                         </div>
                     </div>

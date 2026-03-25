@@ -117,6 +117,7 @@
     --color8: #484747;
     --colortitulos: #660033;
     --colorPDF: red;
+    
 }
 
 * {
@@ -997,13 +998,13 @@ footer {
 }
 
 .btn-outline-primary {
-    color: var(--mainColor) !important;
-    border-color: var(--mainColor) !important;
+    color: var(--color5) !important;
+    border-color: var(--color5) !important;
 }
 
 .btn-outline-primary:hover {
     color: #fff !important;
-    background-color: var(--mainColor) !important;
+    background-color: var(--color5) !important;
 }
 
 .footer-2 a {
