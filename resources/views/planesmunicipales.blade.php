@@ -57,10 +57,13 @@
                 <div class="col-md-4">
                     <article class="leaderboard">
                         <header class="encabezado-municipios">
-                            <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" width="20%"
-                                style="padding-left:40px; padding-top:10px;" title="Mapa de Puebla en Gris"
-                                title="Mapa de Puebla en Gris">
-                            <h2 class="leaderboard__title"><span class="leaderboard__title--top">Municipios</span></h2>
+                            <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" class="mapa-gris-puebla"
+                                alt="Mapa de Puebla en Gris" title="Puebla">
+                            <h2 class="leaderboard__title">
+                                <span class="leaderboard__title--top">
+                                    Municipios
+                                </span>
+                            </h2>
                         </header>
                         <table class="table" style="border-spacing: 0 !important; border-collapse: collapse !important;">
                             <div class="container">
@@ -73,8 +76,8 @@
                                         <td>
                                             <article class="leaderboard__profile" id="{{ $municipio->id }}"
                                                 data-id="{{ $municipio->id }}">
-                                                <img src="{{ asset('Municipios/iconos/' . $municipio->id . '.png') }}"
-                                                    width="100%" alt="{{ $municipio->nombre }}"
+                                                <img src="{{ asset('Municipios/iconos/' . $municipio->id . '.webp') }}" loading="lazy"
+                                                    alt="Figura con la forma del municipios de {{ $municipio->nombre }}"
                                                     title="{{ $municipio->nombre }}" class="leaderboard__picture">
                                                 <span class="leaderboard__name">{{ $municipio->id }}.
                                                     {{ $municipio->nombre }}</span>
@@ -86,17 +89,26 @@
                         </table>
                     </article>
                 </div>
-                <div class="col-md-8" id="mapa">
-                    <div class="container">
-                        Seleccione un municipio de la lista o de clic en el mapa
-                        <a href="https://geoportal.puebla.gob.mx/" target="_blank"
-                            class="btn btn-outline-secondary btn-sm text-black"
-                            style="position: absolute; top: 41rem; left: 10px;">
-                            Con la tecnología del Geoportal SEI
-                        </a>
+                <div class="col-md-8" id="main-content-area">
+                    <div class="mapa-wrapper">
+                        <div id="map-loader" class="loader-overlay d-flex">
+                            <div class="spinner"></div>
+                            <p>Cargando mapa...</p>
+                        </div>
+
+                        <div id="mapa" class="mapa"></div>
+
+                        <div class="controles-flotantes"
+                            style="position: absolute; bottom: 10px; left: 10px; z-index: 1000; pointer-events: none;">
+                            <div class="botonera-vertical" style="pointer-events: auto;">
+                                <button class="btn-info" id="btnInfo"
+                                    title="Seleccione un municipio de la lista o haga clic en el mapa">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-8" id="container-results">
+                    <div id="container-results"></div>
                 </div>
             </div>
         </div>
@@ -115,124 +127,4 @@
 @section('scripts')
     <script src="{{ asset('js/mapa_planesmunicipales.js') }}"></script>
     {{-- <script src="{{ asset('web/js/mostrar-municipios.js') }}"></script> --}}
-<script>
-    /**
-     * Función unificada para cerrar el modal.
-     */
-    function closeModal() {
-        const modal = document.getElementById('myModal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-        
-        const modalIframe = document.getElementById('modalIframe');
-        if (modalIframe) {
-            modalIframe.src = '';
-        }
-    }
-
-    // Se ejecuta cuando la página ha cargado completamente.
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // --- Referencias a los elementos del DOM ---
-        const modal = document.getElementById('myModal');
-        const modalIframe = document.getElementById('modalIframe');
-        const modalTitle = document.getElementById('modalTitle');
-        const closeButton = document.querySelector('#myModal .close-btn');
-
-        // --- LÓGICA PARA ABRIR EL MODAL (CON DELEGACIÓN DE EVENTOS) ---
-        
-        // 1. Añadimos un solo listener al documento.
-        document.addEventListener('click', function(event) {
-            
-            // 2. Verificamos si el elemento clickeado (o su padre más cercano) es un botón para abrir el modal.
-            const openButton = event.target.closest('.js-open-modal');
-
-            // 3. Si encontramos un botón, ejecutamos la lógica.
-            if (openButton) {
-                // Prevenimos cualquier comportamiento por defecto si el botón fuera un enlace <a>
-                event.preventDefault();
-
-                // Obtenemos la info desde los data-attributes del botón encontrado.
-                const docUrl = openButton.dataset.src;
-                const docTitle = openButton.dataset.title;
-
-                if (docUrl) {
-                    // Llenamos el modal con la información
-                    modalTitle.textContent = docTitle;
-                    modalIframe.src = docUrl;
-                    
-                    // Mostramos el modal
-                    modal.style.display = 'block';
-                }
-            }
-        });
-
-
-        // --- Lógica para CERRAR el modal (esta no cambia) ---
-
-        // 1. Clic en el botón de cierre (X)
-        if (closeButton) {
-            closeButton.addEventListener('click', closeModal);
-        }
-
-        // 2. Clic en el fondo (overlay)
-        window.addEventListener('click', function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        });
-
-        // 3. Presionar la tecla "Escape"
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && modal.style.display === 'block') {
-                closeModal();
-            }
-        });
-    });
-</script>
-    <script>
-        const $leaderboardProfile = document.querySelectorAll('.leaderboard__profile')
-        const $mapa = document.getElementById('mapa')
-
-        $leaderboardProfile.forEach(el => {
-            el.addEventListener('click', function(e) {
-                let idMun = this.dataset.id
-                fetch('/obtener_planes/' + idMun)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('La solicitud ha fallado');
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        $mapa.classList.add('d-none')
-                        const $containerResults = document.getElementById('container-results')
-                        $containerResults.innerHTML = data;
-                    })
-
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            })
-        });
-    </script>
-    <script>
-        document.getElementById('buscar-municipio').addEventListener('input', function() {
-            let inputText = this.value.toLowerCase();
-            let municipios = document.querySelectorAll('.leaderboard__profile');
-
-            municipios.forEach(function(municipio) {
-                let nombreMunicipio = municipio.querySelector('.leaderboard__name').textContent
-                    .toLowerCase();
-                let tdMunicipio = municipio.closest('td'); // Obtener el <td> que contiene el municipio
-
-                if (nombreMunicipio.includes(inputText)) {
-                    tdMunicipio.style.display = 'table-cell'; // Mostrar el <td> si coincide con la búsqueda
-                } else {
-                    tdMunicipio.style.display = 'none'; // Ocultar el <td> si no coincide con la búsqueda
-                }
-            });
-        });
-    </script>
 @endsection

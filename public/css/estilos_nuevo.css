@@ -331,7 +331,7 @@ body {
     text-decoration: none;
     color: var(--color-vino);
     /* font-weight: 550; */
-    font-family: 'Gilroy-Bold', sans-serif;
+    font-family: 'Corra-Montserra-Bold', sans-serif;
     border-bottom: 1px solid #f0f0f0;
     color: var(--color1);
 }
@@ -393,7 +393,6 @@ body {
 @media (min-width: 992px) {
     .site-header {
         box-shadow: none;
-        /* La sombra puede no ser necesaria en el diseño de escritorio */
     }
 
     .header-top {
@@ -458,32 +457,37 @@ body {
     }
 
     .nav-links a:hover {
-        background-color: var(--color6);
-        padding: 1rem 1rem;
+        background-color: var(--arena);
+        /* padding: 1rem 1rem; */
         border-radius: 10px;
-        color: var(--colorBlanco);
+        color: var(--color6);
     }
 
-    /* Lógica del menú desplegable en hover */
     .dropdown {
         position: relative;
     }
 
     .dropdown-content {
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(15px);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         position: absolute;
         top: 100%;
         left: 0;
         background-color: white;
         min-width: 220px;
-        padding-left: 0;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        border-radius: 0 0 4px 4px;
+        padding: 10px 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
         z-index: 10;
+        margin-top: 5px;
     }
 
     .dropdown:hover .dropdown-content {
-        display: block;
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .dropdown-content a {
@@ -2776,11 +2780,10 @@ footer {
     }
 
     .leaderboard {
-        max-width: 890px;
         width: 100%;
         border-radius: 12px;
         padding-left: 10px;
-        height: 600px;
+        height: 650px;
         overflow-y: scroll;
 
         #searchInput {
@@ -2934,130 +2937,6 @@ footer {
         overflow-y: none;
     }
 
-    .mapa {
-        width: 100%;
-        height: 700px;
-        z-index: 2;
-    }
-
-    #mapa .container {
-        font-family: 'Corra-Montserra-SemiBold';
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: transparent;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 40px;
-        border-radius: 5px;
-        color: rgb(255, 255, 255);
-    }
-
-    .leaflet-container {
-        background: transparent !important;
-    }
-
-
-
-    .custom-popup-container {
-        width: 280px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        font-family: 'Corra-Montserra-Light', sans-serif;
-        overflow: hidden;
-    }
-
-    /* --- Encabezado --- */
-    .custom-popup-header {
-        background-color: var(--color1);
-        padding: 12px 16px;
-        color: #ffffff;
-    }
-
-    .custom-popup-title {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-
-    /* --- Cuerpo y Lista --- */
-    .custom-popup-body {
-        padding: 16px;
-        color: #333;
-    }
-
-    .custom-popup-subtitle {
-        margin: 0 0 10px 0;
-        font-size: 0.875rem;
-        /* 14px */
-        font-weight: 600;
-        color: var(--color1);
-        /* Usamos el color de acento para el subtítulo */
-        text-transform: uppercase;
-        /* Estilo sobrio y claro */
-        letter-spacing: 0.5px;
-    }
-
-    .custom-popup-list {
-        list-style: none;
-        /* Quitamos los puntos de la lista */
-        margin: 0;
-        padding: 0;
-        max-height: 150px;
-        /* Altura máxima para evitar pop-ups gigantes */
-        overflow-y: auto;
-        /* Scroll si la lista es muy larga */
-    }
-
-    .custom-popup-list li {
-        padding: 8px 0;
-        font-size: 0.95rem;
-        /* 15px */
-        border-bottom: 1px solid #f0f0f0;
-        /* Separador sutil entre municipios */
-    }
-
-    /* Estilo para el último elemento de la lista para que no tenga borde */
-    .custom-popup-list li:last-child {
-        border-bottom: none;
-    }
-
-    /* Estilo para la barra de scroll (opcional pero elegante) */
-    .custom-popup-list::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .custom-popup-list::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    .custom-popup-list::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border-radius: 6px;
-    }
-
-    .custom-popup-list::-webkit-scrollbar-thumb:hover {
-        background: #aaa;
-    }
-
-
-    /* --- (Opcional pero muy recomendado) Flecha/Puntero en la base --- */
-    .custom-popup-container::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        /* Posiciona la flecha justo debajo del pop-up */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-top: 10px solid #ffffff;
-        filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.05));
-    }
-
     .boton-geoportal {
         position: absolute;
         top: 41rem;
@@ -3068,6 +2947,125 @@ footer {
             color: var(--colorBlanco);
         }
     }
+}
+
+/* --- ESTILOS GLOBAL DE MAPAS --- */
+.mapa {
+    width: 100%;
+    height: 700px;
+    z-index: 2;
+}
+
+#mapa .container {
+    font-family: 'Corra-Montserra-SemiBold';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: transparent;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+}
+
+.mapa-wrapper {
+    position: relative;
+    height: 700px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-container {
+    background: transparent !important;
+}
+
+.custom-popup-container {
+    width: 280px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    font-family: 'Corra-Montserra-Light', sans-serif;
+    overflow: hidden;
+}
+
+/* --- Encabezado --- */
+.custom-popup-header {
+    background-color: var(--color1);
+    padding: 12px 16px;
+    color: #ffffff;
+}
+
+.custom-popup-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* --- Cuerpo y Lista --- */
+.custom-popup-body {
+    padding: 16px;
+    color: #333;
+}
+
+.custom-popup-subtitle {
+    margin: 0 0 10px 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-popup-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.custom-popup-list li {
+    padding: 8px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.custom-popup-list li:last-child {
+    border-bottom: none;
+}
+
+/* Scrollbar para la lista popup */
+.custom-popup-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-popup-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.custom-popup-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 6px;
+}
+
+.custom-popup-list::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+.custom-popup-container::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #ffffff;
+    filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.05));
 }
 
 .descarga-base {
@@ -4046,8 +4044,7 @@ footer {
     height: 100%;
     background: rgba(255, 255, 255, 0.7);
     z-index: 9999;
-    /* Súper alto para tapar los controles y el mapa */
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -4055,7 +4052,6 @@ footer {
     font-weight: bold;
 }
 
-/* El spinner lo dejas igualito como lo tenías */
 .spinner {
     width: 50px;
     height: 50px;
@@ -4097,6 +4093,7 @@ footer {
     gap: 8px;
     pointer-events: auto;
     font-size: 0.9rem;
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
@@ -4161,7 +4158,7 @@ footer {
     transform: scale(0.98);
 }
 
-/* Tooltip personalizado (opcional, si no quieres usar el atributo title) */
+/* Tooltip personalizado */
 .botonera-vertical button {
     position: relative;
 }
@@ -4255,7 +4252,6 @@ footer {
     transition: all 0.3s ease;
 }
 
-/* Cuando el slide está activo (el del centro), puedes hacerlo un poco más grande */
 .swiper-slide-active {
     transform: scale(1.05);
     z-index: 10;
@@ -4271,4 +4267,90 @@ footer {
 .swiper-button-prev {
     color: #007aff !important;
     --swiper-navigation-size: 30px;
+}
+
+/* --- ESTILOS DE POPUPS PERSONALIZADOS (UNificados) --- */
+.leaflet-container {
+    background: transparent !important;
+}
+
+.custom-popup-container {
+    width: 280px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    font-family: 'Corra-Montserra-Light', sans-serif;
+    overflow: hidden;
+}
+
+.custom-popup-header {
+    background-color: var(--color1);
+    padding: 12px 16px;
+    color: #ffffff;
+}
+
+.custom-popup-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.custom-popup-body {
+    padding: 16px;
+    color: #333;
+}
+
+.custom-popup-subtitle {
+    margin: 0 0 10px 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-popup-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.custom-popup-list li {
+    padding: 8px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.custom-popup-list li:last-child {
+    border-bottom: none;
+}
+
+/* Scrollbar para la lista popup */
+.custom-popup-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-popup-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.custom-popup-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 6px;
+}
+
+.custom-popup-container::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #ffffff;
+    filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.05));
 }

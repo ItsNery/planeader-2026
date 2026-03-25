@@ -20,6 +20,34 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     };
 
+    // --- CACHÉ localStorage (24 horas) ---
+    const CACHE_TTL = 24 * 60 * 60 * 1000;
+
+    function getCache(key) {
+        try {
+            const ts = localStorage.getItem(key + "_ts");
+            if (!ts || Date.now() - parseInt(ts, 10) > CACHE_TTL) {
+                localStorage.removeItem(key);
+                localStorage.removeItem(key + "_ts");
+                return null;
+            }
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            console.warn("Error leyendo caché:", key, e);
+            return null;
+        }
+    }
+
+    function setCache(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+            localStorage.setItem(key + "_ts", String(Date.now()));
+        } catch (e) {
+            console.warn("No se pudo guardar caché:", key, e);
+        }
+    }
+
     // Variables
     let selectLayer = null;
     let capaGeneral = null;
@@ -69,10 +97,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================================================
     // 2. CARGA DE MUNICIPIOS
     // =========================================================================
+    const CACHE_KEY_MUNI = "geo_regionalizacion_21mun";
     const urlMuni = `${baseUrlWFS}&typeName=21mun`;
-    fetch(urlMuni)
-        .then((response) => response.json())
-        .then((data) => {
+
+    function procesarMunicipios(data) {
             // Capa de municipios para el mapa principal
             municipiosLayer = L.geoJSON(data, {
                 style: {
@@ -164,42 +192,62 @@ document.addEventListener("DOMContentLoaded", function () {
                     interactive: false,
                 }).addTo(miniMap._map);
             }
-        })
-        .catch((error) => console.error("Error municipios:", error));
+    }
+
+    // Cargar municipios: caché o fetch
+    const cachedMuni = getCache(CACHE_KEY_MUNI);
+    if (cachedMuni) {
+        console.info("Capa 21mun (regionalización) cargada desde caché.");
+        procesarMunicipios(cachedMuni);
+    } else {
+        fetch(urlMuni)
+            .then((r) => r.json())
+            .then((data) => {
+                setCache(CACHE_KEY_MUNI, data);
+                console.info("Capa 21mun (regionalización) cargada del servidor y cacheada.");
+                procesarMunicipios(data);
+            })
+            .catch((error) => console.error("Error municipios:", error));
+    }
 
     // =========================================================================
     // 3. PRECARGA (SOPORTE MULTI-GEOMETRÍA)
     // =========================================================================
 
+    function procesarGeometrias(data, config, mapaDeAlmacenamiento) {
+        if (data && data.features) {
+            data.features.forEach((feature) => {
+                const id = feature.properties[config.id_field];
+                if (id) {
+                    const idStr = String(id);
+                    if (mapaDeAlmacenamiento.has(idStr)) {
+                        mapaDeAlmacenamiento.get(idStr).push(feature.geometry);
+                    } else {
+                        mapaDeAlmacenamiento.set(idStr, [feature.geometry]);
+                    }
+                }
+            });
+        }
+    }
+
     function precargarGeometrias(claveCapa, mapaDeAlmacenamiento) {
         const config = configCapas[claveCapa];
-        const urlPrecarga = `${baseUrlWFS}&typeName=${config.layer_name}`;
+        const cacheKey = `geo_regionalizacion_${claveCapa}`;
 
+        const cached = getCache(cacheKey);
+        if (cached) {
+            console.info(`Precarga ${claveCapa} cargada desde caché.`);
+            procesarGeometrias(cached, config, mapaDeAlmacenamiento);
+            return;
+        }
+
+        const urlPrecarga = `${baseUrlWFS}&typeName=${config.layer_name}`;
         fetch(urlPrecarga)
             .then((response) => response.json())
             .then((data) => {
-                if (data && data.features) {
-                    let contadorFragmentos = 0;
-
-                    data.features.forEach((feature) => {
-                        const id = feature.properties[config.id_field];
-
-                        if (id) {
-                            const idStr = String(id);
-
-                            if (mapaDeAlmacenamiento.has(idStr)) {
-                                const geometriasExistentes =
-                                    mapaDeAlmacenamiento.get(idStr);
-                                geometriasExistentes.push(feature.geometry);
-                                contadorFragmentos++;
-                            } else {
-                                mapaDeAlmacenamiento.set(idStr, [
-                                    feature.geometry,
-                                ]);
-                            }
-                        }
-                    });
-                }
+                setCache(cacheKey, data);
+                console.info(`Precarga ${claveCapa} cargada del servidor y cacheada.`);
+                procesarGeometrias(data, config, mapaDeAlmacenamiento);
             })
             .catch((error) =>
                 console.warn(`Error precarga ${claveCapa}`, error),
@@ -211,29 +259,42 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================================================
     function cargarCapaPrincipal(claveCapa) {
         const config = configCapas[claveCapa];
-        if (loader) loader.style.display = "flex";
+        if (loader) loader.classList.add("d-flex");
 
         if (capaGeneral) {
             map.removeLayer(capaGeneral);
             capaGeneral = null;
         }
 
+        // 1. Caché en memoria (ya descargado esta sesión)
         if (cacheCapasPrincipales[claveCapa]) {
             renderizarCapa(cacheCapasPrincipales[claveCapa]);
-            if (loader) loader.style.display = "none";
+            if (loader) loader.classList.remove("d-flex");
             return;
         }
 
+        // 2. Caché en localStorage
+        const cacheKey = `geo_regionalizacion_${claveCapa}`;
+        const cached = getCache(cacheKey);
+        if (cached) {
+            cacheCapasPrincipales[claveCapa] = cached;
+            renderizarCapa(cached);
+            if (loader) loader.classList.remove("d-flex");
+            return;
+        }
+
+        // 3. Fetch del servidor
         const urlFondo = `${baseUrlWFS}&typeName=${config.layer_name}`;
         fetch(urlFondo)
             .then((response) => response.json())
             .then((data) => {
                 cacheCapasPrincipales[claveCapa] = data;
+                setCache(cacheKey, data);
                 renderizarCapa(data);
             })
             .catch((error) => console.error(error))
             .finally(() => {
-                if (loader) loader.style.display = "none";
+                if (loader) loader.classList.remove("d-flex");
             });
     }
 

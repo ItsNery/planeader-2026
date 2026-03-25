@@ -20,13 +20,14 @@
 
                 <!-- Documentos Dropdown -->
                 @canany(['ver-doc-subcomite', 'ver-doc-copladep', 'ver-marco-juridico', 'ver-doc-apoyo',
-                    'ver-doc-metodologico', 'ver-doc-sesion'])
+                    'ver-doc-metodologico', 'ver-doc-sesion', 'ver-listado-registro-copladep'])
                     <x-dropdown id="docsDropdown" :active="request()->routeIs([
                         'panel-documentos-subcomites*',
                         'panel-documentos-copladep*',
                         'panel-marco-juridico*',
                         'panel-documentos-apoyo-coplademun*',
                         'panel-documentos-metodologicos*',
+                        'coplade-registro.index'
                         // 'panel-documentos-sesiones*',
                     ])">
                         <x-slot name="trigger">
@@ -56,6 +57,11 @@
                             @can('ver-doc-metodologico')
                                 <x-dropdown-link href="{{ route('panel-documentos-metodologicos.index') }}">
                                     {{ __('Metodológicos') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-listado-registro-copladep')
+                                <x-dropdown-link href="{{ route('copladep-registro.index') }}">
+                                    {{ __('Listado') }}
                                 </x-dropdown-link>
                             @endcan
                             {{-- @can('ver-doc-sesion')

@@ -1,189 +1,337 @@
-// URL base del Geoportal y URL del servicio WMS
-const url = "https://geoportal.puebla.gob.mx/",
-    urlGeoserver = `${url}geoserver/wms`;
+/**
+ * Configuración del Mapa de Planes Municipales de Desarrollo
+ */
 
-// Variable para almacenar la capa seleccionada y el contenedor del mapa
+// --- CONFIGURACIÓN Y CONSTANTES ---
+const URL_BASE = "https://geoportal.puebla.gob.mx/";
+const URL_WMS = `${URL_BASE}geoserver/wms`;
+const URL_WFS = `${URL_BASE}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json&typeName=21mun`;
+
+// Clave y TTL para caché en localStorage (24 horas en milisegundos)
+const CACHE_KEY = "geojson_21mun_data";
+const CACHE_TS_KEY = "geojson_21mun_timestamp";
+const CACHE_TTL = 24 * 60 * 60 * 1000;
+
+let geojsonLayer = null;
 let selectLayer = null;
-const containerMap = document.getElementById("mapa");
+let allMunicipiosData = null;
 
-// Inicializa el mapa con configuraciones específicas
+const $mapWrapper = document.querySelector(".mapa-wrapper");
+const $mapContainer = document.getElementById("mapa");
+const $mapLoader = document.getElementById("map-loader");
+const $resultsContainer = document.getElementById("container-results");
+const $sidebarItems = document.querySelectorAll(".leaderboard__profile");
+const $searchInput = document.getElementById("buscar-municipio");
+
+// --- INICIALIZACIÓN DEL MAPA ---
 const map = L.map("mapa", {
-    zoom: 8,
-    zoomSnap: 0.02,
-    maxBounds: [
-        [32.7183333333, -114.540833333], // Coordenadas de límite máximo
-        [14.5408333333, -92.2166666667], // Coordenadas de límite mínimo
-    ],
-    minZoom: 8, // Nivel mínimo de zoom
-}).setView([19.35, -97.8], 8); // Vista inicial del mapa
+  zoom: 8,
+  minZoom: 8,
+}).setView([19.35, -97.8], 8);
 
-// URL para obtener datos GeoJSON de las capas
-const urlShapeGeo = `${url}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json&typeName=`;
+// Estilo base para los municipios
+const styleBase = {
+  color: "var(--color1, #808080)",
+  weight: 1,
+  opacity: 0.5,
+  fillColor: "#a2a2a2",
+  fillOpacity: 0.1,
+};
 
-// Carga y añade la capa de municipios al mapa
-fetch(`${urlShapeGeo}21mun`)
-    .then((response) => response.json()) // Convierte la respuesta en JSON
-    .then((data) => {
-        // Añade la capa GeoJSON al mapa con estilos personalizados
-        const geoJsonLayer = L.geoJSON(data, {
-            style: {
-                color: "var(--color1)", // Color del borde
-                weight: 1, // Grosor del borde
-                opacity: 0.3, // Opacidad del borde
-                fillColor: "#A9A9A9", // Color de relleno (opcional)
-                fillOpacity: 0, // Opacidad del relleno (opcional)
-            },
-        }).addTo(map); // Añade la capa al mapa
-    })
-    .catch((error) => console.error("Error:", error)); // Manejo de errores
+// Estilo para resaltado (hover/select)
+const styleHighlight = {
+  color: "var(--color4, #FF0000)",
+  weight: 3,
+  opacity: 1,
+  fillColor: "var(--color4, #FF0000)",
+  fillOpacity: 0.3,
+  dashArray: "5, 5",
+};
 
-// old->1
+// --- FUNCIONES CORE ---
 
-// Función asíncrona para obtener información de una región por su ID
-async function getInfoRegion(id_region) {
-    try {
-        const response = await fetch(`get_info_region/${id_region}`); // Realiza la solicitud
-        const data = await response.json(); // Convierte la respuesta en JSON
-        return data; // Devuelve los datos
-    } catch (error) {
-        // Muestra una alerta en caso de error
-        Swal.fire({
-            icon: "error",
-            title: `${error}`,
-        });
-    }
+/**
+ * Formatea el ID del municipio a 3 dígitos (ej: 1 -> 001, 10 -> 010)
+ */
+function formatId(id) {
+  return String(id).padStart(3, "0");
 }
 
-// Añade un evento de clic a cada elemento de la región
-const itemRegion = document.querySelectorAll(".leaderboard__profile");
-itemRegion.forEach((el) => {
-    el.addEventListener("mouseenter", () => {
-        let idMunicipio = el.dataset.id; // Obtiene el ID del municipio desde el atributo de datos
+/**
+ * Intenta obtener los datos GeoJSON de localStorage.
+ * Devuelve null si no hay caché, si expiró o si está corrupto.
+ */
+function getCachedGeoJSON() {
+  try {
+    const timestamp = localStorage.getItem(CACHE_TS_KEY);
+    if (!timestamp) return null;
 
-        // Convierte el ID en un número y aplica el formato deseado
-        if (idMunicipio < 10) {
-            idMunicipio = `00${idMunicipio}`; // Agrega dos ceros si es entre 1 y 9
-        } else if (idMunicipio < 100) {
-            idMunicipio = `0${idMunicipio}`; // Agrega un cero si es entre 10 y 99
-        }
+    const age = Date.now() - parseInt(timestamp, 10);
+    if (age > CACHE_TTL) {
+      // Caché expirado, limpiar
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TS_KEY);
+      return null;
+    }
 
-        // // URL para buscar la región seleccionada
-        let urlSearch = `${urlShapeGeo}21mun&CQL_FILTER=cve_mun=%27${idMunicipio}%27`;
+    const data = localStorage.getItem(CACHE_KEY);
+    if (!data) return null;
 
-        fetch(urlSearch) // Realiza la solicitud para obtener datos de la región
-            .then((response) => response.json()) // Convierte la respuesta en JSON
-            .then((data) => {
-                // Filtra los datos para obtener el municipio deseada
-                // Filtrar los datos para obtener solo la consulta deseada
-                const layerGeoJSON = data.features.find(
-                    (feature) => feature.properties["cve_mun"] == idMunicipio
-                );
+    return JSON.parse(data);
+  } catch (e) {
+    console.warn("Error leyendo caché de municipios:", e);
+    return null;
+  }
+}
 
-                // Remueve la capa existente si ya existe
-                if (selectLayer) {
-                    map.removeLayer(selectLayer);
-                }
+/**
+ * Guarda los datos GeoJSON en localStorage con la marca de tiempo actual.
+ */
+function setCachedGeoJSON(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
+  } catch (e) {
+    // localStorage lleno o no disponible — no es crítico
+    console.warn("No se pudo guardar caché de municipios:", e);
+  }
+}
 
-                // Crea una nueva capa con la región seleccionada y la añade al mapa
-                selectLayer = L.geoJSON(layerGeoJSON.geometry, {
-                    style: {
-                        color: "var(--color4)", // Rojo vibrante para el borde
-                        weight: 8, // Borde más grueso
-                        opacity: 1, // Opacidad completa del borde
-                        fillColor: "var(--color4)", // Relleno rojo suave
-                        fillOpacity: 0.8, // Opacidad más ligera del relleno
-                        dashArray: "5, 5", // Borde punteado para mayor visibilidad
-                        shadowColor: "var(--color4)", // Sombra negra
-                        shadowBlur: 10, // Difuminado de la sombra
-                        shadowOffsetX: 2, // Desplazamiento de la sombra
-                        shadowOffsetY: 2, // Desplazamiento de la sombra
-                    },
-                }).addTo(map); //Agrega la capa al mapa
+/**
+ * Carga los datos GeoJSON de todos los municipios.
+ * Primero intenta usar la caché de localStorage; si no existe o expiró,
+ * descarga los datos del servidor WFS y los guarda en caché.
+ */
+async function initMap() {
+  try {
+    // Intentar cargar desde caché
+    allMunicipiosData = getCachedGeoJSON();
 
-                // Ajusta los límites del mapa para mostrar la capa seleccionada
-                map.fitBounds(selectLayer.getBounds(), {
-                    animate: true,
-                    duration: 1000,
-                    easeLinearity: 0.5,
-                    maxZoom: 8, // (opcional) Ajusta el nivel de zoom máximo
-                });
+    if (!allMunicipiosData) {
+      // Sin caché válido — descargar del servidor
+      const response = await fetch(URL_WFS);
+      allMunicipiosData = await response.json();
+      setCachedGeoJSON(allMunicipiosData);
+      console.info("Capa 21mun cargada desde el servidor y cacheada.");
+    } else {
+      console.info("Capa 21mun cargada desde caché local.");
+    }
 
-                const nombreMunicipio = layerGeoJSON.properties["nomgeo"];
-                selectLayer.bindPopup(`<b>${nombreMunicipio}</b>`).openPopup();
+    // Ocultar loader
+    if ($mapLoader) {
+      $mapLoader.classList.remove("d-flex");
+      $mapLoader.style.display = "none";
+    }
 
-                selectLayer.bringToBack(); // Envía la capa al fondo
-            })
-            .catch((error) => {
-                // Muestra una alerta en caso de error
-                Swal.fire({
-                    icon: "error",
-                    title: "Lo siento...",
-                    text: `Error al cargar el archivo JSON: ${error}`,
-                });
-            });
-    });
-});
-
-itemRegion.forEach((el) => {
-    el.addEventListener("mouseleave", () => {
-        if (selectLayer) {
-            map.removeLayer(selectLayer);
-        }
-
-        let boundsMexico = [
-            [21.043716, -99.249698],
-            [17.7107, -96.443203],
-        ];
-
-        map.fitBounds(boundsMexico, {
-            animate: true,
-            duration: 1000,
-            easeLinearity: 0.5,
-            maxZoom: 8,
+    // Añadir capa GeoJSON al mapa
+    geojsonLayer = L.geoJSON(allMunicipiosData, {
+      style: styleBase,
+      onEachFeature: (feature, layer) => {
+        layer.on({
+          mouseover: (e) => highlightFeature(feature.properties.cve_mun),
+          mouseout: resetHighlight,
+          click: (e) => cargarPlanes(feature.properties.cve_mun),
         });
+      },
+    }).addTo(map);
+
+    setupEventListeners();
+  } catch (error) {
+    console.error("Error cargando GeoJSON:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error de conexión",
+      text: "No se pudieron cargar los límites de los municipios.",
     });
+  }
+}
+
+/**
+ * Resalta un municipio en el mapa dado su ID (cve_mun)
+ */
+function highlightFeature(idMun) {
+  const formattedId = formatId(idMun);
+
+  // Encontrar el feature correspondiente
+  const feature = allMunicipiosData.features.find(
+    (f) => f.properties.cve_mun == formattedId,
+  );
+
+  if (!feature) return;
+
+  // Remover capa previa
+  if (selectLayer) map.removeLayer(selectLayer);
+
+  // Crear capa de resaltado
+  selectLayer = L.geoJSON(feature.geometry, {
+    style: styleHighlight,
+    interactive: false, // Evita que esta capa intercepte eventos del ratón (corrige parpadeo)
+  }).addTo(map);
+
+  // Mostrar popup sobre la capa base para que no desaparezca al mover el ratón
+  const popupContent = `
+    <div class="custom-popup-container">
+      <div class="custom-popup-header">
+        <h4 class="custom-popup-title">${feature.properties.nomgeo}</h4>
+      </div>
+
+    </div>
+  `;
+
+  geojsonLayer.eachLayer((layer) => {
+    if (layer.feature.properties.cve_mun === formattedId) {
+      layer.bindPopup(popupContent).openPopup();
+    }
+  });
+}
+
+/**
+ * Quita el resaltado
+ */
+function resetHighlight() {
+  if (selectLayer) {
+    map.removeLayer(selectLayer);
+    selectLayer = null;
+  }
+  map.closePopup(); // Cierra cualquier popup abierto al salir del área
+}
+
+/**
+ * Carga los planes de un municipio mediante AJAX
+ */
+async function cargarPlanes(idMun) {
+  const numericId = parseInt(idMun);
+  try {
+    const response = await fetch(`/obtener_planes/${numericId}`);
+    if (!response.ok) throw new Error("Falla en la respuesta");
+
+    const html = await response.text();
+
+    // Ocultar mapa y mostrar resultados
+    if ($mapWrapper) $mapWrapper.classList.add("d-none");
+    if ($resultsContainer) {
+      $resultsContainer.innerHTML = html;
+      $resultsContainer.scrollIntoView({ behavior: "smooth" });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudieron obtener los planes de este municipio.",
+    });
+  }
+}
+
+/**
+ * Cierra la vista de info y vuelve al mapa
+ */
+window.cerrarInfoMunicipio = function () {
+  if ($resultsContainer) $resultsContainer.innerHTML = "";
+  if ($mapWrapper) $mapWrapper.classList.remove("d-none");
+  if (map) {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+  }
+};
+
+// --- EVENT LISTENERS ---
+
+function setupEventListeners() {
+  // Hover en la lista lateral
+  $sidebarItems.forEach((el) => {
+    el.addEventListener("mouseenter", () => {
+      const id = el.dataset.id;
+      highlightFeature(id);
+    });
+
+    el.addEventListener("mouseleave", resetHighlight);
+
+    el.addEventListener("click", () => {
+      cargarPlanes(el.dataset.id);
+    });
+  });
+
+  // Búsqueda en sidebar
+  if ($searchInput) {
+    $searchInput.addEventListener("input", function () {
+      const query = this.value.toLowerCase();
+      $sidebarItems.forEach((el) => {
+        const name = el
+          .querySelector(".leaderboard__name")
+          .textContent.toLowerCase();
+        const container = el.closest("tr") || el;
+        container.style.display = name.includes(query) ? "" : "none";
+      });
+    });
+  }
+
+  // Limpieza al salir del mapa
+  map.on("mouseout", resetHighlight);
+
+  // Al abrir popup, prevenir que el scroll/click salga del mapa
+  map.on("popupopen", function (e) {
+    const popupNode = e.popup.getElement();
+    if (popupNode) {
+      L.DomEvent.disableClickPropagation(popupNode);
+      L.DomEvent.disableScrollPropagation(popupNode);
+    }
+  });
+
+  // Botón de información estilo mapa regionalización
+  const btnInfo = document.getElementById("btnInfo");
+  if (btnInfo) {
+    btnInfo.addEventListener("click", () => {
+      Swal.fire({
+        icon: "info",
+        title: "Información",
+        html: "Seleccione un municipio de la lista o haga clic en el mapa para ver los planes disponibles.",
+        confirmButtonText: "Cerrar",
+      });
+    });
+  }
+}
+// --- LÓGICA DE MODAL (DOCUMENTOS) ---
+// Delegación de eventos para el modal que se carga dinámicamente
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".js-open-modal");
+  if (btn) {
+    e.preventDefault();
+    const modal = document.getElementById("myModal");
+    const iframe = document.getElementById("modalIframe");
+    const title = document.getElementById("modalTitle");
+
+    if (modal && iframe) {
+      title.textContent = btn.dataset.title;
+      iframe.src = btn.dataset.src;
+      modal.style.display = "block";
+    }
+  }
 });
 
-// Suponiendo que ya tienes la capa GeoJSON añadida como en el código anterior:
-fetch(`${urlShapeGeo}21mun`)
-    .then((response) => response.json())
-    .then((data) => {
-        // Añades la capa GeoJSON al mapa y asignas el evento click a cada municipio
-        L.geoJSON(data, {
-            style: {
-                color: "var(--color2)",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: 0,
-            },
-            onEachFeature: function (feature, layer) {
-                // Añades el evento click a cada municipio
-                layer.on("click", function () {
-                    // Obtener el id del municipio desde las propiedades del GeoJSON
-                    let idMun = feature.properties.cve_mun;
+// Cerrar modal
+window.closeModal = function () {
+  const modal = document.getElementById("myModal");
+  const iframe = document.getElementById("modalIframe");
+  if (modal) modal.style.display = "none";
+  if (iframe) iframe.src = "";
+};
 
-                    // Realiza la solicitud al servidor como en el script original
-                    fetch("/obtener_planes/" + idMun)
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error("La solicitud ha fallado");
-                            }
-                            return response.text();
-                        })
-                        .then((data) => {
-                            // Ocultar el mapa y mostrar los planes en el contenedor
-                            $mapa.classList.add("d-none");
-                            const $containerResults =
-                                document.getElementById("container-results");
-                            $containerResults.innerHTML = data;
-                        })
-                        .catch((error) => {
-                            console.error("Error:", error);
-                        });
-                });
-            },
-        }).addTo(map);
-    })
-    .catch((error) => console.error("Error:", error));
+// Listeners básicos para modal
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.querySelector("#myModal .close-btn");
+  if (closeBtn) closeBtn.onclick = closeModal;
 
-    
+  window.onclick = (e) => {
+    const modal = document.getElementById("myModal");
+    if (e.target == modal) closeModal();
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+});
+
+// Arrancar inicialización
+initMap();
