@@ -14,9 +14,9 @@
     'Página principal de los Primera Sesión Ordinaria del Comité de Planeación para el
     Desarrollo del Estado de Puebla del Estado de Puebla.')
 @section('css')
+    <script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@2" async defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 @endsection
-
 @section('content')
     <section class="contenedor-imagen-primera-sesion">
         <h1>
@@ -34,6 +34,28 @@
             <div class="container my-4">
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading0">
+                            <button class="accordion-button show" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0">
+                                Liga de registro
+                            </button>
+                        </h2>
+                        <div id="collapse0" class="accordion-collapse collapse show" aria-labelledby="heading0"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="container d-flex justify-content-center bg-light px-4 py-4">
+                                    <a href="{{ url('/copladep/primera-sesion-ordinaria/registro') }}" 
+                                    rel="noopener" 
+                                    target="_blank" 
+                                    title="Registro de asistencia"
+                                    class="btn btn-outline-primary btn-sm shadow-sm px-5 py-3 rounded-pill fw-bold text-uppercase"> 
+                                        Registro
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
                         <h2 class="accordion-header" id="heading1">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
@@ -43,7 +65,28 @@
                         <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="heading1"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <ul>
+                                <div class="container">
+                                    @php
+                                        $descripcionEvento = "Evento: Privado | Sectores Estratégicos | Código de vestimenta: Formal\n\n" .
+                                            "Presentar avances en materia de planeación estatal:\n" .
+                                            "• Presentación y, en su caso, aprobación de los Lineamientos para el funcionamiento del COPLADEP y sus Órganos Auxiliares, así como de los Subcomités Sectoriales del COPLADEP.\n" .
+                                            "• Presentación y, en su caso, aprobación de Programas Institucionales del Plan Estatal de Desarrollo 2024-2030.\n" .
+                                            "• Actualización de la regionalización y los Programas Regionales.\n" .
+                                            "• Presentación de los resultados de la Evaluación de Diseño del Plan Estatal de Desarrollo 2024-2030.\n" .
+                                            "• Relanzamiento de la Agenda 2030 en el Estado de Puebla.";
+                                    @endphp
+                                    <add-to-calendar-button
+                                        name="Primera Sesión Ordinaria 2026 de la Asamblea Plenaria del COPLADEP"
+                                        description="{{ $descripcionEvento }}" startDate="2026-03-31" startTime="17:00"
+                                        endTime="17:50" timeZone="America/Mexico_City"
+                                        location="Salón Juan N. Méndez. Edificio Ejecutivo (CIS), Atlixcáyotl 1101, Reserva Territorial Atlixcáyotl, Puebla de Zaragoza"
+                                        options="'Google','Apple','Microsoft365','Outlook.com'" buttonsList
+                                        hideTextLabelButton lightMode="system"></add-to-calendar-button>
+                                    <iframe
+                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
+                                        frameborder="0" class="iframe-documento"></iframe>
+                                </div>
+                                {{-- <ul>
                                     <li class="document-item">
                                         <div class="document-item__main-content">
                                             <p class="document-item__name">
@@ -61,8 +104,7 @@
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" 
-                                                title="Abrir en nueva pestaña">
+                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
@@ -73,8 +115,7 @@
                                             </a>
                                         </div>
                                     </li>
-
-                                </ul>
+                                </ul> --}}
                             </div>
                         </div>
                     </div>
@@ -88,7 +129,12 @@
                         <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <ul>
+                                <div class="container">
+                                    <iframe
+                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
+                                        frameborder="0" class="iframe-documento"></iframe>
+                                </div>
+                                {{-- <ul>
                                     <li class="document-item">
                                         <div class="document-item__main-content">
                                             <p class="document-item__name">
@@ -105,19 +151,18 @@
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" 
-                                                title="Abrir en nueva pestaña">
+                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                download="Nombre documento" rel="noopener" title="Descargar 2. Orden del Día.pdf">
+                                                download="Nombre documento" rel="noopener"
+                                                title="Descargar 2. Orden del Día.pdf">
                                                 <i class="fas fa-download"></i>
                                                 <span>Descargar</span>
                                             </a>
                                         </div>
                                     </li>
-
-                                </ul>
+                                </ul> --}}
                             </div>
                         </div>
                     </div>
@@ -156,15 +201,13 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
+                                            {{-- <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
-                                                data-title="Estructura General de los Subcomités"
-                                                title="Ver aqui">
+                                                data-title="Estructura General de los Subcomités" title="Ver aqui">
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" 
-                                                title="Abrir en nueva pestaña">
+                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
@@ -185,15 +228,14 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
+                                            {{-- <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
                                                 data-title="Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria"
                                                 title="Ver aquí">
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" 
-                                                title="Abrir en nueva pestaña">
+                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
@@ -229,15 +271,14 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
+                                            {{-- <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
                                                 data-title="Actualización de la Regionalización del Estado de Puebla"
                                                 title="Ver aquí">
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" 
-                                                title="Abrir en nueva pestaña">
+                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
@@ -328,15 +369,13 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
+                                            {{-- <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
-                                                data-title="Programas Institucionales - Sector Educativo"
-                                                title="Ver aquí">
+                                                data-title="Programas Institucionales - Sector Educativo" title="Ver aquí">
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" 
-                                                title="Abrir en nueva pestaña">
+                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
@@ -405,6 +444,35 @@
                             </div>
                         </div>
                     </div>
+                                        <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading10">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                                Proyectos Transformadores del Plan Estatal de Desarrollo 2024-2030
+                            </button>
+                        </h2>
+                        <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                            </div>
+                        </div>
+                    </div>
+                     <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading11">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
+                                Guía metodológica para la construcción, seguimiento y análisis de indicadores estratégicos y tácticos
+                            </button>
+                        </h2>
+                        <div id="collapse11" class="accordion-collapse collapse" aria-labelledby="heading11"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                               <div class="container">
+                                 <img src="{{asset('documentos/primera-sesion-ordinaria-2026/Esquema_Mesa de trabajo.webp')}}" alt="" srcset="" class="w-100">
+                               </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -415,7 +483,7 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const swiper = new Swiper(".regionales", {
                 loop: true,
 

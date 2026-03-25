@@ -997,13 +997,13 @@ footer {
 }
 
 .btn-outline-primary {
-    color: var(--mainColor) !important;
-    border-color: var(--mainColor) !important;
+    color: var(--color5) !important;
+    border-color: var(--color5) !important;
 }
 
 .btn-outline-primary:hover {
     color: #fff !important;
-    background-color: var(--mainColor) !important;
+    background-color: var(--color5) !important;
 }
 
 .footer-2 a {
@@ -4442,4 +4442,12 @@ footer {
     border-right: 10px solid transparent;
     border-top: 10px solid #ffffff;
     filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.05));
+}
+.iframe-documento{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    min-height: 500px;
+    box-shadow: var(--boxShadow);
+    border-radius: 8px;
 }
