@@ -77,7 +77,8 @@
                         {{-- El div padre del acordeón. Necesita un ID único. --}}
                         <div class="accordion" id="accordionHistorico">
 
-                            {{-- La clave ($plan_id) no la usamos, pero el valor ahora es la colección de programas de ese plan --}}
+                            {{-- La clave ($plan_id) no la usamos, pero el valor ahora es la colección de programas de ese plan
+                            --}}
                             @foreach ($historico_programas_agrupados as $plan_id => $programas_del_plan)
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading-{{ $plan_id }}">
@@ -89,8 +90,8 @@
                                             <strong>
                                                 {{ $programas_del_plan->first()->planEstatal->periodo }}
                                             </strong>
-                                            {{-- <span
-                                                class="ms-2 fst-italic fw-normal">({{ $programas_del_plan->first()->planEstatal->periodo }})
+                                            {{-- <span class="ms-2 fst-italic fw-normal">({{
+                                                $programas_del_plan->first()->planEstatal->periodo }})
                                             </span> --}}
                                         </button>
                                     </h2>
@@ -116,9 +117,13 @@
                                                             <a href="#" class="js-ver-documento"
                                                                 data-src="{{ asset('programasEstatales/' . $programa->ruta_documento) }}"
                                                                 data-title="{{ $programa->nombre }}" title="Ver documento">
-                                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                                             </a>
-
+                                                            <a href="{{ asset('programasEstatales/' . $programa->ruta_documento) }}"
+                                                                target="_blank" rel="noopener noreferrer"
+                                                                title="Abrir en nueva pestaña">
+                                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                            </a>
                                                             <a href="{{ asset('programasEstatales/' . $programa->ruta_documento) }}"
                                                                 download rel="noopener" title="Descargar documento">
                                                                 <i class="fas fa-download"></i>
@@ -149,7 +154,7 @@
 @section('scripts')
     <script>
         // Espera a que todo el contenido de la página se cargue.
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             // --- Guardamos referencias a los elementos del modal ---
             const modal = document.getElementById('myModal');
@@ -162,7 +167,7 @@
                 '.tarjeta_histder-button, .elemento img, .js-ver-documento');
 
             openModalTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function(event) {
+                trigger.addEventListener('click', function (event) {
                     event.preventDefault();
 
                     // Lógica inteligente para encontrar los datos
@@ -199,7 +204,7 @@
             }
 
             // 2. Clic en el fondo (overlay)
-            window.addEventListener('click', function(event) {
+            window.addEventListener('click', function (event) {
                 // Si el elemento clickeado es el fondo del modal...
                 if (event.target == modal) {
                     closeModal();
@@ -207,7 +212,7 @@
             });
 
             // 3. Presionar la tecla "Escape"
-            document.addEventListener('keydown', function(event) {
+            document.addEventListener('keydown', function (event) {
                 // Si la tecla es 'Escape' y el modal está visible...
                 if (event.key === 'Escape' && modal.style.display === 'block') {
                     closeModal();

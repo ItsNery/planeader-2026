@@ -4045,6 +4045,22 @@ footer {
 .boton-copiar__icono {
     color: white;
 }
+
+.boton-abrir-ventana {
+    border-radius: 50%;
+    background-color: var(--color4);
+    padding: 10px;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boton-abrir-ventana__icono {
+    color: white;
+}
 /* Estilos para mapa de regionalización */
 .loader-overlay {
     position: absolute;

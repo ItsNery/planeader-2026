@@ -71,12 +71,14 @@
 
                         <div class="document-item__actions">
 
-                            <a href="#" class="js-open-modal"
-                                data-src="{{ asset('planesmun/' . $plan->ruta_documento) }}"
+                            <a href="#" class="js-open-modal" data-src="{{ asset('planesmun/' . $plan->ruta_documento) }}"
                                 data-title="{{ $plan->nombre }}" title="Ver documento">
-                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
                             </a>
-
+                            <a href="{{ asset('planesmun/' . $plan->ruta_documento) }}" target="_blank"
+                                rel="noopener noreferrer" title="Abrir en nueva pestaña">
+                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                            </a>
                             <a href="{{ asset('planesmun/' . $plan->ruta_documento) }}" download rel="noopener"
                                 title="Descargar documento">
                                 <i class="fas fa-download"></i>

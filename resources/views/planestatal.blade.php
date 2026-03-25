@@ -36,6 +36,10 @@
                     if (copyButton) {
                         copyButton.dataset.url = docUrl;
                     }
+                    const openWindowButton = document.getElementById('botonAbrirVentana');
+                    if (openWindowButton) {
+                        openWindowButton.dataset.url = docUrl;
+                    }
                     modal.style.display = 'block';
                 });
             });
@@ -86,6 +90,17 @@
                         }).catch(err => {
                             console.error('Error al copiar: ', err);
                         });
+                    }
+                });
+            }
+
+            // --- Lógica para ABRIR en ventana nueva ---
+            const openWindowButton = document.getElementById('botonAbrirVentana');
+            if (openWindowButton) {
+                openWindowButton.addEventListener('click', function() {
+                    const url = this.dataset.url;
+                    if (url) {
+                        window.open(url, '_blank');
                     }
                 });
             }
@@ -594,8 +609,13 @@
                 <button class="close-btn" aria-label="Cerrar">&times;</button>
                 <div class="d-flex flex-row justify-content-evenly">
                     <h3 id="modalTitle"></h3>
-                    <div class="boton-copiar" id="botoncopiar">
-                        <i class="fa-solid fa-copy boton-copiar__icono"></i>
+                    <div class="d-flex gap-2">
+                        <div class="boton-copiar" id="botoncopiar" title="Copiar url del documento">
+                            <i class="fa-solid fa-copy boton-copiar__icono"></i>
+                        </div>
+                        <div class="boton-abrir-ventana" id="botonAbrirVentana" title="Abrir documento en una nueva ventana">
+                            <i class="fas fa-external-link-alt boton-abrir-ventana__icono"></i>
+                        </div>
                     </div>
                 </div>
                 <iframe id="modalIframe" class="w-100 h-100" src="" title="Contenido del documento"

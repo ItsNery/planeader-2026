@@ -137,9 +137,13 @@
                                                                     data-src="{{ asset('documentosubcomites/' . $documento->ruta_documento) }}"
                                                                     data-title="{{ $documento->nombre }} {{ $documento->anio }}"
                                                                     title="Ver documento">
-                                                                    <i class="fas fa-eye"></i> <span>Ver</span>
+                                                                    <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                                                 </a>
-
+                                                                <a href="{{ asset('documentosubcomites/' . $documento->ruta_documento) }}"
+                                                                    target="_blank" rel="noopener noreferrer"
+                                                                    title="Abrir en nueva pestaña">
+                                                                    <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                </a>
                                                                 <a href="{{ asset('documentosubcomites/' . $documento->ruta_documento) }}"
                                                                     download rel="noopener" title="Descargar documento">
                                                                     <i class="fas fa-download"></i>

@@ -108,7 +108,11 @@
                                                                             data-src="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}"
                                                                             data-title="{{ $documento->nombre_display }}"
                                                                             title="Ver documento">
-                                                                            <i class="fas fa-eye"></i> <span>Ver</span>
+                                                                            <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                                                        </a>
+                                                                        <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}" target="_blank"
+                                                                            rel="noopener noreferrer" title="Abrir en nueva pestaña">
+                                                                            <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                                                         </a>
                                                                         <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}"
                                                                             download rel="noopener"

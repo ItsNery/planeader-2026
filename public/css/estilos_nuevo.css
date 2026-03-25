@@ -1828,11 +1828,12 @@ footer {
 }
 
 .document-item__main-content {
-    display: flex;
-    align-items: center;
+    display: block;
+    margin-right: 1.5rem;
 }
 
 .document-item__name {
+    display: inline;
     margin: 0;
     color: #333;
     cursor: pointer;
@@ -1901,7 +1902,10 @@ footer {
 
 /* 6. Estilos para las ETIQUETAS DE FORMATO */
 .document-badge {
-    margin-left: 0.75rem;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    margin-bottom: 0.2rem;
     padding: 0.2rem 0.6rem;
     border-radius: 12px;
     font-size: 0.7rem;
@@ -4033,6 +4037,22 @@ footer {
 }
 
 .boton-copiar__icono {
+    color: white;
+}
+
+.boton-abrir-ventana {
+    border-radius: 50%;
+    background-color: var(--color4);
+    padding: 10px;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boton-abrir-ventana__icono {
     color: white;
 }
 

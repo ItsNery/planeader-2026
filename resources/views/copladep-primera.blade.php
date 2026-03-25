@@ -57,12 +57,17 @@
                                         <div class="document-item__actions">
                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                                data-title="Logística del evento" title="Logística del evento">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                data-title="Logística del evento" title="Ver aquí">
+                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                            </a>
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
+                                                target="_blank" rel="noopener noreferrer" 
+                                                title="Abrir en nueva pestaña">
+                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
                                                 download="1. Logística del evento.pdf" rel="noopener"
-                                                title="Logística del evento">
+                                                title="Descargar Logística del evento">
                                                 <i class="fas fa-download"></i>
                                                 <span>Descargar</span>
                                             </a>
@@ -96,11 +101,16 @@
                                         <div class="document-item__actions">
                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                data-title="Orden del día" title="Orden del día">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                data-title="Orden del día" title="Ver aquí">
+                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                download="Nombre documento" rel="noopener" title="Descargar documento">
+                                                target="_blank" rel="noopener noreferrer" 
+                                                title="Abrir en nueva pestaña">
+                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                            </a>
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
+                                                download="Nombre documento" rel="noopener" title="Descargar 2. Orden del Día.pdf">
                                                 <i class="fas fa-download"></i>
                                                 <span>Descargar</span>
                                             </a>
@@ -149,8 +159,13 @@
                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
                                                 data-title="Estructura General de los Subcomités"
-                                                title="Estructura General de los Subcomités">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                title="Ver aqui">
+                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                            </a>
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
+                                                target="_blank" rel="noopener noreferrer" 
+                                                title="Abrir en nueva pestaña">
+                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
                                                 download="Estructura General de los Subcomités" rel="noopener"
@@ -173,8 +188,13 @@
                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
                                                 data-title="Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria"
-                                                title="Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                title="Ver aquí">
+                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                            </a>
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
+                                                target="_blank" rel="noopener noreferrer" 
+                                                title="Abrir en nueva pestaña">
+                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
                                                 download="Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria"
@@ -212,8 +232,13 @@
                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
                                                 data-title="Actualización de la Regionalización del Estado de Puebla"
-                                                title="Actualización de la Regionalización del Estado de Puebla">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                title="Ver aquí">
+                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                            </a>
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
+                                                target="_blank" rel="noopener noreferrer" 
+                                                title="Abrir en nueva pestaña">
+                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
                                                 download="Actualización de la Regionalización del Estado de Puebla"
@@ -306,8 +331,13 @@
                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
                                                 data-title="Programas Institucionales - Sector Educativo"
-                                                title="Ver Programas Institucionales - Sector Educativo">
-                                                <i class="fas fa-eye"></i> <span>Ver</span>
+                                                title="Ver aquí">
+                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                            </a>
+                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
+                                                target="_blank" rel="noopener noreferrer" 
+                                                title="Abrir en nueva pestaña">
+                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                             </a>
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
                                                 download="Programas Institucionales - Sector Educativo" rel="noopener"

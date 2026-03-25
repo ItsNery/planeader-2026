@@ -162,9 +162,13 @@
                                                                     data-src="{{ asset('documentocopladep/' . $documento->ruta_documento) }}"
                                                                     data-title="{{ $documento->nombre }} {{ $documento->anio }}"
                                                                     title="Ver documento">
-                                                                    <i class="fas fa-eye"></i> <span>Ver</span>
+                                                                    <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                                                 </a>
-
+                                                                <a href="{{ asset('documentocopladep/' . $documento->ruta_documento) }}"
+                                                                    target="_blank" rel="noopener noreferrer" 
+                                                                    title="Abrir en nueva pestaña">
+                                                                    <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                </a>
                                                                 <a href="{{ asset('documentocopladep/' . $documento->ruta_documento) }}"
                                                                     download="{{ $documento->nombre }}" rel="noopener"
                                                                     title="Descargar documento">
@@ -213,10 +217,11 @@
             const closeModalButton = document.querySelector('#myModal .close-btn');
 
             // --- Lógica para ABRIR el modal ---
-            const openModalTriggers = document.querySelectorAll('.document-item__name');
+            const openModalTriggers = document.querySelectorAll('.js-open-modal');
 
             openModalTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function() {
+                trigger.addEventListener('click', function(event) {
+                    event.preventDefault();
                     const docUrl = this.dataset.src;
                     const docTitle = this.dataset.title;
 
