@@ -240,6 +240,7 @@
                 <p>
             @endif
         </div>
+    </section>
 @endsection
 @section('scripts')
 @endsection
