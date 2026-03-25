@@ -108,7 +108,11 @@
                                                                             data-src="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}"
                                                                             data-title="{{ $documento->nombre_display }}"
                                                                             title="Ver documento">
-                                                                            <i class="fas fa-eye"></i> <span>Ver</span>
+                                                                            <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                                                        </a>
+                                                                        <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}" target="_blank"
+                                                                            rel="noopener noreferrer" title="Abrir en nueva pestaña">
+                                                                            <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
                                                                         </a>
                                                                         <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}"
                                                                             download rel="noopener"
@@ -144,82 +148,8 @@
                 @endforelse
             </div>
         </div>
-        <div id="myModal" class="modal-planeader">
-            <div class="modal-content">
-                <button class="close-btn" aria-label="Cerrar">
-                    &times;
-                </button>
-                <h2 id="modalTitle"></h2>
-                <iframe class="w-100 h-100" id="modalIframe" src=""></iframe>
-            </div>
-        </div>
     </section>
 @endsection
 
 @section('scripts')
-    <script>
-        /**
-         * Función mejorada para cerrar el modal.
-         * Limpia el iframe para detener la carga y liberar recursos.
-         */
-        function closeModal() {
-            const modal = document.getElementById('myModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-
-            const modalIframe = document.getElementById('modalIframe');
-            if (modalIframe) {
-                modalIframe.src = ''; // ¡Importante!
-            }
-        }
-
-        // Se ejecuta cuando la página ha cargado completamente.
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // --- Referencias a los elementos del DOM ---
-            const modal = document.getElementById('myModal');
-            const modalIframe = document.getElementById('modalIframe');
-            const modalTitle = document.getElementById('modalTitle');
-            const closeButton = document.querySelector('#myModal .close-btn');
-
-            // --- Lógica para ABRIR el modal (con delegación de eventos) ---
-            document.addEventListener('click', function(event) {
-
-                // Revisa si el elemento clickeado es un enlace para abrir el modal
-                const openTrigger = event.target.closest('.js-open-modal');
-
-                if (openTrigger) {
-                    event.preventDefault(); // Evita que el enlace '#' navegue
-
-                    // Obtiene la info desde los data-attributes
-                    const docUrl = openTrigger.dataset.src;
-                    const docTitle = openTrigger.dataset.title;
-
-                    if (docUrl) {
-                        modalTitle.textContent = docTitle;
-                        modalIframe.src = docUrl;
-                        modal.style.display = 'block';
-                    }
-                }
-            });
-
-            // --- Lógica para CERRAR el modal (todas las opciones) ---
-            if (closeButton) {
-                closeButton.addEventListener('click', closeModal);
-            }
-
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    closeModal();
-                }
-            });
-        });
-    </script>
 @endsection

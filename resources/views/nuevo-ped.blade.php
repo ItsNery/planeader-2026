@@ -15,22 +15,6 @@ Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.
 'Bienvenido a la página de visión general del Plan Estatal 2024-2030 de
 Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('jss')
-<script>
-    function openModal(url, title) {
-        var modal = document.getElementById('myModal');
-        var modalIframe = document.getElementById('modalIframe');
-        var modalTitle = document.getElementById('modalTitle');
-
-        modalIframe.src = url;
-        modalTitle.textContent = title;
-        modal.style.display = 'block';
-    }
-
-    function closeModal() {
-        var modal = document.getElementById('myModal');
-        modal.style.display = 'none';
-    }
-</script>
 @endsection
 @section('content')
 <main id="#" class="">
@@ -76,8 +60,7 @@ Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.
                     <div class="contenedor-tarjetadocs">
                         <div class="tarjeta-herramientas">
                             <p class="titulo-documento">Anexo Estadístico del Estado de Puebla</p>
-                            <a href="#" class="boton"
-                                onclick="openModal('{{ asset('documentos/nuevo-ped/INEGI/ESTATAL/AnexoEstadísticoEstatalPUEBLA.pdf') }}', 'Anexo Estadístico del Estado de Puebla')">Ver</a>
+                            <a href="{{ asset('documentos/nuevo-ped/INEGI/ESTATAL/AnexoEstadísticoEstatalPUEBLA.pdf') }}" target="_blank" class="boton">Ver</a>
                             <a href="{{ asset('documentos/nuevo-ped/INEGI/ESTATAL/AnexoEstadísticoEstatalPUEBLA.pdf') }}"
                                 class="boton boton-descargar" download="" rel="noopener">
                                 <i class="fas fa-file-pdf"></i> Descargar
@@ -127,8 +110,7 @@ Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.
                     <div class="contenedor-tarjetadocs">
                         <div class="tarjeta-herramientas">
                             <p class="titulo-documento">Anexo estadístico municipal del estado de Puebla</p>
-                            <a href="#" class="boton"
-                                onclick="openModal('{{ asset('documentos/nuevo-ped/AnexoMun2024Puebla.pdf') }}', 'Anexo estadístico municipal del estado de Puebla')">Ver</a>
+                            <a href="{{ asset('documentos/nuevo-ped/AnexoMun2024Puebla.pdf') }}" target="_blank" class="boton">Ver</a>
                             <a href="{{ asset('documentos/nuevo-ped/AnexoMun2024Puebla.pdf') }}"
                                 class="boton boton-descargar">
                                 <i class="fas fa-file-pdf"></i> Descargar
@@ -140,8 +122,7 @@ Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.
                     <div class="contenedor-tarjetadocs">
                         <div class="tarjeta-herramientas">
                             <p class="titulo-documento">El SNIEG en el Estado de Puebla</p>
-                            <a href="#" class="boton"
-                                onclick="openModal('{{ asset('documentos/nuevo-ped/El_SNIEG_en_el_estado_de_Puebla.pdf') }}', 'El SNIEG en el Estado de Puebla')">Ver</a>
+                            <a href="{{ asset('documentos/nuevo-ped/El_SNIEG_en_el_estado_de_Puebla.pdf') }}" target="_blank" class="boton">Ver</a>
                             <a href="{{ asset('documentos/nuevo-ped/El_SNIEG_en_el_estado_de_Puebla.pdf') }}"
                                 class="boton boton-descargar">
                                 <i class="fas fa-file-pdf"></i> Descargar
@@ -153,8 +134,7 @@ Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.
                     <div class="contenedor-tarjetadocs">
                         <div class="tarjeta-herramientas">
                             <p class="titulo-documento">Versión en Cifras de Puebla</p>
-                            <a href="#" class="boton"
-                                onclick="openModal('{{ asset('documentos/nuevo-ped/Vision_en_cifras_de_Puebla_20012025_Imagen_actualizada.pdf') }}', 'Versión en Cifras de Puebla')">Ver</a>
+                            <a href="{{ asset('documentos/nuevo-ped/Vision_en_cifras_de_Puebla_20012025_Imagen_actualizada.pdf') }}" target="_blank" class="boton">Ver</a>
                             <a href="{{ asset('documentos/nuevo-ped/Vision_en_cifras_de_Puebla_20012025_Imagen_actualizada.pdf') }}"
                                 class="boton boton-descargar">
                                 <i class="fas fa-file-pdf"></i> Descargar
@@ -176,13 +156,6 @@ Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.
         </div>
         </div> --}}
         </div>
-        </div>
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2 id="modalTitle"></h2>
-                <iframe id="modalIframe" src="" width="100%" height="100%"></iframe>
-            </div>
         </div>
     </section>
 </main>

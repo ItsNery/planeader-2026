@@ -71,13 +71,6 @@
                 </div>
             </div>
             <div class="container">
-                <div id="myModal" class="modal-planeader">
-                    <div class="modal-content">
-                        <button class="close-btn" aria-label="Cerrar">&times;</button>
-                        <h3 class="text-center" id="modalTitle"></h3>
-                        <iframe id="modalIframe" src="" width="100%" height="100%"></iframe>
-                    </div>
-                </div>
                 @if ($documentosAgrupados->isEmpty())
                     <div class="container"
                         style="display: flex; justify-content:center; align-items:center; flex-direction:column">
@@ -133,13 +126,17 @@
 
                                                             <div class="document-item__actions">
 
-                                                                <a href="#" class="open-modal"
+                                                                <a href="#" class="js-open-modal"
                                                                     data-src="{{ asset('documentosubcomites/' . $documento->ruta_documento) }}"
                                                                     data-title="{{ $documento->nombre }} {{ $documento->anio }}"
                                                                     title="Ver documento">
-                                                                    <i class="fas fa-eye"></i> <span>Ver</span>
+                                                                    <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                                                 </a>
-
+                                                                <a href="{{ asset('documentosubcomites/' . $documento->ruta_documento) }}"
+                                                                    target="_blank" rel="noopener noreferrer"
+                                                                    title="Abrir en nueva pestaña">
+                                                                    <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                </a>
                                                                 <a href="{{ asset('documentosubcomites/' . $documento->ruta_documento) }}"
                                                                     download rel="noopener" title="Descargar documento">
                                                                     <i class="fas fa-download"></i>
@@ -201,70 +198,4 @@
     </main>
 @endsection
 @section('scripts')
-    <script>
-        /**
-         * Función para cerrar el modal.
-         */
-        function closeModal() {
-            const modal = document.getElementById('myModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-
-            const modalIframe = document.getElementById('modalIframe');
-            if (modalIframe) {
-                // Limpia la URL del iframe para detener contenido y liberar recursos.
-                modalIframe.src = '';
-            }
-        }
-
-        // Se ejecuta cuando todo el contenido del DOM ha sido cargado.
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // --- Referencias a los elementos del DOM ---
-            const modal = document.getElementById('myModal');
-            const modalIframe = document.getElementById('modalIframe');
-            const modalTitle = document.getElementById('modalTitle');
-            const openModalLinks = document.querySelectorAll('.open-modal');
-            // Asumimos que tu botón de cierre tiene la clase 'close-btn' como en los ejemplos anteriores
-            const closeButton = document.querySelector('#myModal .close-btn');
-
-            // --- Lógica para ABRIR el modal ---
-            openModalLinks.forEach(function(link) {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    const src = this.dataset.src;
-                    const title = this.dataset.title;
-
-                    if (src) {
-                        modalIframe.src = src;
-                        modalTitle.textContent = title;
-                        modal.style.display = 'block';
-                    }
-                });
-            });
-
-            // --- Lógica para CERRAR el modal (todas las opciones) ---
-
-            // 1. Clic en el botón de cierre (X)
-            if (closeButton) {
-                closeButton.addEventListener('click', closeModal);
-            }
-
-            // 2. Clic en el fondo (overlay)
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    closeModal();
-                }
-            });
-
-            // 3. Presionar la tecla "Escape"
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    closeModal();
-                }
-            });
-        });
-    </script>
 @endsection

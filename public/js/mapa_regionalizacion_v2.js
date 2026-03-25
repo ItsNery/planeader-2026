@@ -23,29 +23,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- CACHÉ localStorage (24 horas) ---
     const CACHE_TTL = 24 * 60 * 60 * 1000;
 
-    function getCache(key) {
-        try {
-            const ts = localStorage.getItem(key + "_ts");
-            if (!ts || Date.now() - parseInt(ts, 10) > CACHE_TTL) {
-                localStorage.removeItem(key);
-                localStorage.removeItem(key + "_ts");
-                return null;
-            }
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : null;
-        } catch (e) {
-            console.warn("Error leyendo caché:", key, e);
-            return null;
-        }
+    async function getCache(key) {
+        return await CacheManager.get(key, CACHE_TTL);
     }
 
-    function setCache(key, data) {
-        try {
-            localStorage.setItem(key, JSON.stringify(data));
-            localStorage.setItem(key + "_ts", String(Date.now()));
-        } catch (e) {
-            console.warn("No se pudo guardar caché:", key, e);
-        }
+    async function setCache(key, data) {
+        await CacheManager.set(key, data);
     }
 
     // Variables
@@ -195,20 +178,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Cargar municipios: caché o fetch
-    const cachedMuni = getCache(CACHE_KEY_MUNI);
-    if (cachedMuni) {
-        console.info("Capa 21mun (regionalización) cargada desde caché.");
-        procesarMunicipios(cachedMuni);
-    } else {
-        fetch(urlMuni)
-            .then((r) => r.json())
-            .then((data) => {
-                setCache(CACHE_KEY_MUNI, data);
-                console.info("Capa 21mun (regionalización) cargada del servidor y cacheada.");
-                procesarMunicipios(data);
-            })
-            .catch((error) => console.error("Error municipios:", error));
-    }
+    getCache(CACHE_KEY_MUNI).then(cachedMuni => {
+        if (cachedMuni) {
+            console.info("Capa 21mun (regionalización) cargada desde caché.");
+            procesarMunicipios(cachedMuni);
+        } else {
+            fetch(urlMuni)
+                .then((r) => r.json())
+                .then((data) => {
+                    setCache(CACHE_KEY_MUNI, data);
+                    console.info("Capa 21mun (regionalización) cargada del servidor y cacheada.");
+                    procesarMunicipios(data);
+                })
+                .catch((error) => console.error("Error municipios:", error));
+        }
+    });
 
     // =========================================================================
     // 3. PRECARGA (SOPORTE MULTI-GEOMETRÍA)
@@ -234,24 +218,25 @@ document.addEventListener("DOMContentLoaded", function () {
         const config = configCapas[claveCapa];
         const cacheKey = `geo_regionalizacion_${claveCapa}`;
 
-        const cached = getCache(cacheKey);
-        if (cached) {
-            console.info(`Precarga ${claveCapa} cargada desde caché.`);
-            procesarGeometrias(cached, config, mapaDeAlmacenamiento);
-            return;
-        }
+        getCache(cacheKey).then(cached => {
+            if (cached) {
+                console.info(`Precarga ${claveCapa} cargada desde caché.`);
+                procesarGeometrias(cached, config, mapaDeAlmacenamiento);
+                return;
+            }
 
-        const urlPrecarga = `${baseUrlWFS}&typeName=${config.layer_name}`;
-        fetch(urlPrecarga)
-            .then((response) => response.json())
-            .then((data) => {
-                setCache(cacheKey, data);
-                console.info(`Precarga ${claveCapa} cargada del servidor y cacheada.`);
-                procesarGeometrias(data, config, mapaDeAlmacenamiento);
-            })
-            .catch((error) =>
-                console.warn(`Error precarga ${claveCapa}`, error),
-            );
+            const urlPrecarga = `${baseUrlWFS}&typeName=${config.layer_name}`;
+            fetch(urlPrecarga)
+                .then((response) => response.json())
+                .then((data) => {
+                    setCache(cacheKey, data);
+                    console.info(`Precarga ${claveCapa} cargada del servidor y cacheada.`);
+                    procesarGeometrias(data, config, mapaDeAlmacenamiento);
+                })
+                .catch((error) =>
+                    console.warn(`Error precarga ${claveCapa}`, error),
+                );
+        });
     }
 
     // =========================================================================
@@ -273,29 +258,30 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // 2. Caché en localStorage
+        // 2. Caché en IndexedDB
         const cacheKey = `geo_regionalizacion_${claveCapa}`;
-        const cached = getCache(cacheKey);
-        if (cached) {
-            cacheCapasPrincipales[claveCapa] = cached;
-            renderizarCapa(cached);
-            if (loader) loader.classList.remove("d-flex");
-            return;
-        }
-
-        // 3. Fetch del servidor
-        const urlFondo = `${baseUrlWFS}&typeName=${config.layer_name}`;
-        fetch(urlFondo)
-            .then((response) => response.json())
-            .then((data) => {
-                cacheCapasPrincipales[claveCapa] = data;
-                setCache(cacheKey, data);
-                renderizarCapa(data);
-            })
-            .catch((error) => console.error(error))
-            .finally(() => {
+        getCache(cacheKey).then(cached => {
+            if (cached) {
+                cacheCapasPrincipales[claveCapa] = cached;
+                renderizarCapa(cached);
                 if (loader) loader.classList.remove("d-flex");
-            });
+                return;
+            }
+
+            // 3. Fetch del servidor
+            const urlFondo = `${baseUrlWFS}&typeName=${config.layer_name}`;
+            fetch(urlFondo)
+                .then((response) => response.json())
+                .then((data) => {
+                    cacheCapasPrincipales[claveCapa] = data;
+                    setCache(cacheKey, data);
+                    renderizarCapa(data);
+                })
+                .catch((error) => console.error(error))
+                .finally(() => {
+                    if (loader) loader.classList.remove("d-flex");
+                });
+        });
     }
 
     function renderizarCapa(dataGeoJSON) {

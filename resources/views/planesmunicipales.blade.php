@@ -112,15 +112,6 @@
                 </div>
             </div>
         </div>
-        <div id="myModal" class="modal-planeader">
-            <div class="modal-content">
-                <button class="close-btn" aria-label="Cerrar">
-                    &times;
-                </button>
-                <h3 id="modalTitle"></h3>
-                <iframe id="modalIframe" src="" width="100%" height="100%"></iframe>
-            </div>
-        </div>
     </section>
 @endsection
 

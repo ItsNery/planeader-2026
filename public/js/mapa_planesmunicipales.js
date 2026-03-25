@@ -7,9 +7,8 @@ const URL_BASE = "https://geoportal.puebla.gob.mx/";
 const URL_WMS = `${URL_BASE}geoserver/wms`;
 const URL_WFS = `${URL_BASE}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json&typeName=21mun`;
 
-// Clave y TTL para caché en localStorage (24 horas en milisegundos)
+// Clave y TTL para caché en IndexedDB (24 horas en milisegundos)
 const CACHE_KEY = "geojson_21mun_data";
-const CACHE_TS_KEY = "geojson_21mun_timestamp";
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 
 let geojsonLayer = null;
@@ -58,60 +57,32 @@ function formatId(id) {
 }
 
 /**
- * Intenta obtener los datos GeoJSON de localStorage.
- * Devuelve null si no hay caché, si expiró o si está corrupto.
+ * Intenta obtener los datos GeoJSON de CacheManager (IndexedDB).
  */
-function getCachedGeoJSON() {
-  try {
-    const timestamp = localStorage.getItem(CACHE_TS_KEY);
-    if (!timestamp) return null;
-
-    const age = Date.now() - parseInt(timestamp, 10);
-    if (age > CACHE_TTL) {
-      // Caché expirado, limpiar
-      localStorage.removeItem(CACHE_KEY);
-      localStorage.removeItem(CACHE_TS_KEY);
-      return null;
-    }
-
-    const data = localStorage.getItem(CACHE_KEY);
-    if (!data) return null;
-
-    return JSON.parse(data);
-  } catch (e) {
-    console.warn("Error leyendo caché de municipios:", e);
-    return null;
-  }
+async function getCachedGeoJSON() {
+  return await CacheManager.get(CACHE_KEY, CACHE_TTL);
 }
 
 /**
- * Guarda los datos GeoJSON en localStorage con la marca de tiempo actual.
+ * Guarda los datos GeoJSON en CacheManager.
  */
-function setCachedGeoJSON(data) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-    localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
-  } catch (e) {
-    // localStorage lleno o no disponible — no es crítico
-    console.warn("No se pudo guardar caché de municipios:", e);
-  }
+async function setCachedGeoJSON(data) {
+  await CacheManager.set(CACHE_KEY, data);
 }
 
 /**
  * Carga los datos GeoJSON de todos los municipios.
- * Primero intenta usar la caché de localStorage; si no existe o expiró,
- * descarga los datos del servidor WFS y los guarda en caché.
  */
 async function initMap() {
   try {
     // Intentar cargar desde caché
-    allMunicipiosData = getCachedGeoJSON();
-
+    allMunicipiosData = await getCachedGeoJSON();
+ 
     if (!allMunicipiosData) {
       // Sin caché válido — descargar del servidor
       const response = await fetch(URL_WFS);
       allMunicipiosData = await response.json();
-      setCachedGeoJSON(allMunicipiosData);
+      await setCachedGeoJSON(allMunicipiosData);
       console.info("Capa 21mun cargada desde el servidor y cacheada.");
     } else {
       console.info("Capa 21mun cargada desde caché local.");
@@ -135,14 +106,16 @@ async function initMap() {
       },
     }).addTo(map);
 
-    setupEventListeners();
+    setupMapRelatedListeners();
   } catch (error) {
     console.error("Error cargando GeoJSON:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error de conexión",
-      text: "No se pudieron cargar los límites de los municipios.",
-    });
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: "error",
+            title: "Error de conexión",
+            text: "No se pudieron cargar los límites de los municipios.",
+        });
+    }
   }
 }
 
@@ -150,6 +123,8 @@ async function initMap() {
  * Resalta un municipio en el mapa dado su ID (cve_mun)
  */
 function highlightFeature(idMun) {
+  if (!allMunicipiosData) return; // Guard para evitar errores si aún carga el mapa
+  
   const formattedId = formatId(idMun);
 
   // Encontrar el feature correspondiente
@@ -174,7 +149,6 @@ function highlightFeature(idMun) {
       <div class="custom-popup-header">
         <h4 class="custom-popup-title">${feature.properties.nomgeo}</h4>
       </div>
-
     </div>
   `;
 
@@ -215,11 +189,13 @@ async function cargarPlanes(idMun) {
     }
   } catch (error) {
     console.error("Error:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "No se pudieron obtener los planes de este municipio.",
-    });
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se pudieron obtener los planes de este municipio.",
+        });
+    }
   }
 }
 
@@ -238,8 +214,11 @@ window.cerrarInfoMunicipio = function () {
 
 // --- EVENT LISTENERS ---
 
-function setupEventListeners() {
-  // Hover en la lista lateral
+/**
+ * Configura los listeners que NO dependen de la carga del mapa (Sidebar, Búsqueda)
+ */
+function setupSidebarListeners() {
+  // Hover y Click en la lista lateral
   $sidebarItems.forEach((el) => {
     el.addEventListener("mouseenter", () => {
       const id = el.dataset.id;
@@ -266,7 +245,27 @@ function setupEventListeners() {
       });
     });
   }
+  
+  // Botón de información estilo mapa regionalización
+  const btnInfo = document.getElementById("btnInfo");
+  if (btnInfo) {
+    btnInfo.addEventListener("click", () => {
+      if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: "info",
+            title: "Información",
+            html: "Seleccione un municipio de la lista o haga clic en el mapa para ver los planes disponibles.",
+            confirmButtonText: "Cerrar",
+          });
+      }
+    });
+  }
+}
 
+/**
+ * Configura los listeners que SÍ dependen del mapa (Popups, Hover Map)
+ */
+function setupMapRelatedListeners() {
   // Limpieza al salir del mapa
   map.on("mouseout", resetHighlight);
 
@@ -278,60 +277,10 @@ function setupEventListeners() {
       L.DomEvent.disableScrollPropagation(popupNode);
     }
   });
-
-  // Botón de información estilo mapa regionalización
-  const btnInfo = document.getElementById("btnInfo");
-  if (btnInfo) {
-    btnInfo.addEventListener("click", () => {
-      Swal.fire({
-        icon: "info",
-        title: "Información",
-        html: "Seleccione un municipio de la lista o haga clic en el mapa para ver los planes disponibles.",
-        confirmButtonText: "Cerrar",
-      });
-    });
-  }
 }
-// --- LÓGICA DE MODAL (DOCUMENTOS) ---
-// Delegación de eventos para el modal que se carga dinámicamente
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".js-open-modal");
-  if (btn) {
-    e.preventDefault();
-    const modal = document.getElementById("myModal");
-    const iframe = document.getElementById("modalIframe");
-    const title = document.getElementById("modalTitle");
 
-    if (modal && iframe) {
-      title.textContent = btn.dataset.title;
-      iframe.src = btn.dataset.src;
-      modal.style.display = "block";
-    }
-  }
-});
-
-// Cerrar modal
-window.closeModal = function () {
-  const modal = document.getElementById("myModal");
-  const iframe = document.getElementById("modalIframe");
-  if (modal) modal.style.display = "none";
-  if (iframe) iframe.src = "";
-};
-
-// Listeners básicos para modal
+// Arrancar inicialización cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
-  const closeBtn = document.querySelector("#myModal .close-btn");
-  if (closeBtn) closeBtn.onclick = closeModal;
-
-  window.onclick = (e) => {
-    const modal = document.getElementById("myModal");
-    if (e.target == modal) closeModal();
-  };
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeModal();
-  });
+    setupSidebarListeners(); // Se ejecuta inmediatamente
+    initMap(); // Empieza a cargar el GeoJSON en paralelo
 });
-
-// Arrancar inicialización
-initMap();

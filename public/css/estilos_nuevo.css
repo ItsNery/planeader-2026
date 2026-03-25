@@ -482,6 +482,12 @@ body {
         border-radius: 12px;
         z-index: 10;
         margin-top: 5px;
+
+        .active {
+            background-color: var(--arena);
+            border-radius: 10px;
+            color: var(--color6);
+        }
     }
 
     .dropdown:hover .dropdown-content {
@@ -929,6 +935,57 @@ footer {
             }
         }
     }
+
+    .evaluation-container {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.5s ease-in-out;
+
+        h5 {
+            color: var(--color8);
+        }
+
+        p {
+            color: var(--color8);
+        }
+    }
+
+    .emoji-container {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .emoji-wrapper {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+    .emoji-wrapper:hover {
+        transform: scale(1.15);
+    }
+
+    .emoji {
+        font-size: 3rem;
+        filter: grayscale(50%);
+        transition: filter 0.2s ease;
+    }
+
+    .emoji-wrapper:hover .emoji {
+        filter: grayscale(0%);
+    }
+
+    .emoji-label {
+        font-size: 0.8rem;
+        color: #495057;
+        margin-top: 5px;
+    }
 }
 
 .footer-1 a {
@@ -960,6 +1017,9 @@ footer {
 }
 
 /* Estilo de utilidades */
+.cursor-pointer{
+    cursor: pointer;
+}
 .contenedor-libro-ped {
     margin-left: 2rem;
 }
@@ -1819,8 +1879,9 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.8rem 0.5rem;
+    padding: 1rem 0.5rem;
     border-bottom: 1px solid #e9ecef;
+    gap: 1.5rem;
 }
 
 .document-item:last-child {
@@ -1830,6 +1891,8 @@ footer {
 .document-item__main-content {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
+    flex: 1;
 }
 
 .document-item__name {
@@ -1881,27 +1944,37 @@ footer {
     .document-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.75rem;
+        gap: 1rem;
+    }
+
+    .document-item__main-content {
+        align-items: flex-start;
     }
 
     .document-item__actions {
-        padding-top: 0.25rem;
         width: 100%;
-        justify-content: flex-start;
+        justify-content: space-between;
+        padding-top: 0.8rem;
+        border-top: 1px dashed #e9ecef;
     }
 
     .document-item__actions span {
-        display: none;
+        display: block !important;
+        font-size: 0.7rem;
+        font-weight: 400;
     }
 
     .document-item__actions a {
-        font-size: 1.2rem;
+        flex-direction: column;
+        gap: 0.3rem;
+        font-size: 1.1rem;
+        flex: 1;
+        text-align: center;
     }
 }
 
 /* 6. Estilos para las ETIQUETAS DE FORMATO */
 .document-badge {
-    margin-left: 0.75rem;
     padding: 0.2rem 0.6rem;
     border-radius: 12px;
     font-size: 0.7rem;
@@ -4033,6 +4106,22 @@ footer {
 }
 
 .boton-copiar__icono {
+    color: white;
+}
+
+.boton-abrir-ventana {
+    border-radius: 50%;
+    background-color: var(--color4);
+    padding: 10px;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boton-abrir-ventana__icono {
     color: white;
 }
 

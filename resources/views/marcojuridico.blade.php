@@ -14,22 +14,6 @@
     'Bienvenido a la página del Marco Jurídico del Sistema Estatal de Planeación Democrática
     del Estado de Puebla.')
 @section('css')
-    <script>
-        function openModal(url, title) {
-            var modal = document.getElementById('myModal');
-            var modalIframe = document.getElementById('modalIframe');
-            var modalTitle = document.getElementById('modalTitle');
-
-            modalIframe.src = url;
-            modalTitle.textContent = title;
-            modal.style.display = 'block';
-        }
-
-        function closeModal() {
-            var modal = document.getElementById('myModal');
-            modal.style.display = 'none';
-        }
-    </script>
 @endsection
 
 @section('content')
@@ -104,13 +88,6 @@
                             alt="Logo del Orden Jurídico Poblano" title="Logo del Orden Jurídico Poblano">
                     </a>
                 </div>
-            </div>
-        </div>
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2 id="modalTitle"></h2>
-                <iframe id="modalIframe" src="" class="w-100 h-100"></iframe>
             </div>
         </div>
     </section>

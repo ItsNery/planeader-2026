@@ -71,8 +71,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/presentacion_c.pdf') }}', 'Taller de Planeación Estratégica')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/presentacion_c.pdf') }}" data-title="Taller de Planeación Estratégica">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -108,8 +108,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/curso_planeacion_estrategica_gabinetes.pdf') }}', 'Planeación Estratégica del GEP')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/curso_planeacion_estrategica_gabinetes.pdf') }}" data-title="Planeación Estratégica del GEP">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -146,8 +146,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/presentacion_buengobierno_vf.pdf') }}', 'Buen Gobierno en Puebla')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/presentacion_buengobierno_vf.pdf') }}" data-title="Buen Gobierno en Puebla">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -193,8 +193,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/prsentacion_ped.pdf') }}', 'Presentación del Plan Estatal de Desarrollo 2024-2030')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/prsentacion_ped.pdf') }}" data-title="Presentación del Plan Estatal de Desarrollo 2024-2030">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -231,8 +231,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/articulacion_ped.pdf') }}', 'Articulación del Plan Estatal de Desarrollo 2024-2030')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/articulacion_ped.pdf') }}" data-title="Articulación del Plan Estatal de Desarrollo 2024-2030">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -269,8 +269,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/TALLER-DE-PROCEDIMIENTOS-DE-ADQUISICIONES.pdf') }}', 'Taller de Procedimientos de Adquisiciones')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/TALLER-DE-PROCEDIMIENTOS-DE-ADQUISICIONES.pdf') }}" data-title="Taller de Procedimientos de Adquisiciones">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -316,8 +316,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/Presentacion_SPED.pdf') }}', 'Análisis de la Congruencia Horizontal del PED')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/Presentacion_SPED.pdf') }}" data-title="Análisis de la Congruencia Horizontal del PED">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -354,8 +354,8 @@
                                 <div class="back">
                                     <img src="{{ asset('imagen/ver-archivo.png') }}" alt="Icono de Ver Archivo"
                                         title="Icono de Ver Archivo" class="width-100">
-                                    <button class="btn boton-neumorfo no_s"
-                                        onclick="openModal('{{ asset('documentos/talleres/Taller-Gep-Ingresos.pdf') }}', 'Importancia de los Ingresos y la Recaudación')">Ver
+                                    <button class="btn boton-neumorfo js-open-modal no_s"
+                                        data-src="{{ asset('documentos/talleres/Taller-Gep-Ingresos.pdf') }}" data-title="Importancia de los Ingresos y la Recaudación">Ver
                                         <i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
@@ -369,13 +369,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2 id="modalTitle"></h2>
-                <iframe id="modalIframe" src="" class="w-100 h-100"></iframe>
             </div>
         </div>
     </section>
