@@ -70,7 +70,7 @@
                             aria-labelledby="macrorregiones-tab" tabindex="0">
                             <article class="leaderboard">
                                 <header class="encabezado-regiones">
-                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" class="mapa-gris-puebla"
+                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.webp') }}" class="mapa-gris-puebla"
                                         title="Puebla" alt="Mapa de Puebla en gris">
                                     <h1 class="leaderboard__title">
                                         <span class="leaderboard__title--top">
@@ -106,7 +106,7 @@
                             aria-labelledby="microrregiones-tab" tabindex="0">
                             <article class="leaderboard">
                                 <header class="encabezado-regiones">
-                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" class="mapa-gris-puebla"
+                                    <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.webp') }}" class="mapa-gris-puebla"
                                         title="Puebla" alt="Mapa de Puebla en gris">
                                     <h1 class="leaderboard__title">
                                         <span class="leaderboard__title--top">

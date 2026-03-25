@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <img src="{{ asset('img/integrantes-copladep.png') }}" alt="Esquema de conformación del COPLADEP" title="Conformación del Copladep" class="esquema-visual">
+                    <img src="{{ asset('img/integrantes-copladep.webp') }}" alt="Esquema de conformación del COPLADEP" title="Conformación del Copladep" class="esquema-visual">
                 </div>
             </div>
         </div>

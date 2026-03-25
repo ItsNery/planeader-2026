@@ -1738,7 +1738,7 @@ footer {
 /* Inician estilos de COPLADEP */
 /* Estilos para el contenedor principal */
 .contenedor-imagen-copladep {
-    background-image: url('../img/fondos-seccion/copladep.jpeg');
+    background-image: url('../img/fondos-seccion/copladep.webp');
     background-size: cover;
     background-position: center center;
     display: flex;

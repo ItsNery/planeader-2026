@@ -79,7 +79,7 @@
                                 title="Imagotipo del PED" class="imagen1">
                         </div>
                         <div class="contenedor-libro-ped">
-                            <img src="{{ asset('img/libro-ped.png') }}"
+                            <img src="{{ asset('img/libro-ped.webp') }}"
                                 alt="Imagen de un libro abierto con algunas páginas sin cerrar" title="Libro PED"
                                 class="w-100">
                         </div>

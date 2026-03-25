@@ -62,7 +62,7 @@ class PlanEstatalController extends Controller
             'nombre' => 'required|string|max:120',
             'periodo' => 'required|string|regex:/^\d{4}(-\d{4})?$/',
             'ruta_documento' => 'required|file|mimes:pdf|max:102400',
-            'portada' => 'required|image|mimes:jpeg,png,svg,jpg|max:6144',
+            'portada' => 'required|image|mimes:jpeg,png,svg,jpg,webp|max:6144',
             'gobernador' => 'required|string|max:255',
             'publicado' => 'nullable|boolean'
 
@@ -156,7 +156,7 @@ class PlanEstatalController extends Controller
             'nombre' => 'required|string|max:120',
             'periodo' => 'required|string|regex:/^\d{4}(-\d{4})?$/',
             'ruta_documento' => 'nullable|file|mimes:pdf|max:102400',
-            'portada' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
+            'portada' => 'nullable|image|mimes:jpeg,png,svg,jpg,webp|max:6144',
             'gobernador' => 'required|string|max:255',
             'publicado' => 'nullable|boolean'
         ], [
