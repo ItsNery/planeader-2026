@@ -78,7 +78,7 @@
                                                     <img class="w-100"
                                                         src="{{ asset('portadaprogder/' . $programa->portada) }}"
                                                         alt="Portada de {{ $programa->nombre }}"
-                                                        title="{{ $programa->nombre }}">
+                                                        title="{{ $programa->nombre }}" loading="lazy">
                                                 </div>
 
                                                 <a class="tarjeta_histder-button no_s js-ver-documento" rel="noopener"
@@ -130,7 +130,7 @@
                 <div class="container"
                     style="display: flex; justify-content:center; align-items:center; flex-direction:column">
                     <img class="w-30p" src="{{ asset('imagen/no-file.png') }}" alt="Imagen de Not Found"
-                        title="Imagen de Not Found">
+                        title="Imagen de Not Found" loading="lazy">
                     <p class="texto-color1 text-center pb-5">Upps, no se encontraron registros.</p>
                 </div>
             @else
@@ -240,5 +240,6 @@
                 <p>
             @endif
         </div>
+@endsection
 @section('scripts')
 @endsection
