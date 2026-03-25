@@ -410,69 +410,9 @@
         </div>
     </section>
 
-    <div id="myModal" class="modal-planeader">
-        <div class="modal-content">
-            <button class="close-btn" aria-label="Cerrar">
-                &times;
-            </button>
-            <h3 id="modalTitle" class="text-center"></h3>
-            <iframe class="w-100 h-100" src="" id="modalIframe"></iframe>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('myModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalIframe = document.getElementById('modalIframe');
-            const closeModalButton = document.querySelector('#myModal .close-btn');
-
-            const openModalTriggers = document.querySelectorAll('.js-open-modal');
-
-            openModalTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const docUrl = this.dataset.src;
-                    const docTitle = this.dataset.title;
-
-                    if (docUrl) {
-                        modalTitle.textContent = docTitle;
-                        modalIframe.src = docUrl;
-                        modal.style.display = 'block';
-                    }
-                });
-            });
-
-            if (closeModalButton) {
-                closeModalButton.addEventListener('click', closeModal);
-            }
-
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    closeModal();
-                }
-            });
-        });
-
-        function closeModal() {
-            const modal = document.getElementById('myModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            const modalIframe = document.getElementById('modalIframe');
-            if (modalIframe) {
-                modalIframe.src = '';
-            }
-        }
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

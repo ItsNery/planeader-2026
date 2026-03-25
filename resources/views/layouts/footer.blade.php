@@ -27,7 +27,7 @@
                     </a>
                 </div>
                 <div class="container pt-3">
-                    <div id="evaluationDiv" class="bg-light p-3 rounded text-center">
+                    <div id="evaluationDiv" class="evaluation-container">
                         <h5 class="text-dark text-uppercase mb-4 h5_planeader">
                             Evaluación del sitio
                         </h5>

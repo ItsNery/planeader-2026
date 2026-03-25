@@ -8,104 +8,13 @@
 @section('og-description',
     'Bienvenido a la página de visión general del Plan Estatal de
     Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.')
-@section('og:image', 'https://planeader.puebla.gob.mx/img/ped2/PED23.png')
+@section('og:image', asset('img/logo-gobierno-1.png'))
 @section('og:url', url()->current())
 @section('twitter-title', 'Plan Estatal de Desarrollo - Sistema Estatal de Planeación Democrática')
 @section('twitter-description',
     'Bienvenido a la página de visión general del Plan
     Estatal de Desarrollo del Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('jss')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('myModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalIframe = document.getElementById('modalIframe');
-            const openModalLinks = document.querySelectorAll('.tarjetahistoricoplanes-link, .abrir-en-modal');
-            const closeModalButton = document.querySelector('#myModal .close-btn');
-
-            // --- Lógica para ABRIR el modal ---
-            openModalLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const docUrl = this.dataset.src;
-                    const docTitle = this.dataset.title;
-
-                    modalTitle.textContent = docTitle;
-                    modalIframe.src = docUrl;
-                    const copyButton = document.getElementById('botoncopiar');
-                    if (copyButton) {
-                        copyButton.dataset.url = docUrl;
-                    }
-                    const openWindowButton = document.getElementById('botonAbrirVentana');
-                    if (openWindowButton) {
-                        openWindowButton.dataset.url = docUrl;
-                    }
-                    modal.style.display = 'block';
-                });
-            });
-
-            // --- Función para CERRAR el modal ---
-            function closeModal() {
-                modal.style.display = 'none';
-                modalIframe.src = ''; // Buena práctica para detener contenido
-            }
-
-            // --- Lógica para CERRAR el modal ---
-
-            // 1. Clic en el botón (X)
-            if (closeModalButton) {
-                closeModalButton.addEventListener('click', closeModal);
-            }
-
-            // 2. Clic en el fondo (overlay)
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    closeModal();
-                }
-            });
-
-            // 3. Presionar la tecla "Escape"
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    closeModal();
-                }
-            });
-
-            // --- Lógica para COPIAR al portapapeles ---
-            const copyButton = document.getElementById('botoncopiar');
-            if (copyButton) {
-                copyButton.addEventListener('click', function() {
-                    const url = this.dataset.url;
-                    if (url) {
-                        navigator.clipboard.writeText(url).then(() => {
-                            const icon = this.querySelector('.boton-copiar__icono');
-                            if (icon) {
-                                icon.classList.remove('fa-copy');
-                                icon.classList.add('fa-check');
-                                setTimeout(() => {
-                                    icon.classList.remove('fa-check');
-                                    icon.classList.add('fa-copy');
-                                }, 2000);
-                            }
-                        }).catch(err => {
-                            console.error('Error al copiar: ', err);
-                        });
-                    }
-                });
-            }
-
-            // --- Lógica para ABRIR en ventana nueva ---
-            const openWindowButton = document.getElementById('botonAbrirVentana');
-            if (openWindowButton) {
-                openWindowButton.addEventListener('click', function() {
-                    const url = this.dataset.url;
-                    if (url) {
-                        window.open(url, '_blank');
-                    }
-                });
-            }
-        });
-    </script>
 @endsection
 @section('css')
 @endsection
@@ -562,7 +471,7 @@
                         @foreach ($planes_estatales as $plan_estatal)
                             <div class="item">
                                 <li class="tarjetahistoricoplanes">
-                                    <a rel="noopener" class="tarjetahistoricoplanes-link" href="#historico"
+                                    <a rel="noopener" class="tarjetahistoricoplanes-link js-open-modal" href="#historico"
                                         title="{{ $plan_estatal->nombre }}"
                                         data-src="{{ asset('planesest/' . $plan_estatal->ruta_documento) }}"
                                         data-title="{{ $plan_estatal->nombre }}">
@@ -602,24 +511,6 @@
                         No hay información disponible.</p>
                     <p>
                 @endif
-            </div>
-        </div>
-        <div id="myModal" class="modal-planeader" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <div class="modal-content">
-                <button class="close-btn" aria-label="Cerrar">&times;</button>
-                <div class="d-flex flex-row justify-content-evenly">
-                    <h3 id="modalTitle"></h3>
-                    <div class="d-flex gap-2">
-                        <div class="boton-copiar" id="botoncopiar" title="Copiar url del documento">
-                            <i class="fa-solid fa-copy boton-copiar__icono"></i>
-                        </div>
-                        <div class="boton-abrir-ventana" id="botonAbrirVentana" title="Abrir documento en una nueva ventana">
-                            <i class="fas fa-external-link-alt boton-abrir-ventana__icono"></i>
-                        </div>
-                    </div>
-                </div>
-                <iframe id="modalIframe" class="w-100 h-100" src="" title="Contenido del documento"
-                    frameborder="0"></iframe>
             </div>
         </div>
     </section>

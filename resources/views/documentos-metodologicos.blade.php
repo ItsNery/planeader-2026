@@ -14,22 +14,6 @@
     'Página principal de los documentos metodológicos del Comité de Planeación Municipal del
     Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('css')
-    <script>
-        function openModal(url, title) {
-            var modal = document.getElementById('myModal');
-            var modalIframe = document.getElementById('modalIframe');
-            var modalTitle = document.getElementById('modalTitle');
-
-            modalIframe.src = url;
-            modalTitle.textContent = title;
-            modal.style.display = 'block';
-        }
-
-        function closeModal() {
-            var modal = document.getElementById('myModal');
-            modal.style.display = 'none';
-        }
-    </script>
 @endsection
 
 @section('content')
@@ -60,16 +44,6 @@
             </div>
         </div>
     </section>
-    <section class="planes_mun">
-        <div class="container py-5">
-            <div id="myModal" class="modal-planeader">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <h2 id="modalTitle"></h2>
-                    <iframe id="modalIframe" src="" class="w-100 h-100"></iframe>
-                </div>
-            </div>
-        </div>
     </section>
 @endsection
 

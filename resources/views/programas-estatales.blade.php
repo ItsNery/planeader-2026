@@ -47,15 +47,6 @@
                 </div>
             @endif
         </div>
-        <div id="myModal" class="modal-planeader">
-            <div class="modal-content">
-                <button class="close-btn" onclick="closeModal()" aria-label="Cerrar">
-                    &times;
-                </button>
-                <h3 class="text-center" id="modalTitle"></h3>
-                <iframe class="w-100 h-100" src="" id="modalIframe"></iframe>
-            </div>
-        </div>
     </section>
     <section class="historicos-subcomites" id="historicos-programas">
         <div class="container mt-5">
@@ -152,72 +143,4 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Espera a que todo el contenido de la página se cargue.
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // --- Guardamos referencias a los elementos del modal ---
-            const modal = document.getElementById('myModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalIframe = document.getElementById('modalIframe');
-            const closeModalButton = document.querySelector('#myModal .close-btn');
-
-            // --- Lógica para ABRIR el modal (unificada) ---
-            const openModalTriggers = document.querySelectorAll(
-                '.tarjeta_histder-button, .elemento img, .js-ver-documento');
-
-            openModalTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function (event) {
-                    event.preventDefault();
-
-                    // Lógica inteligente para encontrar los datos
-                    const dataSourceElement = this.closest('[data-src]');
-
-                    if (dataSourceElement) {
-                        const docUrl = dataSourceElement.dataset.src;
-                        const docTitle = dataSourceElement.dataset.title;
-
-                        // Asigna los datos al modal
-                        modalTitle.textContent = docTitle;
-                        modalIframe.src = docUrl;
-
-                        // Muestra el modal
-                        modal.style.display = 'block';
-                    }
-                });
-            });
-
-            /**
-             * Función que cierra el modal y limpia el iframe.
-             * La mantenemos separada para poder reutilizarla.
-             */
-            function closeModal() {
-                modal.style.display = 'none';
-                modalIframe.src = '';
-            }
-
-            // --- Lógica para CERRAR el modal (AÑADIENDO NUEVOS MÉTODOS) ---
-
-            // 1. Clic en el botón (X)
-            if (closeModalButton) {
-                closeModalButton.addEventListener('click', closeModal);
-            }
-
-            // 2. Clic en el fondo (overlay)
-            window.addEventListener('click', function (event) {
-                // Si el elemento clickeado es el fondo del modal...
-                if (event.target == modal) {
-                    closeModal();
-                }
-            });
-
-            // 3. Presionar la tecla "Escape"
-            document.addEventListener('keydown', function (event) {
-                // Si la tecla es 'Escape' y el modal está visible...
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    closeModal();
-                }
-            });
-        });
-    </script>
 @endsection

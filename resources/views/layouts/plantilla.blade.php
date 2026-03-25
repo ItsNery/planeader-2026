@@ -24,12 +24,12 @@
     <meta property="og:description" content="@yield('og-description', 'Página Informativa del Portal de Planeación para el Desarrollo del Gobierno del Estado de Puebla')">
     <meta property="og:type" content="website">
     <meta property="og:url" content="@yield('og:url', 'https://planeader.puebla.gob.mx')">
-    <meta property="og:image" content="@yield('og:image', 'https://planeader.puebla.gob.mx/baners/Banners-PLANEADER-portada%20(1)_20240522223737.jpg')">
+    <meta property="og:image" content="@yield('og:image', asset('img/logo-gobierno-1.png'))">
     <meta property="og:site_name" content="Portal de Planeación para el Desarrollo del Gobierno del Estado de Puebla">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter-title', 'Portal de Planeación para el Desarrollo del Gobierno del Estado de Puebla')">
     <meta name="twitter:description" content="@yield('twitter-description', 'Página Informativa del Portal de Planeación para el Desarrollo del Gobierno del Estado de Puebla')">
-    <meta name="twitter:image" content="@yield('twitter:image', 'https://planeader.puebla.gob.mx/baners/Banners-PLANEADER-portada%20(1)_20240522223737.jpg')">
+    <meta name="twitter:image" content="@yield('twitter:image', asset('img/logo-gobierno-1.png'))">
     <link rel="canonical" href="@yield('canonical-url', 'https://planeader.puebla.gob.mx')">
     <!-- Favicon -->
     <link href="{{ asset('imagen/favicon.ico') }}" rel="icon">
@@ -61,7 +61,7 @@
     <!-- Template CSS -->
     {{-- <link rel="stylesheet" href="{{ asset('css/estilos.css') }}?v={{ rand() }}"> --}}
     <link rel="stylesheet" href="{{ asset('css/estilos_nuevo.css') }}?v={{ rand() }}">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @yield('page_css')
     @yield('jss')
@@ -174,6 +174,25 @@
 
 
     @yield('scripts')
+    {{-- MODAL GLOBAL --}}
+    <div id="myModal" class="modal-planeader" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Cerrar">&times;</button>
+            <div class="d-flex flex-row justify-content-evenly">
+                <h3 id="modalTitle"></h3>
+                <div class="d-flex gap-2">
+                    <div class="boton-copiar" id="botoncopiar" title="Copiar url del documento">
+                        <i class="fa-solid fa-copy boton-copiar__icono"></i>
+                    </div>
+                    <div class="boton-abrir-ventana" id="botonAbrirVentana" title="Abrir documento en una nueva ventana">
+                        <i class="fas fa-external-link-alt boton-abrir-ventana__icono"></i>
+                    </div>
+                </div>
+            </div>
+            <iframe id="modalIframe" class="w-100 h-100" src="" title="Contenido del documento"
+                frameborder="0"></iframe>
+        </div>
+    </div>
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/aos.js') }}"></script>
