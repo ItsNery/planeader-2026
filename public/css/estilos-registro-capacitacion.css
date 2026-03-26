@@ -38,7 +38,10 @@
     --whiteColor: #ffffff;
     --blackColor: #1f2428;
     --bg-header: rgba(231, 226, 218, 0.4);
+    --color1: #5f1b2d;
     --color-4: #070719;
+    --color4: #c79b66;
+    --color5: #0c312d;
     --font-size-p: 1rem;
     --transition: 0.5s;
     --boxShadow: rgba(80, 79, 79, 0.1) 0px 0px 16px;
@@ -203,4 +206,28 @@ body {
     background: var(--maincolor) !important;
     color: white !important;
     border-color: var(--maincolor) !important;
+}
+
+.btn-group .btn-outline-primary {
+    color: #495057;
+    border-color: #ced4da;
+    background-color: #ffffff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-group .btn-outline-primary:hover {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.btn-check:checked+.btn-outline-primary {
+    background-color: var(--color1);
+    border-color: var(--color5);
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.btn-check:focus+.btn-outline-primary {
+    box-shadow: 0 0 0 0.25rem rgba(105, 28, 50, 0.25);
 }

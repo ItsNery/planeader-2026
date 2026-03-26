@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('cargo');
             $table->foreignId('municipio_id')->constrained('cat_municipios')->nullable();
             $table->string('correo_electronico');
-            $table->string('telefono_oficina')->nullable();
-            $table->string('telefono_celular');
+            $table->string('telefono_oficina');
+            $table->string('telefono_celular')->nullable();
             $table->longText('firma')->nullable();
             $table->timestamps();
         });

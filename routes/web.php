@@ -22,6 +22,7 @@ use App\Http\Controllers\PlanEstatalAnexoController;
 use App\Http\Controllers\DocumentoApoyoCoplademunController;
 use App\Http\Controllers\DocumentoMetodologicoController;
 use App\Http\Controllers\DocumentoSesionController;
+use App\Http\Controllers\InvitadoCopladepController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RegistroCopladepController;
 
@@ -161,8 +162,15 @@ Route::get('/coplademun/listado', [RegistroController::class, 'index'])->name('r
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('panel-marco-juridico', MarcoJuridicoController::class);
     Route::resource('panel-documentos-subcomites', DocumentoSubcomiteController::class);
+
     Route::get('/copladep/primera-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'index'])->name('copladep-registro.index');
+    Route::get('/copladep/primera-sesion-ordinaria/invitados', [InvitadoCopladepController::class, 'index'])->name('copladep-registro-invitados.index');
+    Route::post('/copladep/primera-sesion-ordinaria/invitados', [InvitadoCopladepController::class, 'store'])->name('copladep-registro-invitados.store');
+    Route::put('/copladep/primera-sesion-ordinaria/invitados/{id}', [InvitadoCopladepController::class, 'update'])->name('copladep-registro-invitados.update');
+    Route::delete('/copladep/primera-sesion-ordinaria/invitados/{id}', [InvitadoCopladepController::class, 'destroy'])->name('copladep-registro-invitados.destroy');
+
     Route::resource('panel-documentos-copladep', DocumentoCopladepController::class);
+
     Route::resource('panel-planes-municipales', PlanMunicipalController::class);
     Route::resource('panel-planes-estatales', PlanEstatalController::class);
 

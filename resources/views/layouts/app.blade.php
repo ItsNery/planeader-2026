@@ -25,6 +25,7 @@
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     @stack('styles')
     @stack('head')
+
 </head>
 
 <body class="font-sans antialiased bg-light">

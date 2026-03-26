@@ -20,10 +20,17 @@ class RegistroCopladep extends Model
         'telefono_oficina',
         'telefono_celular',
         'firma',
+        'tipo_asistente',
+        'invitado_id',
     ];
 
     public function catMunicipio()
     {
         return $this->belongsTo(CatMunicipio::class, 'municipio_id');
+    }
+
+    public function invitado()
+    {
+        return $this->belongsTo(InvitadoCopladep::class, 'invitado_id');
     }
 }

@@ -33,13 +33,20 @@
                     Nuevo registro
                 </button>
             </a>
+            <a href="{{ route('copladep-registro-invitados.index') }}" class="mx-2">
+                <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
+                    Ver invitados
+                </button>
+            </a>
         </div>
         <div class="container table-responsive">
             <table id="registrosCopladepTable" class="table w-100 table-hover align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>Nombre Completo</th>
+                        <th>Tipo de Asistencia</th>
+                        <th>Invitado Oficial (Titular)</th>
+                        <th>Nombre de quien asiste</th>
                         <th>Municipio</th>
                         <th>Cargo</th>
                         <th>Sexo</th>
@@ -53,6 +60,14 @@
                     @foreach($registros as $registro)
                         <tr>
                             <td>{{ $registro->id }}</td>
+                            <td class="text-center">
+                                @if($registro->tipo_asistente == 'titular')
+                                    <span class="badge bg-success">Titular</span>
+                                @else
+                                    <span class="badge bg-warning text-dark">Representante</span>
+                                @endif
+                            </td>
+                            <td class="fw-bold">{{ $registro->invitado->nombre_completo ?? 'N/A' }}</td>
                             <td>{{ $registro->nombre_completo }}</td>
                             <td>{{ $registro->catMunicipio->nombre_municipio ?? 'N/A' }}</td>
                             <td>{{ $registro->cargo }}</td>
@@ -61,7 +76,8 @@
                             <td>{{ $registro->telefono_celular }}</td>
                             <td class="text-center">
                                 @if($registro->firma)
-                                    <img src="{{ $registro->firma }}" alt="Firma o rúbrica de {{ $registro->nombre_completo }}" class="firma-img" title="{{ $registro->nombre_completo }}">
+                                    <img src="{{ $registro->firma }}" alt="Firma o rúbrica de {{ $registro->nombre_completo }}"
+                                        class="firma-img" title="{{ $registro->nombre_completo }}">
                                 @else
                                     <span class="badge bg-secondary">Sin firma</span>
                                 @endif
@@ -73,7 +89,9 @@
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre Completo</th>
+                        <th>Tipo de Asistencia</th>
+                        <th>Invitado Oficial (Titular)</th>
+                        <th>Nombre de quien asiste</th>
                         <th>Municipio</th>
                         <th>Cargo</th>
                         <th>Sexo</th>
@@ -108,7 +126,7 @@
                                 text: '<i class="bi bi-file-earmark-spreadsheet"></i> Exportar a Excel',
                                 className: 'btn btn-success btn-sm',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
                                 }
                             },
                             {
@@ -117,7 +135,7 @@
                                 text: '<i class="bi bi-filetype-csv"></i> Exportar a CSV',
                                 className: 'btn btn-info btn-sm text-white',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
                                 }
                             },
                             {
@@ -126,7 +144,7 @@
                                 text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF',
                                 className: 'btn btn-danger btn-sm text-white',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
                                 }
                             }
                         ],
