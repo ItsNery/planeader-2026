@@ -2,11 +2,6 @@
     @section('title', 'Registro de asistencia de sesión ordinaria de COPLADEP: Listado')
 
     @push('styles')
-        <style>
-            .ts-dropdown {
-                z-index: 1060 !important;
-            }
-        </style>
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap5.min.css">
         <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -36,9 +31,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre Completo</th>
-                        <th>Cargo</th>
                         <th>Municipio</th>
-                        <th>Sexo</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -46,14 +39,51 @@
                     @foreach($invitados as $invitado)
                         <tr>
                             <td>{{ $invitado->id }}</td>
-                            <td class="fw-bold">{{ $invitado->nombre_completo }}</td>
-                            <td>{{ $invitado->cargo }}</td>
-                            <td>{{ $invitado->municipio->nombre_municipio ?? 'N/A' }}</td>
-                            <td>{{ $invitado->sexo }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
+                                            {{ $invitado->nombre_completo }}
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $invitado->cargo }}
+                                            </span>
+                                            @if ($invitado->sexo === 'Mujer')
+                                                <span class="badge bg-mujer">
+                                                    {{ $invitado->sexo }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-hombre">
+                                                    {{ $invitado->sexo }}
+                                                </span>
+                                            @endif
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-black">
+                                    {{ $invitado->municipio->nombre_municipio ?? 'N/A' }}
+                                </span>
+                            </td>
 
                             <td>
                                 <div class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
+                                        @if(!$invitado->registro)
+                                            <button type="button"
+                                                class="btn btn-sm btn-express {{ $invitado->check_in_express ? 'btn-success' : 'btn-outline-success' }}"
+                                                data-id="{{ $invitado->id }}" title="Check-in Express (Entrada directa)">
+                                                <i class="bi bi-person-check-fill"></i>
+                                            </button>
+                                        @else
+                                            <button type="button" class="btn btn-sm btn-secondary" disabled
+                                                title="Ya registrado formalmente">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </button>
+                                        @endif
                                         <button type="button" class="btn btn-outline-secondary btn-editar"
                                             data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
                                             data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
@@ -74,6 +104,14 @@
                         </tr>
                     @endforeach
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Municipio</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
         <div class="modal fade" id="modalAgregarInvitado" tabindex="-1" aria-labelledby="modalAgregarInvitadoLabel"
@@ -126,7 +164,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-outline-secondary px-4"
+                                data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-custom-primary px-5 shadow-sm">Guardar</button>
                         </div>
                     </form>
@@ -178,8 +217,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-custom-primary px-5 shadow-sm">Actualizar Datos</button>
+                            <button type="button" class="btn btn-outline-secondary px-4"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-custom-primary px-5 shadow-sm">Actualizar
+                                Datos</button>
                         </div>
                     </form>
                 </div>
@@ -244,6 +285,46 @@
                 const tablaInvitados = document.getElementById('invitadosTable');
 
                 tablaInvitados.addEventListener('click', function (event) {
+                    const btnExpress = event.target.closest('.btn-express');
+
+                    if (btnExpress) {
+                        const id = btnExpress.dataset.id;
+                        const url = `{{ url('/copladep/primera-sesion-ordinaria/invitados') }}/${id}/toggle-express`;
+
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    if (data.estado_actual) {
+                                        btnExpress.classList.remove('btn-outline-success');
+                                        btnExpress.classList.add('btn-success');
+                                    } else {
+                                        btnExpress.classList.remove('btn-success');
+                                        btnExpress.classList.add('btn-outline-success');
+                                    }
+
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: data.message,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    });
+                                } else {
+                                    Swal.fire('Atención', data.message, 'info');
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+
+                        return;
+                    }
                     // Buscamos si el clic provino de un elemento con la clase '.btn-editar' o un hijo de este (como el ícono)
                     const botonEditar = event.target.closest('.btn-editar');
 

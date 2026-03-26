@@ -14,10 +14,19 @@ class InvitadoCopladep extends Model
         'sexo',
         'cargo',
         'municipio_id',
+        'check_in_express',
+    ];
+    
+    protected $casts = [
+        'check_in_express' => 'boolean',
     ];
 
-       public function municipio()
+    public function municipio()
     {
         return $this->belongsTo(CatMunicipio::class, 'municipio_id', 'id');
+    }
+    public function registro()
+    {
+        return $this->hasOne(RegistroCopladep::class, 'invitado_id', 'id');
     }
 }

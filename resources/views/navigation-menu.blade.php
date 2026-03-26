@@ -27,7 +27,7 @@
                         'panel-marco-juridico*',
                         'panel-documentos-apoyo-coplademun*',
                         'panel-documentos-metodologicos*',
-                        'coplade-registro.index'
+                        'copladep-registro.index'
                         // 'panel-documentos-sesiones*',
                     ])">
                         <x-slot name="trigger">
@@ -61,7 +61,7 @@
                             @endcan
                             @can('ver-listado-registro-copladep')
                                 <x-dropdown-link href="{{ route('copladep-registro.index') }}">
-                                    {{ __('Listado') }}
+                                    {{ __('Sesión COPLADEP') }}
                                 </x-dropdown-link>
                             @endcan
                             {{-- @can('ver-doc-sesion')

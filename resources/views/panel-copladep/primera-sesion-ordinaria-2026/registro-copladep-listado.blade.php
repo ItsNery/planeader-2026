@@ -28,6 +28,11 @@
         </div>
 
         <div class="container d-flex justify-content-end">
+            <a href="{{ route('copladep-registro-invitados-monitor.index') }}" class="mx-2">
+                <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
+                    Ver monitor
+                </button>
+            </a>
             <a href="{{ route('copladep-registro.create') }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Nuevo registro
@@ -46,14 +51,16 @@
                         <th>ID</th>
                         <th>Tipo de Asistencia</th>
                         <th>Invitado Oficial (Titular)</th>
-                        <th>Nombre de quien asiste</th>
+                        <th>Datos del Asistente</th>
                         <th>Municipio</th>
+                        <th class="text-center">Firma o rúbrica</th>
+                        <th>Fecha de Registro</th>
+                        <th>Nombre de quien asiste</th>
                         <th>Cargo</th>
                         <th>Sexo</th>
                         <th>Correo Electrónico</th>
-                        <th>Celular</th>
-                        <th>Firma o rúbrica</th>
-                        <th>Fecha de Registro</th>
+                        <th>Tel. oficina</th>
+                        <th>Tel. celular</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,12 +75,46 @@
                                 @endif
                             </td>
                             <td class="fw-bold">{{ $registro->invitado->nombre_completo ?? 'N/A' }}</td>
-                            <td>{{ $registro->nombre_completo }}</td>
-                            <td>{{ $registro->catMunicipio->nombre_municipio ?? 'N/A' }}</td>
-                            <td>{{ $registro->cargo }}</td>
-                            <td>{{ $registro->sexo }}</td>
-                            <td>{{ $registro->correo_electronico }}</td>
-                            <td>{{ $registro->telefono_celular }}</td>
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
+                                            {{ $registro->nombre_completo }}
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2 align-items-center mb-1">
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $registro->cargo }}
+                                            </span>
+                                            @if ($registro->sexo === 'Mujer')
+                                                <span class="badge bg-mujer">{{ $registro->sexo }}</span>
+                                            @else
+                                                <span class="badge bg-hombre">{{ $registro->sexo }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="text-muted mt-1" style="font-size: 0.85rem;">
+                                            <div class="mb-1"><i class="bi bi-envelope"></i>
+                                                {{ $registro->correo_electronico }}</div>
+                                            <div class="d-flex flex-wrap gap-3">
+                                                @if($registro->telefono_oficina && $registro->telefono_oficina != 'ND')
+                                                    <span><i class="bi bi-telephone"></i>
+                                                        {{ $registro->telefono_oficina }}</span>
+                                                @endif
+                                                @if($registro->telefono_celular && $registro->telefono_celular != 'ND')
+                                                    <span><i class="bi bi-phone"></i> {{ $registro->telefono_celular }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-light text-black border">
+                                    {{ $registro->catMunicipio->nombre_municipio ?? 'N/A' }}
+                                </span>
+                            </td>
+
                             <td class="text-center">
                                 @if($registro->firma)
                                     <img src="{{ $registro->firma }}" alt="Firma o rúbrica de {{ $registro->nombre_completo }}"
@@ -82,7 +123,15 @@
                                     <span class="badge bg-secondary">Sin firma</span>
                                 @endif
                             </td>
+
                             <td>{{ $registro->created_at->format('d/m/Y H:i') }}</td>
+
+                            <td>{{ $registro->nombre_completo }}</td>
+                            <td>{{ $registro->cargo }}</td>
+                            <td>{{ $registro->sexo }}</td>
+                            <td>{{ $registro->correo_electronico }}</td>
+                            <td>{{ $registro->telefono_oficina ?? 'ND'}}</td>
+                            <td>{{ $registro->telefono_celular ?? 'ND'}}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -91,21 +140,22 @@
                         <th>ID</th>
                         <th>Tipo de Asistencia</th>
                         <th>Invitado Oficial (Titular)</th>
-                        <th>Nombre de quien asiste</th>
+                        <th>Datos del Asistente</th>
                         <th>Municipio</th>
+                        <th class="text-center">Firma o rúbrica</th>
+                        <th>Fecha de Registro</th>
+                        <th>Nombre de quien asiste</th>
                         <th>Cargo</th>
                         <th>Sexo</th>
                         <th>Correo Electrónico</th>
-                        <th>Celular</th>
-                        <th>Firma o rúbrica</th>
-                        <th>Fecha de Registro</th>
+                        <th>Tel. oficina</th>
+                        <th>Tel. celular</th>
                     </tr>
                 </tfoot>
             </table>
         </div>
     </div>
     @push('scripts')
-        {{-- Scripts necesarios para que funcionen los botones con Bootstrap 5 y DataTables 2 --}}
         <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap5.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -119,6 +169,10 @@
                     $('#registrosCopladepTable').DataTable({
                         responsive: true,
                         dom: 'Bfrtip',
+                        "columnDefs": [
+                            // Ocultamos las columnas 7 a la 12 en la interfaz web
+                            { "visible": false, "targets": [7, 8, 9, 10, 11, 12] }
+                        ],
                         buttons: [
                             {
                                 extend: 'excelHtml5',
@@ -126,7 +180,9 @@
                                 text: '<i class="bi bi-file-earmark-spreadsheet"></i> Exportar a Excel',
                                 className: 'btn btn-success btn-sm',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
+                                    // Mapeamos el orden exacto del reporte original:
+                                    // ID(0), Tipo(1), Titular(2), Nombre(7), Municipio(4), Cargo(8), Sexo(9), Correo(10), Tel Ofic(11), Tel Cel(12)
+                                    columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
                                 }
                             },
                             {
@@ -135,16 +191,17 @@
                                 text: '<i class="bi bi-filetype-csv"></i> Exportar a CSV',
                                 className: 'btn btn-info btn-sm text-white',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
+                                    columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
                                 }
                             },
                             {
                                 extend: 'pdfHtml5',
                                 title: 'Registros_COPLADEP',
                                 text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF',
+                                orientation: 'landscape',
                                 className: 'btn btn-danger btn-sm text-white',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
+                                    columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
                                 }
                             }
                         ],

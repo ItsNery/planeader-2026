@@ -64,4 +64,38 @@ class InvitadoCopladepController extends Controller
             return redirect()->route('copladep-registro-invitados.index')->withErrors(['error' => 'No se puede eliminar a este invitado porque ya tiene un registro de asistencia vinculado.']);
         }
     }
+
+    public function monitor()
+    {
+        $invitados = InvitadoCopladep::with('registro')->orderBy('nombre_completo', 'asc')->get();
+
+        $total = $invitados->count();
+        $asistencias = $invitados->filter(function ($invitado) {
+            return $invitado->registro || $invitado->check_in_express;
+        })->count();
+        $faltantes = $total - $asistencias;
+
+        return view('panel-copladep.primera-sesion-ordinaria-2026.monitor-invitados', compact('invitados', 'total', 'asistencias', 'faltantes'));
+    }
+    public function toggleCheckInExpress($id)
+    {
+        $invitado = InvitadoCopladep::findOrFail($id);
+
+        if ($invitado->registro) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Este invitado ya realizó su registro de asistencia en el formulario.'
+            ]);
+        }
+
+
+        $invitado->check_in_express = !$invitado->check_in_express;
+        $invitado->save();
+
+        return response()->json([
+            'success' => true,
+            'estado_actual' => $invitado->check_in_express,
+            'message' => $invitado->check_in_express ? '¡Check-in Express activado!' : 'Check-in Express revertido.'
+        ]);
+    }
 }

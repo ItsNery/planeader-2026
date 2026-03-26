@@ -168,7 +168,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/copladep/primera-sesion-ordinaria/invitados', [InvitadoCopladepController::class, 'store'])->name('copladep-registro-invitados.store');
     Route::put('/copladep/primera-sesion-ordinaria/invitados/{id}', [InvitadoCopladepController::class, 'update'])->name('copladep-registro-invitados.update');
     Route::delete('/copladep/primera-sesion-ordinaria/invitados/{id}', [InvitadoCopladepController::class, 'destroy'])->name('copladep-registro-invitados.destroy');
-
+    Route::get('/copladep/primera-sesion-ordinaria/monitor', [InvitadoCopladepController::class, 'monitor'])->name('copladep-registro-invitados-monitor.index');
+    Route::post('/copladep/primera-sesion-ordinaria/invitados/{id}/toggle-express', [InvitadoCopladepController::class, 'toggleCheckInExpress'])->name('copladep-registro-invitados.toggle-express');
     Route::resource('panel-documentos-copladep', DocumentoCopladepController::class);
 
     Route::resource('panel-planes-municipales', PlanMunicipalController::class);
