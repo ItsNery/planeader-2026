@@ -27,7 +27,7 @@ class RegistroCopladepController extends Controller
 
     public function create()
     {
-        $municipios = CatMunicipio::select('nombre_municipio')->selectRaw('MIN(id) as id')->groupBy('nombre_municipio')->orderBy('nombre_municipio', 'asc')->get();
+        $municipios = CatMunicipio::select('nombre_municipio')->selectRaw('MIN(id) as id')->whereIn('id', [3, 4, 10, 15, 19, 45, 47, 53, 39, 71, 74, 85, 94, 114, 132, 140, 154, 156, 164, 169, 174, 186, 197, 207])->groupBy('nombre_municipio')->orderBy('nombre_municipio', 'asc')->get();
         $invitados = InvitadoCopladep::with('municipio')->orderBy('nombre_completo', 'asc')->get();
         return view('panel-copladep.primera-sesion-ordinaria-2026.registro-copladep', compact('municipios', 'invitados'));
     }
