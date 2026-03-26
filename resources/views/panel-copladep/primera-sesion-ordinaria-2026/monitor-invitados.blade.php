@@ -91,7 +91,7 @@
                                         Rep: {{ $repCorto }}
                                     </div>
                                 @else
-                                    <i class="bi bi-check-circle-fill mb-1" style="font-size: 0.75rem;"></i>
+                                    <i class="bi bi-check-circle-fill" style="font-size: 0.75rem;"></i>
                                 @endif
 
                                 <div class="hora-llegada">
