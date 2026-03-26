@@ -260,7 +260,10 @@
                         <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <ul>
+                                <div class="container">
+                                    <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.webp') }}" alt="" srcset="" class="w-100">
+                                </div>
+                                {{-- <ul>
                                     <li class="document-item">
                                         <div class="document-item__main-content">
                                             <p class="document-item__name">
@@ -271,12 +274,12 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            {{-- <a href="#" class="js-open-modal"
+                                             <a href="#" class="js-open-modal"
                                                 data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
                                                 data-title="Actualización de la Regionalización del Estado de Puebla"
                                                 title="Ver aquí">
                                                 <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a> --}}
+                                            </a> 
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
                                                 target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
@@ -289,7 +292,7 @@
                                             </a>
                                         </div>
                                     </li>
-                                </ul>
+                                </ul> --}}
                             </div>
                         </div>
                     </div>
@@ -454,6 +457,11 @@
                         <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
+                                                                <div class="container">
+                                    <iframe
+                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/Proyectos Transformadores.pdf') }}"
+                                        frameborder="0" class="iframe-documento"></iframe>
+                                </div>
                             </div>
                         </div>
                     </div>

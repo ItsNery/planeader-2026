@@ -13,7 +13,7 @@ class InvitadoCopladepController extends Controller
     {
         $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index']]);
         $this->middleware('permission:crear-invitado-copladep', ['only' => ['create', 'store']]);
-        $this->middleware('permission:editar-invitado-copladep', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:editar-invitado-copladep', ['only' => ['update']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
     }
 

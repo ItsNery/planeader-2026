@@ -50,21 +50,26 @@
                             <td>{{ $invitado->cargo }}</td>
                             <td>{{ $invitado->municipio->nombre_municipio ?? 'N/A' }}</td>
                             <td>{{ $invitado->sexo }}</td>
-                            <td class="text-center d-flex justify-content-center gap-2">
-                                <button type="button" class="btn btn-warning btn-sm btn-editar text-dark"
-                                    data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
-                                    data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
-                                    data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                                <form action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
-                                    method="POST" class="formEliminar">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar Invitado">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </form>
+
+                            <td>
+                                <div class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-secondary btn-editar"
+                                            data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
+                                            data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
+                                            data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                        <form action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
+                                            method="POST" class="formEliminar ms-1">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger" title="Eliminar Invitado">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -77,7 +82,7 @@
                 <div class="modal-content">
                     <div class="modal-header text-black">
                         <h5 class="modal-title" id="modalAgregarInvitadoLabel">
-                            <i class="bi bi-person-plus-fill me-2"></i>Agregar invitado
+                            Agregar invitado
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
@@ -121,8 +126,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar e Integrar a la Lista</button>
+                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-custom-primary px-5 shadow-sm">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -131,7 +136,7 @@
         <div class="modal fade" id="modalEditarInvitado" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header bg-warning text-dark">
+                    <div class="modal-header text-dark">
                         <h5 class="modal-title">
                             Editar datos del invitado
                         </h5>
@@ -173,8 +178,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Actualizar Datos</button>
+                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-custom-primary px-5 shadow-sm">Actualizar Datos</button>
                         </div>
                     </form>
                 </div>

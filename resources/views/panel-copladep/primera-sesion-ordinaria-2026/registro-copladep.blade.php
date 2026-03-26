@@ -257,7 +257,7 @@
 
                 const ahora = new Date();
                 const inicioRegistro = new Date(2026, 2, 26, 8, 30, 0); // 26-Mar-2026 08:30:00
-                const finRegistro = new Date(2026, 2, 26, 15, 0, 0);    // 26-Mar-2026 15:00:00
+                const finRegistro = new Date(2026, 2, 31, 19, 0, 0);    // 31-Mar-2026 19:00:00
 
                 if (ahora >= inicioRegistro && ahora <= finRegistro) {
                     boton.textContent = 'Registrarse';

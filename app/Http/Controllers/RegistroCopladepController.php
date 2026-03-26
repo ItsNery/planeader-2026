@@ -38,13 +38,13 @@ class RegistroCopladepController extends Controller
         $now = Carbon::now();
 
         $inicioRegistro = Carbon::create(2026, 3, 26, 8, 30, 0);
-        $finRegistro    = Carbon::create(2026, 3, 26, 15, 0, 0);
+        $finRegistro    = Carbon::create(2026, 3, 31, 19, 0, 0);
 
         // Comprobar si la hora actual está dentro del periodo
         if (!$now->between($inicioRegistro, $finRegistro)) {
             Log::warning('Intento de registro COPLADEP fuera de horario. Hora actual: ' . $now);
             return redirect()->route('copladep-registro.create')
-                ->withErrors(['error' => 'El registro solo está disponible el 10 de abril, de 8:30 AM a 3:00 PM.'])
+                ->withErrors(['error' => 'El registro solo está disponible desde el 26 hasta el 31 de marzo a 7:00 PM.'])
                 ->withInput();
         }
         
