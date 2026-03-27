@@ -58,7 +58,7 @@ class RegistroCopladepController extends Controller
             'correo_electronico' => 'required|unique:registro_copladeps,correo_electronico|string|email|max:50',
             'telefono_oficina' => 'required|string|max:20|regex:/^[0-9\s\-\+\(\)]*$/',
             'telefono_celular' => 'nullable|string|max:20|regex:/^[0-9\s\-\+\(\)]*$/',
-            'firma' => 'required|string',
+            'firma' => 'nullable|string',
         ];
         $messages = [
             'tipo_asistente.required' => 'Debe indicar si es titular o representante.',

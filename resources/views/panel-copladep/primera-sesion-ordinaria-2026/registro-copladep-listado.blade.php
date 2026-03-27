@@ -171,7 +171,7 @@
                         dom: 'Bfrtip',
                         "columnDefs": [
                             // Ocultamos las columnas 7 a la 12 en la interfaz web
-                            { "visible": false, "targets": [7, 8, 9, 10, 11, 12] }
+                            { "visible": false, "targets": [5, 7, 8, 9, 10, 11, 12] }
                         ],
                         buttons: [
                             {

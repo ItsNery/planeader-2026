@@ -67,10 +67,12 @@ class InvitadoCopladepController extends Controller
 
     public function monitor()
     {
-        $invitados = InvitadoCopladep::with('registro')->orderBy('nombre_completo', 'asc')->get();
+        $invitados = InvitadoCopladep::whereHas('registro')->orderBy('nombre_completo', 'asc')->get();
 
         $total = $invitados->count();
+
         $asistencias = $invitados->where('check_in_express', true)->count();
+
         $faltantes = $total - $asistencias;
 
         return view('panel-copladep.primera-sesion-ordinaria-2026.monitor-invitados', compact('invitados', 'total', 'asistencias', 'faltantes'));
@@ -78,12 +80,12 @@ class InvitadoCopladepController extends Controller
     public function toggleCheckInExpress($id)
     {
         $invitado = InvitadoCopladep::findOrFail($id);
-        
+
         $invitado->check_in_express = !$invitado->check_in_express;
         $invitado->save();
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'estado_actual' => $invitado->check_in_express,
             'message' => $invitado->check_in_express ? '¡Pase de lista: Presente!' : 'Pase de lista: Revertido.'
         ]);

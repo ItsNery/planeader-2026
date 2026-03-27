@@ -95,14 +95,14 @@
                                             data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        <form action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
+                                        {{-- <form action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
                                             method="POST" class="formEliminar ms-1">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-outline-danger" title="Eliminar Invitado">
                                                 <i class="bi bi-trash-fill"></i>
                                             </button>
-                                        </form>
+                                        </form> --}}
                                     </div>
                                 </div>
                             </td>

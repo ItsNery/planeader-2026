@@ -10,25 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/estilos-registro-capacitacion.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        .signature-wrapper {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            background-color: #fafafa;
-        }
 
-        .signature-pad {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
-    </style>
 </head>
 
 <body>
@@ -157,27 +139,6 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="col-12">
-                        <div class="mb-4 mt-4">
-                            <label class="form-label fw-bold">Firma o rúbrica <span class="text-danger">*</span></label>
-                            <p class="text-muted small mb-1">Por favor, firme o rubrique en el recuadro inferior usando
-                                su ratón o
-                                dedo.</p>
-
-                            <div class="signature-wrapper">
-                                <canvas id="signature-pad" class="signature-pad"></canvas>
-                            </div>
-
-                            <button type="button" id="clear-signature"
-                                class="btn btn-sm btn-outline-secondary mt-2">Limpiar Firma</button>
-
-                            <input type="hidden" name="firma" id="firma" required>
-
-                            @error('firma')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
                     <div class="col-12 text-muted">
                         <span class="text-danger">*</span> Indica campo obligatorio
                     </div>
@@ -191,12 +152,12 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
-    <script>
+ <script>
         document.addEventListener('DOMContentLoaded', function () {
 
+            // --- ALERTA DE ÉXITO ---
             @if (session('success'))
                 Swal.fire({
                     icon: 'success',
@@ -208,20 +169,20 @@
                 });
             @endif
 
-                // --- ALERTA DE ERRORES DE VALIDACIÓN ---
-                @if ($errors->any())
-                    let errores = '';
-                    @foreach ($errors->all() as $error)
-                        errores += '• {{ $error }}\n';
-                    @endforeach
+            // --- ALERTA DE ERRORES DE VALIDACIÓN ---
+            @if ($errors->any())
+                let errores = '';
+                @foreach ($errors->all() as $error)
+                    errores += '• {{ $error }}\n';
+                @endforeach
 
-                    Swal.fire({
-                        icon: 'error',
-                        title: '¡Revisa los datos!',
-                        text: errores,
-                        confirmButtonColor: '#dc3545' 
-                    });
-                @endif
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Revisa los datos!',
+                    text: errores,
+                    confirmButtonColor: '#dc3545' 
+                });
+            @endif
 
             // 1. Inicializar Tom Select del Invitado
             let tomSelectInvitado = new TomSelect("#invitado_id", {
@@ -234,9 +195,6 @@
             });
 
             // 2. Elementos del DOM
-            const canvas = document.getElementById('signature-pad');
-            const hiddenFirmaInput = document.getElementById('firma');
-            const clearButton = document.getElementById('clear-signature');
             const boton = document.getElementById('botonRegistro');
             const mensajeEstado = document.getElementById('mensajeEstado');
             const formulario = document.getElementById('miFormulario');
@@ -281,39 +239,21 @@
                 }
             }
 
+            // Evitamos que manden el form si el botón está deshabilitado por el candado de tiempo
             if (formulario) {
                 formulario.addEventListener('submit', function (event) {
                     if (boton.disabled) {
                         event.preventDefault();
                     }
+                    // Opcional: Aquí puedes poner el código para cambiar el texto del botón a "Enviando..."
                 });
             }
 
             actualizarEstadoBoton();
             setInterval(actualizarEstadoBoton, 60000);
 
-            // 4. Lógica del Signature Pad
-            const signaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgba(255, 255, 255, 0)',
-                penColor: 'rgb(0, 0, 0)'
-            });
-
-            function resizeCanvas() {
-                const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                canvas.width = canvas.offsetWidth * ratio;
-                canvas.height = canvas.offsetHeight * ratio;
-                canvas.getContext("2d").scale(ratio, ratio);
-                signaturePad.clear();
-            }
-            window.addEventListener("resize", resizeCanvas);
-            resizeCanvas();
-
-            clearButton.addEventListener('click', function () {
-                signaturePad.clear();
-            });
-
-            // 5. Lógica de Titular vs Representante
-function cambiarModo(esEventoDelUsuario = true) {
+            // 4. Lógica de Titular vs Representante
+            function cambiarModo(esEventoDelUsuario = true) {
                 if (radioTitular.checked) {
                     labelBuscador.textContent = "Busque su nombre en la lista:";
                     ayudaNombre.textContent = "Este campo se llena automáticamente.";
@@ -338,7 +278,6 @@ function cambiarModo(esEventoDelUsuario = true) {
                     selectMunicipio.style.backgroundColor = "#fff";
 
                     // SOLO limpiamos los campos si el usuario le dio clic manualmente.
-                    // Si la página se recargó por un error de validación, queremos conservar el old() que venía.
                     if (esEventoDelUsuario) {
                         inputNombre.value = "";
                         inputCargo.value = "";
@@ -354,7 +293,6 @@ function cambiarModo(esEventoDelUsuario = true) {
                 let val = tomSelectInvitado.getValue();
                 
                 if (val) {
-                    // Forma infalible de obtener el option original usando selectores nativos
                     let selectNativo = document.getElementById('invitado_id');
                     let opcionNativa = selectNativo.querySelector(`option[value="${val}"]`);
 
@@ -365,7 +303,6 @@ function cambiarModo(esEventoDelUsuario = true) {
                         selectMunicipio.value = opcionNativa.dataset.municipio || "";
                     }
                 } else {
-                    // Si no hay nada seleccionado, limpiamos
                     inputNombre.value = "";
                     inputCargo.value = "";
                     selectSexo.value = "";
@@ -384,23 +321,6 @@ function cambiarModo(esEventoDelUsuario = true) {
             // Ejecutar al inicio: Le pasamos "false" para que NO nos borre los errores ni los old() inputs
             cambiarModo(false);
 
-            // 6. Validación de firma al enviar (Ahora está DENTRO del DOMContentLoaded)
-            formulario.addEventListener('submit', function (event) {
-                if (signaturePad.isEmpty()) {
-                    event.preventDefault(); 
-                    
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Firma requerida',
-                        text: 'Por favor, proporcione su firma o rúbrica en el recuadro antes de continuar.',
-                        confirmButtonColor: '#0d6efd', // Color azul de Bootstrap
-                        confirmButtonText: 'Entendido'
-                    });
-                } else {
-                    const dataURL = signaturePad.toDataURL('image/png');
-                    hiddenFirmaInput.value = dataURL;
-                }
-            });
         });
     </script>
 </body>
