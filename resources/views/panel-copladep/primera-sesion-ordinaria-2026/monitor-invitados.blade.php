@@ -20,6 +20,7 @@
         </div>
 
         <div class="container d-flex justify-content-end">
+            
             <a href="{{ route('copladep-registro.index') }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Volver al listado
@@ -60,8 +61,8 @@
             <div class="grid-asientos">
                 @foreach($invitados as $invitado)
                     @php
-                        $yaLlego = ($invitado->registro || $invitado->check_in_express) ? true : false;
-                        $claseAsiento = $yaLlego ? 'llegado' : 'faltante';
+                        $yaLlego = $invitado->check_in_express;
+                        $claseAsiento = $yaLlego ? 'llegado shadow' : 'faltante shadow-sm';
 
                         $partesNombre = explode(' ', trim($invitado->nombre_completo));
                         $nombreCorto = count($partesNombre) >= 2
@@ -74,33 +75,12 @@
 
                     <div class="asiento {{ $claseAsiento }}" data-bs-toggle="tooltip" data-bs-placement="top"
                         title="{{ $tooltipText }}">
-
                         <div class="nombre-truncado">
                             {{ $nombreCorto }}
                         </div>
 
                         @if($yaLlego)
-
-                            @if($invitado->registro)
-
-                                @if($invitado->registro->tipo_asistente == 'representante')
-                                    @php
-                                        $repCorto = explode(' ', trim($invitado->registro->nombre_completo))[0];
-                                    @endphp
-                                    <div class="badge-rep mb-1" title="Representante: {{ $invitado->registro->nombre_completo }}">
-                                        Rep: {{ $repCorto }}
-                                    </div>
-                                @else
-                                    <i class="bi bi-check-circle-fill" style="font-size: 0.75rem;"></i>
-                                @endif
-
-                                <div class="hora-llegada">
-                                    {{ $invitado->registro->created_at->format('H:i') }}
-                                </div>
-
-                            @elseif($invitado->check_in_express)
-                                <i class="bi bi-lightning-charge-fill" style="font-size: 0.75rem; opacity: 0.8;"></i>
-                            @endif
+                            <i class="bi bi-check-circle-fill mb-1" style="font-size: 0.85rem;"></i>
                         @endif
                     </div>
                 @endforeach
@@ -117,7 +97,7 @@
 
                 setTimeout(function () {
                     window.location.reload();
-                }, 10000);
+                }, 5000);
             });
         </script>
     @endpush

@@ -180,8 +180,6 @@
                                 text: '<i class="bi bi-file-earmark-spreadsheet"></i> Exportar a Excel',
                                 className: 'btn btn-success btn-sm',
                                 exportOptions: {
-                                    // Mapeamos el orden exacto del reporte original:
-                                    // ID(0), Tipo(1), Titular(2), Nombre(7), Municipio(4), Cargo(8), Sexo(9), Correo(10), Tel Ofic(11), Tel Cel(12)
                                     columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
                                 }
                             },

@@ -20,6 +20,11 @@
         </div>
 
         <div class="container d-flex justify-content-end">
+            <a href="{{ route('copladep-registro-invitados-monitor.index') }}" class="mx-2">
+                <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
+                    Ver monitor
+                </button>
+            </a>
             <button type="button" class="btn btn-custom-primary mt-3 mb-3 ml-3" data-bs-toggle="modal"
                 data-bs-target="#modalAgregarInvitado">
                 Nuevo invitado
@@ -32,6 +37,7 @@
                         <th>ID</th>
                         <th>Nombre Completo</th>
                         <th>Municipio</th>
+                        <th>Estatus</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -68,22 +74,21 @@
                                     {{ $invitado->municipio->nombre_municipio ?? 'N/A' }}
                                 </span>
                             </td>
-
+                            <td>
+                                @if($invitado->check_in_express)
+                                    <span class="badge bg-success" id="badge-status-{{ $invitado->id }}">Presente</span>
+                                @else
+                                    <span class="badge bg-secondary" id="badge-status-{{ $invitado->id }}">Falta</span>
+                                @endif
+                            </td>
                             <td>
                                 <div class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        @if(!$invitado->registro)
-                                            <button type="button"
-                                                class="btn btn-sm btn-express {{ $invitado->check_in_express ? 'btn-success' : 'btn-outline-success' }}"
-                                                data-id="{{ $invitado->id }}" title="Check-in Express (Entrada directa)">
-                                                <i class="bi bi-person-check-fill"></i>
-                                            </button>
-                                        @else
-                                            <button type="button" class="btn btn-sm btn-secondary" disabled
-                                                title="Ya registrado formalmente">
-                                                <i class="bi bi-lock-fill"></i>
-                                            </button>
-                                        @endif
+                                        <button type="button"
+                                            class="btn btn-sm btn-express {{ $invitado->check_in_express ? 'btn-success' : 'btn-outline-success' }} mx-2"
+                                            data-id="{{ $invitado->id }}" title="Check-in Express (Entrada directa)">
+                                            <i class="bi bi-person-check-fill"></i>
+                                        </button>
                                         <button type="button" class="btn btn-outline-secondary btn-editar"
                                             data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
                                             data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
@@ -109,6 +114,7 @@
                         <th>ID</th>
                         <th>Nombre Completo</th>
                         <th>Municipio</th>
+                        <th>Estatus</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </tfoot>
@@ -228,6 +234,11 @@
         </div>
     </div>
     @push('scripts')
+        <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -260,13 +271,23 @@
                 // (En DataTables v1.11+ ya puedes usar 'new DataTable' en lugar del viejo '$().DataTable')
                 new DataTable('#invitadosTable', {
                     responsive: true,
-                    language: {
-                        "search": "Buscar invitado:",
-                        "lengthMenu": "Mostrar _MENU_ invitados",
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ invitados",
-                        "emptyTable": "No hay invitados registrados aún",
-                        "paginate": { "previous": "Anterior", "next": "Siguiente" }
-                    },
+                    dom: 'Bfrtip', // Habilita los botones
+                    buttons: [
+                        {
+                            extend: 'pdfHtml5',
+                            text: '<i class="bi bi-file-earmark-pdf"></i> Exportar a PDF',
+                            className: 'btn btn-danger btn-sm text-white mb-3',
+                            title: 'Pase de Lista - COPLADEP',
+                            exportOptions: { columns: [0, 1, 2, 3] } // No exportamos la columna de botones
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="bi bi-printer"></i> Imprimir Lista',
+                            className: 'btn btn-secondary btn-sm text-white mb-3 ms-2',
+                            title: 'Pase de Lista - COPLADEP',
+                            exportOptions: { columns: [0, 1, 2, 3] }
+                        }
+                    ],
                     order: [[0, 'asc']]
                 });
 
@@ -304,9 +325,15 @@
                                     if (data.estado_actual) {
                                         btnExpress.classList.remove('btn-outline-success');
                                         btnExpress.classList.add('btn-success');
+                                        // Cambiar la etiqueta a Presente
+                                        document.getElementById('badge-status-' + id).className = 'badge bg-success';
+                                        document.getElementById('badge-status-' + id).textContent = 'Presente';
                                     } else {
                                         btnExpress.classList.remove('btn-success');
                                         btnExpress.classList.add('btn-outline-success');
+                                        // Cambiar la etiqueta a Falta
+                                        document.getElementById('badge-status-' + id).className = 'badge bg-secondary';
+                                        document.getElementById('badge-status-' + id).textContent = 'Falta';
                                     }
 
                                     Swal.fire({
