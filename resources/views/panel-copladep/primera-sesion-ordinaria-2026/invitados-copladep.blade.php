@@ -75,7 +75,7 @@
                                 <div class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <button type="button"
-                                            class="btn btn-sm btn-express {{ $invitado->check_in_express ? 'btn-success' : 'btn-outline-success' }} mx-2"
+                                            class="btn btn-express {{ $invitado->check_in_express ? 'btn-success' : 'btn-outline-success' }} me-4 px-3 shadow-sm rounded"
                                             data-id="{{ $invitado->id }}" title="Check-in Express (Entrada directa)">
                                             <i class="bi bi-person-check-fill"></i>
                                         </button>

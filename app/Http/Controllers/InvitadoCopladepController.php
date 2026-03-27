@@ -67,7 +67,11 @@ class InvitadoCopladepController extends Controller
 
     public function monitor()
     {
-        $invitados = InvitadoCopladep::whereHas('registro')->orderBy('nombre_completo', 'asc')->get();
+        // $invitados = InvitadoCopladep::whereHas('registro')->orderBy('nombre_completo', 'asc')->get();
+        $invitados = InvitadoCopladep::where(function ($query) {
+            $query->whereHas('registro') 
+                ->orWhere('check_in_express', true);
+        })->orderBy('nombre_completo', 'asc')->get();
 
         $total = $invitados->count();
 
