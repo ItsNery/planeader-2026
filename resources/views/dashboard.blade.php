@@ -163,7 +163,8 @@
                                 <span class="fs-4 fw-bold text-primary">{{ $cantidad_docsMarco }}</span>
                                 documentos.
                             </p>
-                            <a href="{{ url('/panel-marco-juridico') }}" class="btn btn-custom-primary mt-auto">Ver panel</a>
+                            <a href="{{ url('/panel-marco-juridico') }}" class="btn btn-custom-primary mt-auto">Ver
+                                panel</a>
                         </div>
                     </div>
                 </div>
@@ -223,7 +224,8 @@
                                 <span class="fs-4 fw-bold text-primary">{{ $cantidad_prog_estatales }}</span>
                                 programas.
                             </p>
-                            <a href="{{ url('/panel-programas-estatales') }}" class="btn btn-custom-primary mt-auto">Ver panel</a>
+                            <a href="{{ url('/panel-programas-estatales') }}" class="btn btn-custom-primary mt-auto">Ver
+                                panel</a>
                         </div>
                     </div>
                 </div>
@@ -248,46 +250,48 @@
                     </div>
                 </div>
             @endcan
+            @can('ver-doc-copladep')
 
-            <div class="col-12 mt-5">
-                <div class="card tarjeta-admin border-0 p-4">
-                    <h3 class="card-title text-center text-primary mb-4 fw-bold">
-                        Encuesta de Satisfacción
-                    </h3>
+                <div class="col-12 mt-5">
+                    <div class="card tarjeta-admin border-0 p-4">
+                        <h3 class="card-title text-center text-primary mb-4 fw-bold">
+                            Encuesta de Satisfacción
+                        </h3>
 
-                    @if ($encuesta_feliz || $encuesta_indiferente || $encuesta_enojado)
-                        <div class="row align-items-center">
-                            <div class="col-md-6 d-flex justify-content-center">
-                                <div id="chart"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rounded-circle me-2"
-                                            style="width:15px; height:15px; background:#00E396;"></div>
-                                        <span>Feliz: <strong>{{ $encuesta_feliz }}</strong></span>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rounded-circle me-2"
-                                            style="width:15px; height:15px; background:#FEB019;"></div>
-                                        <span>Indiferente: <strong>{{ $encuesta_indiferente }}</strong></span>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rounded-circle me-2"
-                                            style="width:15px; height:15px; background:#FF4560;"></div>
-                                        <span>Molesto: <strong>{{ $encuesta_enojado }}</strong></span>
+                        @if ($encuesta_feliz || $encuesta_indiferente || $encuesta_enojado)
+                            <div class="row align-items-center">
+                                <div class="col-md-6 d-flex justify-content-center">
+                                    <div id="chart"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="rounded-circle me-2"
+                                                style="width:15px; height:15px; background:#00E396;"></div>
+                                            <span>Feliz: <strong>{{ $encuesta_feliz }}</strong></span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="rounded-circle me-2"
+                                                style="width:15px; height:15px; background:#FEB019;"></div>
+                                            <span>Indiferente: <strong>{{ $encuesta_indiferente }}</strong></span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="rounded-circle me-2"
+                                                style="width:15px; height:15px; background:#FF4560;"></div>
+                                            <span>Molesto: <strong>{{ $encuesta_enojado }}</strong></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
-                            <p class="fs-5 text-muted">Aún no hay datos de encuestas disponibles</p>
-                        </div>
-                    @endif
+                        @else
+                            <div class="text-center py-5">
+                                <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                                <p class="fs-5 text-muted">Aún no hay datos de encuestas disponibles</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            @endcan
         </div>
         <script>
             var options = {
