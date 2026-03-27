@@ -55,16 +55,6 @@
                                             <span class="badge bg-light text-dark border">
                                                 {{ $invitado->cargo }}
                                             </span>
-                                            @if ($invitado->sexo === 'Mujer')
-                                                <span class="badge bg-mujer">
-                                                    {{ $invitado->sexo }}
-                                                </span>
-                                            @else
-                                                <span class="badge bg-hombre">
-                                                    {{ $invitado->sexo }}
-                                                </span>
-                                            @endif
-
                                         </div>
                                     </div>
                                 </div>

@@ -86,11 +86,6 @@
                                             <span class="badge bg-light text-dark border">
                                                 {{ $registro->cargo }}
                                             </span>
-                                            @if ($registro->sexo === 'Mujer')
-                                                <span class="badge bg-mujer">{{ $registro->sexo }}</span>
-                                            @else
-                                                <span class="badge bg-hombre">{{ $registro->sexo }}</span>
-                                            @endif
                                         </div>
                                         <div class="text-muted mt-1" style="font-size: 0.85rem;">
                                             <div class="mb-1"><i class="bi bi-envelope"></i>

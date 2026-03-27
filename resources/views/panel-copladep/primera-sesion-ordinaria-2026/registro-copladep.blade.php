@@ -43,7 +43,7 @@
                     <div class="btn-group w-100" role="group">
                         <input type="radio" class="btn-check" name="tipo_asistente" id="soy_titular" value="titular" 
                             {{ old('tipo_asistente', 'titular') == 'titular' ? 'checked' : '' }}>
-                        <label class="btn btn-outline-primary" for="soy_titular">Soy el Titular / Invitado</label>
+                        <label class="btn btn-outline-primary" for="soy_titular">Soy la persona Titular / Invitada</label>
 
                         <input type="radio" class="btn-check" name="tipo_asistente" id="soy_representante" value="representante"
                             {{ old('tipo_asistente') == 'representante' ? 'checked' : '' }}>
