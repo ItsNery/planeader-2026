@@ -65,8 +65,19 @@
                                 </span>
                             </td>
                             <td>
+                                @php
+                                    // Definimos la hora límite (31-03 a las 17:00 hrs)
+                                    $fechaLimite = \Carbon\Carbon::parse('2026-03-31 17:00:00');
+                                    // Revisamos si su último check-in fue después de esa hora
+                                    $esTolerancia = $invitado->updated_at && $invitado->updated_at->greaterThan($fechaLimite);
+                                @endphp
+
                                 @if($invitado->check_in_express)
-                                    <span class="badge bg-success" id="badge-status-{{ $invitado->id }}">Presente</span>
+                                    @if($esTolerancia)
+                                        <span class="badge bg-warning text-dark" id="badge-status-{{ $invitado->id }}">Asistencia
+                                    con retardo</span> @else
+                                            <span class="badge bg-success" id="badge-status-{{ $invitado->id }}">Presente</span>
+                                        @endif
                                 @else
                                     <span class="badge bg-secondary" id="badge-status-{{ $invitado->id }}">Falta</span>
                                 @endif
@@ -85,7 +96,8 @@
                                             data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        {{-- <form action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
+                                        {{-- <form
+                                            action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
                                             method="POST" class="formEliminar ms-1">
                                             @csrf
                                             @method('DELETE')
@@ -312,18 +324,21 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
+                                    // 1. Cambiamos el color del botón
                                     if (data.estado_actual) {
                                         btnExpress.classList.remove('btn-outline-success');
                                         btnExpress.classList.add('btn-success');
-                                        // Cambiar la etiqueta a Presente
-                                        document.getElementById('badge-status-' + id).className = 'badge bg-success';
-                                        document.getElementById('badge-status-' + id).textContent = 'Presente';
                                     } else {
                                         btnExpress.classList.remove('btn-success');
                                         btnExpress.classList.add('btn-outline-success');
-                                        // Cambiar la etiqueta a Falta
-                                        document.getElementById('badge-status-' + id).className = 'badge bg-secondary';
-                                        document.getElementById('badge-status-' + id).textContent = 'Falta';
+                                    }
+
+                                    // 2. Actualizamos la etiqueta (Badge) con lo que dictó el servidor
+                                    let badge = document.getElementById('badge-status-' + id);
+                                    if (badge) {
+                                        // Limpiamos las clases anteriores y ponemos las nuevas
+                                        badge.className = 'badge ' + data.estado_clase;
+                                        badge.textContent = data.estado_texto;
                                     }
 
                                     Swal.fire({

@@ -79,7 +79,7 @@
                                         name="Primera Sesión Ordinaria 2026 de la Asamblea Plenaria del COPLADEP"
                                         description="{{ $descripcionEvento }}" startDate="2026-03-31" startTime="17:00"
                                         endTime="17:50" timeZone="America/Mexico_City"
-                                        location="Salón Juan N. Méndez. Edificio Ejecutivo (CIS), Atlixcáyotl 1101, Reserva Territorial Atlixcáyotl, Puebla de Zaragoza"
+                                        location="Casa Puebla, Calzada de los Fuertes 106, Centro histórico de Puebla, 72260, Puebla de Zaragoza"
                                         options="'Google','Apple','Microsoft365','Outlook.com'" buttonsList
                                         hideTextLabelButton lightMode="system"></add-to-calendar-button>
                                     <iframe

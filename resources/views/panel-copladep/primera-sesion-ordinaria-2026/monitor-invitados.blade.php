@@ -20,7 +20,7 @@
         </div>
 
         <div class="container d-flex justify-content-end">
-            
+
             <a href="{{ route('copladep-registro.index') }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Volver al listado
@@ -62,7 +62,24 @@
                 @foreach($invitados as $invitado)
                     @php
                         $yaLlego = $invitado->check_in_express;
-                        $claseAsiento = $yaLlego ? 'llegado shadow' : 'faltante shadow-sm';
+
+                        // Calculamos si llegó en tolerancia
+                        $fechaLimite = \Carbon\Carbon::parse('2026-03-31 17:00:00');
+                        $esTolerancia = false;
+
+                        if ($yaLlego && $invitado->updated_at) {
+                            $fechaCheckin = \Carbon\Carbon::parse($invitado->updated_at);
+                            $esTolerancia = $fechaCheckin->greaterThan($fechaLimite);
+                        }
+
+                        // Asignamos la clase: gris (falta), naranja (tolerancia) o verde (llegó bien)
+                        if (!$yaLlego) {
+                            $claseAsiento = 'faltante shadow-sm';
+                        } elseif ($esTolerancia) {
+                            $claseAsiento = 'tolerancia shadow';
+                        } else {
+                            $claseAsiento = 'llegado shadow';
+                        }
 
                         $partesNombre = explode(' ', trim($invitado->nombre_completo));
                         $nombreCorto = count($partesNombre) >= 2

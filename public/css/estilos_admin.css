@@ -724,3 +724,9 @@ select[name="publicado"]:focus {
 .ts-dropdown {
     z-index: 1060 !important;
 }
+
+.asiento.tolerancia {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border: 1px solid #e0a800 !important;
+}

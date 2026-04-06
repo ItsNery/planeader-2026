@@ -84,6 +84,40 @@ class InvitadoCopladepController extends Controller
     public function toggleCheckInExpress($id)
     {
         $invitado = InvitadoCopladep::findOrFail($id);
+        
+        // Invertimos el valor y guardamos (Esto actualiza la columna 'updated_at' a la hora actual)
+        $invitado->check_in_express = !$invitado->check_in_express;
+        $invitado->save();
+
+        // Evaluamos si es retardo/tolerancia
+        $fechaLimite = \Carbon\Carbon::parse('2026-03-31 17:00:00');
+        $esTolerancia = $invitado->updated_at->greaterThan($fechaLimite);
+
+        // Preparamos la respuesta visual
+        $estado_texto = 'Falta';
+        $estado_clase = 'bg-secondary';
+
+        if ($invitado->check_in_express) {
+            if ($esTolerancia) {
+                $estado_texto = 'Asistencia con retardo';
+                $estado_clase = 'bg-warning text-dark';
+            } else {
+                $estado_texto = 'Presente';
+                $estado_clase = 'bg-success';
+            }
+        }
+
+        return response()->json([
+            'success' => true, 
+            'estado_actual' => $invitado->check_in_express,
+            'estado_texto' => $estado_texto,
+            'estado_clase' => $estado_clase,
+            'message' => $invitado->check_in_express ? "Pase de lista: {$estado_texto}" : 'Pase de lista revertido.'
+        ]);
+    }
+    public function toggleCheckInExpressOld($id)
+    {
+        $invitado = InvitadoCopladep::findOrFail($id);
 
         $invitado->check_in_express = !$invitado->check_in_express;
         $invitado->save();
