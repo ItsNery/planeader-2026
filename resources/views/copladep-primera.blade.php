@@ -176,7 +176,9 @@
                         <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-
+                                    <iframe
+                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/Lineamientos-COPLADEP.pdf') }}"
+                                        frameborder="0" class="iframe-documento"></iframe>
                             </div>
                         </div>
                     </div>
@@ -306,47 +308,11 @@
                         <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <div class="swiper coverflow-carousel regionales">
-                                    <div class="swiper-wrapper">
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-1-sierra-norte.webp') }}"
-                                                alt="Portada del programa regional de la Region 1 Sierra Norte"
-                                                title="Programa Regional 1 Sierra Norte">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-2-sierra-nororiental.webp') }}"
-                                                alt="Portada del programa regional de la Region 2 Sierra Nororiental"
-                                                title="Programa Regional 2 Sierra Nororiental">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-3-valle-de-serdan.webp') }}"
-                                                alt="Portada del programa regional de la Region 3 Valle de Serdán"
-                                                title="Programa Regional 3 Valle de Serdán">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-4-angelopolis.webp') }}"
-                                                alt="Portada del programa regional de la Region 4 Angelópolis"
-                                                title="Programa Regional 4 Angelópolis">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-5-valle-de-atlixco-y-matamoros.webp') }}"
-                                                alt="Portada del programa regional de la Region 5 Valle de Atlixco y Matamoros"
-                                                title="Programa Regional 5 Valle de Atlixco y Matamoros">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-6-mixteca.webp') }}"
-                                                alt="Portada del programa regional de la Region 6 Mixteca"
-                                                title="Programa Regional 6 Mixteca">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/programa-regional-7-tehuacan-y-sierra-negra.webp') }}"
-                                                alt="Portada del programa regional de la Region 7 Tehuacán y Sierra Negra"
-                                                title="Programa Regional 7 Tehuacán y Sierra Negra">
-                                        </div>
-                                    </div>
-                                    <div class="swiper-pagination"></div>
-                                    <div class="swiper-button-prev"></div>
-                                    <div class="swiper-button-next"></div>
+                                <div class="container mb-5 accion-programa">
+                                    <a href="https://planeader.puebla.gob.mx/ped-programas" target="_self" rel="noopener" title="Programas Derivados" class="accion-programa__boton accion-programa__boton--vino">
+                                        <span class="accion-programa__texto">Conócelos</span>
+                                        <i class="fa-solid fa-arrow-right accion-programa__icono"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -403,20 +369,9 @@
                         <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <div class="row">
-                                    <div class="mx-auto px-4 py-4 col-lg-8 col-md-6 col-sm-12 col-12">
-                                        <div class="container">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/8.1 Esquema piramide.png') }}"
-                                                alt="Titulo" class="acordion__imagen-piramide" title="Titulo">
-                                        </div>
-                                    </div>
-                                    <div class="mx-auto px-4 py-4 col-lg-3 col-md-6 col-sm-12 col-12">
-                                        <div class="contenedor-tarjetadocs">
-                                            <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/8.2 Portada Documento Relanzamiento Agenda 2030.webp') }}"
-                                                alt="Titulo" class="width-100" title="Titulo">
-                                        </div>
-                                    </div>
-                                </div>
+                                    <iframe
+                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/Relanzamiento-Agenda2030.pdf') }}"
+                                        frameborder="0" class="iframe-documento"></iframe>
                             </div>
                         </div>
                     </div>

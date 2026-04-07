@@ -60,7 +60,7 @@
 
     <!-- Template CSS -->
     {{-- <link rel="stylesheet" href="{{ asset('css/estilos.css') }}?v={{ rand() }}"> --}}
-    <link rel="stylesheet" href="{{ asset('css/estilos_nuevo.css') }}?v={{ rand() }}">
+    <link rel="stylesheet" href="{{ asset('css/estilos.css') }}?v={{ rand() }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @yield('page_css')
