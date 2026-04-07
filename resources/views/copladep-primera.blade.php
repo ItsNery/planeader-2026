@@ -43,11 +43,9 @@
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <div class="container d-flex justify-content-center bg-light px-4 py-4">
-                                    <a href="{{ url('/copladep/primera-sesion-ordinaria/registro') }}" 
-                                    rel="noopener" 
-                                    target="_blank" 
-                                    title="Registro de asistencia"
-                                    class="btn btn-outline-primary btn-sm shadow-sm px-5 py-3 rounded-pill fw-bold text-uppercase"> 
+                                    <a href="{{ url('/copladep/primera-sesion-ordinaria/registro') }}" rel="noopener"
+                                        target="_blank" title="Registro de asistencia"
+                                        class="btn btn-outline-primary btn-sm shadow-sm px-5 py-3 rounded-pill fw-bold text-uppercase">
                                         Registro
                                     </a>
                                 </div>
@@ -83,38 +81,8 @@
                                         hideTextLabelButton lightMode="system"></add-to-calendar-button>
                                     <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                        frameborder="0" class="iframe-documento"></iframe>
+                                        frameborder="0" class="iframe-documento" title="Logística del evento"></iframe>
                                 </div>
-                                {{-- <ul>
-                                    <li class="document-item">
-                                        <div class="document-item__main-content">
-                                            <p class="document-item__name">
-                                                Logística del evento
-                                            </p>
-                                            <span class="document-badge badge-pdf">
-                                                PDF
-                                            </span>
-                                        </div>
-
-                                        <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                                data-title="Logística del evento" title="Ver aquí">
-                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a>
-                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
-                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
-                                            </a>
-                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                                download="1. Logística del evento.pdf" rel="noopener"
-                                                title="Descargar Logística del evento">
-                                                <i class="fas fa-download"></i>
-                                                <span>Descargar</span>
-                                            </a>
-                                        </div>
-                                    </li>
-                                </ul> --}}
                             </div>
                         </div>
                     </div>
@@ -131,37 +99,8 @@
                                 <div class="container">
                                     <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                        frameborder="0" class="iframe-documento"></iframe>
+                                        frameborder="0" class="iframe-documento" title="Orden del día"></iframe>
                                 </div>
-                                {{-- <ul>
-                                    <li class="document-item">
-                                        <div class="document-item__main-content">
-                                            <p class="document-item__name">
-                                                Orden del día
-                                            </p>
-                                            <span class="document-badge badge-pdf">
-                                                PDF
-                                            </span>
-                                        </div>
-                                        <div class="document-item__actions">
-                                            <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                data-title="Orden del día" title="Ver aquí">
-                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a>
-                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
-                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
-                                            </a>
-                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                                download="Nombre documento" rel="noopener"
-                                                title="Descargar 2. Orden del Día.pdf">
-                                                <i class="fas fa-download"></i>
-                                                <span>Descargar</span>
-                                            </a>
-                                        </div>
-                                    </li>
-                                </ul> --}}
                             </div>
                         </div>
                     </div>
@@ -175,9 +114,9 @@
                         <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                    <iframe
-                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/Lineamientos-COPLADEP.pdf') }}"
-                                        frameborder="0" class="iframe-documento"></iframe>
+                                <iframe
+                                    src="{{ asset('documentos/primera-sesion-ordinaria-2026/Lineamientos-COPLADEP.pdf') }}"
+                                    frameborder="0" class="iframe-documento" title="Lineamientos del COPLADEP"></iframe>
                             </div>
                         </div>
                     </div>
@@ -202,11 +141,6 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            {{-- <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
-                                                data-title="Estructura General de los Subcomités" title="Ver aqui">
-                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/3. Estructura General de los Subcomités.pdf') }}"
                                                 target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
@@ -229,12 +163,6 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            {{-- <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
-                                                data-title="Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria"
-                                                title="Ver aquí">
-                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/4. Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria.pdf') }}"
                                                 target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
@@ -262,38 +190,11 @@
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <div class="container">
-                                    <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.webp') }}" alt="" srcset="" class="w-100">
+                                    <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.webp') }}"
+                                        alt="Diagrama que muestra la nueva regionalización para la administración 2024-2030"
+                                        loading="lazy" class="w-100" title="Regionalización 2024-2030" decoding="async"
+                                        fetchpriority="low">
                                 </div>
-                                {{-- <ul>
-                                    <li class="document-item">
-                                        <div class="document-item__main-content">
-                                            <p class="document-item__name">
-                                                Actualización de la Regionalización del Estado de Puebla
-                                            </p>
-                                            <span class="document-badge badge-pdf">
-                                                PDF
-                                            </span>
-                                        </div>
-                                        <div class="document-item__actions">
-                                             <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
-                                                data-title="Actualización de la Regionalización del Estado de Puebla"
-                                                title="Ver aquí">
-                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a> 
-                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
-                                                target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
-                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
-                                            </a>
-                                            <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/5. Actualización de la Regionalización del Estado de Puebla.pdf') }}"
-                                                download="Actualización de la Regionalización del Estado de Puebla"
-                                                rel="noopener" title="Descargar documento">
-                                                <i class="fas fa-download"></i>
-                                                <span>Descargar</span>
-                                            </a>
-                                        </div>
-                                    </li>
-                                </ul> --}}
                             </div>
                         </div>
                     </div>
@@ -308,7 +209,9 @@
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <div class="container mb-5 accion-programa">
-                                    <a href="https://planeader.puebla.gob.mx/ped-programas" target="_self" rel="noopener" title="Programas Derivados" class="accion-programa__boton accion-programa__boton--vino">
+                                    <a href="https://planeader.puebla.gob.mx/ped-programas" target="_self" rel="noopener"
+                                        title="Programas Derivados"
+                                        class="accion-programa__boton accion-programa__boton--vino">
                                         <span class="accion-programa__texto">Conócelos</span>
                                         <i class="fa-solid fa-arrow-right accion-programa__icono"></i>
                                     </a>
@@ -337,11 +240,6 @@
                                             </span>
                                         </div>
                                         <div class="document-item__actions">
-                                            {{-- <a href="#" class="js-open-modal"
-                                                data-src="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
-                                                data-title="Programas Institucionales - Sector Educativo" title="Ver aquí">
-                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
-                                            </a> --}}
                                             <a href="{{ asset('documentos/primera-sesion-ordinaria-2026/Programas Institucionales-Sector Educativo.pdf') }}"
                                                 target="_blank" rel="noopener noreferrer" title="Abrir en nueva pestaña">
                                                 <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
@@ -368,9 +266,10 @@
                         <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                    <iframe
-                                        src="{{ asset('documentos/primera-sesion-ordinaria-2026/Relanzamiento-Agenda2030.pdf') }}"
-                                        frameborder="0" class="iframe-documento"></iframe>
+                                <iframe
+                                    src="{{ asset('documentos/primera-sesion-ordinaria-2026/Relanzamiento-Agenda2030.pdf') }}"
+                                    frameborder="0" class="iframe-documento"
+                                    title="Estrategia de Relanzamiento de la Agenda 2030"></iframe>
                             </div>
                         </div>
                     </div>
@@ -388,20 +287,23 @@
                                     <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="contenedor-tarjetadocs">
                                             <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/9.1 PED.png') }}"
-                                                alt="Titulo" class="width-100" title="Titulo">
+                                                alt="Portada del Plan Estatal de Desarrollo 2024-2030" class="width-100"
+                                                title="Plan Estatal de Desarrollo 2024-2030">
                                         </div>
                                     </div>
                                     <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="contenedor-tarjetadocs">
                                             <img src="{{ asset('documentos/primera-sesion-ordinaria-2026/9.2 Evaluación de Diseño del Plan Estatal de Desarrollo 2024 – 2030.png') }}"
-                                                alt="Titulo" class="width-100" title="Titulo">
+                                                alt="Portada de la Evaluación Específica de Diseño del Plan Estatal de Desarrollo 2024-2030"
+                                                class="width-100"
+                                                title="Evaluación Específica de Diseño del Plan Estatal de Desarrollo 2024-2030">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                                        <div class="accordion-item">
+                    <div class="accordion-item">
                         <h2 class="accordion-header" id="heading10">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
@@ -411,27 +313,31 @@
                         <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                                                <div class="container">
+                                <div class="container">
                                     <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/Proyectos Transformadores.pdf') }}"
-                                        frameborder="0" class="iframe-documento"></iframe>
+                                        frameborder="0" class="iframe-documento" title="Proyectos transformadores"></iframe>
                                 </div>
                             </div>
                         </div>
                     </div>
-                     <div class="accordion-item">
+                    <div class="accordion-item">
                         <h2 class="accordion-header" id="heading11">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
-                                Guía metodológica para la construcción, seguimiento y análisis de indicadores estratégicos y tácticos
+                                Guía metodológica para la construcción, seguimiento y análisis de indicadores estratégicos y
+                                tácticos
                             </button>
                         </h2>
                         <div id="collapse11" class="accordion-collapse collapse" aria-labelledby="heading11"
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                               <div class="container">
-                                 <img src="{{asset('documentos/primera-sesion-ordinaria-2026/Esquema_Mesa de trabajo.webp')}}" alt="" srcset="" class="w-100">
-                               </div>
+                                <div class="container">
+                                    <img src="{{asset('documentos/primera-sesion-ordinaria-2026/Esquema_Mesa de trabajo.webp')}}"
+                                        alt="Esquema con detalle de la guía metodológica"
+                                        title="Guía metodológica para la construcción, seguimiento y análisis de indicadores estratégicos y tácticos"
+                                        class="w-100" loading="lazy" decoding="async" fetchpriority="low">
+                                </div>
                             </div>
                         </div>
                     </div>
