@@ -15,7 +15,6 @@
     Desarrollo del Estado de Puebla del Estado de Puebla.')
 @section('css')
     <script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@2" async defer></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 @endsection
 @section('content')
     <section class="contenedor-imagen-primera-sesion">
@@ -444,39 +443,4 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const swiper = new Swiper(".regionales", {
-                loop: true,
-
-                autoplay: {
-                    delay: 6000,
-                    disableOnInteraction: false,
-                },
-
-                slidesPerView: "3",
-                centeredSlides: true,
-
-                effect: "coverflow",
-                coverflowEffect: {
-                    rotate: 50,
-                    stretch: 0,
-                    depth: 100,
-                    modifier: 1,
-                    slideShadows: true,
-                },
-
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true,
-                },
-
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev",
-                },
-            });
-        });
-    </script>
 @endsection
