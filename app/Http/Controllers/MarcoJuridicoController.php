@@ -24,7 +24,7 @@ class MarcoJuridicoController extends Controller
     public function index()
     {
         $documentos = MarcoJuridico::paginate(1000);
-        return view('panel-marcojuridico.index', compact('documentos'));
+        return view('panel-marco-juridico.index', compact('documentos'));
     }
 
     /**
@@ -37,7 +37,7 @@ class MarcoJuridicoController extends Controller
         $totalDocumentos = MarcoJuridico::count();
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
         $ordenesDisponibles = range(1, $totalDocumentos + 2);
-        return view('panel-marcojuridico.crear', compact('ordenesExistentes', 'ordenesDisponibles'));
+        return view('panel-marco-juridico.crear', compact('ordenesExistentes', 'ordenesDisponibles'));
     }
 
     /**
@@ -104,7 +104,7 @@ class MarcoJuridicoController extends Controller
         // MarcoJuridico::create($documentosMarcoJuridico);
         $documentosMarcoJuridico->save();
         // return redirect()->route('.index');
-        return redirect()->route('panel-marcojuridico.index')->with('success', 'Documento subido exitosamente.');
+        return redirect()->route('panel-marco-juridico.index')->with('success', 'Documento subido exitosamente.');
     }
 
     /**
@@ -130,7 +130,7 @@ class MarcoJuridicoController extends Controller
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
         $ordenesDisponibles = range(1, $totalDocumentos + 1);
         $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
-        return view('panel-marcojuridico.editar', compact('documentosMarcoJuridico', 'ordenesExistentes', 'ordenesDisponibles'));
+        return view('panel-marco-juridico.editar', compact('documentosMarcoJuridico', 'ordenesExistentes', 'ordenesDisponibles'));
     }
 
     /**
@@ -191,7 +191,7 @@ class MarcoJuridicoController extends Controller
         // Guardar los cambios en la base de datos
         $documentosMarcoJuridico->save();
 
-        return redirect()->route('panel-marcojuridico.index')->with('success', 'Documento actualizado exitosamente.');
+        return redirect()->route('panel-marco-juridico.index')->with('success', 'Documento actualizado exitosamente.');
     }
 
     /**
@@ -219,7 +219,7 @@ class MarcoJuridicoController extends Controller
 
         $documento->delete();
 
-        return redirect()->route('panel-marcojuridico.index');
+        return redirect()->route('panel-marco-juridico.index');
     }
 
     public function mostrarDocumentosMarco()
