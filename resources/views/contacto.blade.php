@@ -52,8 +52,7 @@
                                     Ubicación
                                 </h5>
                                 <p class="corra-light">
-                                    Avenida 11 Oriente 2224 Tercer Piso,
-                                    72501 Puebla, Puebla
+                                    Av. Cúmulo de Virgo 1358, Reserva Territorial Atlixcáyotl, Puebla, Pue. 
                                 </p>
                             </div>
                         </div>

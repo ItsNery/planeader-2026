@@ -1,7 +1,7 @@
 <header class="site-header">
     <div class="header-top">
         <div class="header-logos">
-            <a href="{{ url('/') }}"><img src="{{ asset('img/logo-gobierno.png') }}" alt="Logo Gobierno de Puebla"></a>
+            <a href="{{ url('/') }}"><img src="{{ asset('img/Logos-SPFA_.png') }}" alt="Logo Gobierno de Puebla"></a>
         </div>
 
         <button class="hamburger-menu" id="hamburger-menu" aria-label="Abrir menú de navegación">
