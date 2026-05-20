@@ -15,71 +15,60 @@
     <section class="contenedor-imagen-subcomites">
         <h1>Subcomités</h1>
     </section>
-    {{-- <section class="subcomites-actual"> --}}
-    {{-- <div class="container py-5">
+    <section class="subcomites-actual">
+        <div class="container py-5">
             <div class="text-center mb-3 pb-3">
                 <p class="text-black">
                     Órganos auxiliares del COPLADEP definidos de acuerdo a las prioridades del Gobierno del Estado.
                 </p>
             </div>
-        </div> --}}
-    {{-- Se comenta en espera de los nuevos subcomités --}}
-    {{-- <div class="container">
+        </div>
+        <div class="container">
             @if ($subcomites_actual->isNotEmpty())
-                @foreach ($tipos_subcomites as $tipo_subcomite)
-                    <div class="three">
-                        <h2 class="titulo-tematica">{{ $tipo_subcomite }}</h2>
-                    </div>
-                    <div class="row">
-                        @foreach ($subcomites_actual->where('tipo_subcomite', $tipo_subcomite) as $subcomite)
-                            <div class="col-sm-12 col-md-6 col-lg-4 item mb-5">
-                                <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}" target="_self"
-                                    title="{{ $subcomite->nombre }}" rel="noopener" class="text-decoration-none">
-                                    <div class="tarjeta-moderna">
-                                        <div class="tarjeta-icono-wrap">
-                                            <div class="tarjeta-icono">
-                                                <img src="{{ asset('icono_subcomites/' . $subcomite->icono) }}"
-                                                    alt="Icono de {{ $subcomite->nombre }}" />
-                                            </div>
-                                        </div>
-                                        <div class="tarjeta-texto">
-                                            @php
-                                                // Tu lógica de PHP para separar el título se mantiene igual
-                                                $nombre = $subcomite->nombre;
-                                                $tipo = '';
-                                                if (Str::startsWith($nombre, 'Subcomité Sectorial')) {
-                                                    $tipo = 'Subcomité Sectorial';
-                                                    $nombre = Str::replaceFirst('Subcomité Sectorial', '', $nombre);
-                                                } // ... (agrega tus otros else if aquí)
-                                                $nombre = trim(Str::replaceFirst('de', '', $nombre));
-                                            @endphp
-
-                                            <span class="tipo-subcomite">{{ $tipo }}</span>
-                                            <span class="nombre-subcomite">{{ $nombre }}</span>
-                                        </div>
-                                    </div>
-                                </a>
+                <div class="accordion" id="accordionActual">
+                    @foreach ($tipos_subcomites as $tipo_subcomite)
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-actual-{{ $loop->index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-actual-{{ $loop->index }}" aria-expanded="false"
+                                    aria-controls="collapse-actual-{{ $loop->index }}">
+                                    <strong>{{ $tipo_subcomite }}</strong>
+                                </button>
+                            </h2>
+                            <div id="collapse-actual-{{ $loop->index }}" class="accordion-collapse collapse"
+                                aria-labelledby="heading-actual-{{ $loop->index }}" data-bs-parent="#accordionActual">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        @foreach ($subcomites_actual->where('tipo_subcomite', $tipo_subcomite) as $subcomite)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                {{ $subcomite->nombre }}
+                                                <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}"
+                                                    class="btn btn-sm btn-outline-color-1" rel="noopener"
+                                                    title="Ver detalle de {{ $subcomite->nombre }}">
+                                                    Ver detalle
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
                             </div>
-                        @endforeach
-                    </div>
-                @endforeach
+                        </div>
+                    @endforeach
+                </div>
             @else
                 <div class="subtitulo-seccion">Próximamente</div>
             @endif
-            <!-- Suponiendo que $documentos es una colección de documentos de COPLADEP obtenidos de tu base de datos -->
             @if ($subcomites_actual->isNotEmpty())
-                <!-- Itera sobre los documentos y obtén la fecha de actualización más reciente -->
                 @php
                     $ultimaActualizacion = $subcomites_actual->max('updated_at');
                 @endphp
-                <!-- Muestra la leyenda con la fecha de la última actualización -->
-                <p class="text-white" style="font-size: 10px; margin-bottom:inherit">Última actualización:
+                <p class="text-black" style="font-size: 10px; margin-bottom:inherit; margin-top: 1rem;">Última actualización:
                     {{ $ultimaActualizacion->format('d/m/Y H:i:s') }}</p>
             @else
                 <p>No hay información disponible.</p>
             @endif
-        </div> --}}
-    {{-- </section> --}}
+        </div>
+    </section>
     <section class="historicos-subcomites">
         <div class="container mt-5">
             <div class="text-center mb-3 pb-3">

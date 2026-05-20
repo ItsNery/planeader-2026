@@ -182,16 +182,36 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3">
-                </div>
-                <div class="col-md-6">
-                    <div class="container">
-                        <iframe
-                            src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3tkB_c4aKhyuWtFztgi_2RM9PvUAESIjPg_c40XMkfxdxrHoppqwAeoKAu4szA-3MKOl_2NlGa?gv=true"
-                            style="border: 0" width="100%" height="900" frameborder="0"></iframe>
+                <div class="col-12">
+                    <ul class="nav nav-tabs justify-content-center mb-4" id="calendarTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="subcomites-tab" data-bs-toggle="tab"
+                                data-bs-target="#subcomites" type="button" role="tab" aria-controls="subcomites"
+                                aria-selected="true">Subcomités</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="mesas-tab" data-bs-toggle="tab"
+                                data-bs-target="#mesas" type="button" role="tab" aria-controls="mesas"
+                                aria-selected="false">Mesas técnicas</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="subcomites" role="tabpanel"
+                            aria-labelledby="subcomites-tab">
+                            <div class="container">
+                                <iframe
+                                    src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3tkB_c4aKhyuWtFztgi_2RM9PvUAESIjPg_c40XMkfxdxrHoppqwAeoKAu4szA-3MKOl_2NlGa?gv=true"
+                                    style="border: 0" width="100%" height="900" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="mesas" role="tabpanel" aria-labelledby="mesas-tab">
+                            <div class="container">
+                                <iframe
+                                    src="https://calendar.google.com/calendar/appointments/schedules/YOUR_MESAS_CALENDAR_URL?gv=true"
+                                    style="border: 0" width="100%" height="900" frameborder="0"></iframe>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
                 </div>
             </div>
         </section>
