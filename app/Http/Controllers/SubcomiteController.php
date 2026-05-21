@@ -289,7 +289,7 @@ class SubcomiteController extends Controller
             return $subcomite->planEstatal && $subcomite->planEstatal->nombre === NOMBRE_PLAN_ACTUAL;
         });
         $plan_actual_id = $plan_actual ? $plan_actual->planestatal_id : null;
-        $subcomites_actual = $todos_los_subcomites->where('planestatal_id', $plan_actual_id);
+        $subcomites_actual = $plan_actual_id !== null ? $todos_los_subcomites->where('planestatal_id', $plan_actual_id) : collect();
         $subcomites_agrupados = $todos_los_subcomites->groupBy('planestatal_id');
         $subcomites_historicos_agrupados = $subcomites_agrupados->filter(function ($group, $key) use ($plan_actual_id) {
             return $key != $plan_actual_id && $key != null;

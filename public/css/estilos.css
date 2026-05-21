@@ -2443,6 +2443,15 @@ footer {
         }
     }
 
+    .btn-outline-color-1 {
+        border-color: var(--color4);
+
+        &:hover {
+            color: var(--colorBlanco);
+            background-color: var(--color1);
+        }
+    }
+
 }
 
 .historicos-subcomites {

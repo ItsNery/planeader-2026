@@ -27,32 +27,37 @@
             @if ($subcomites_actual->isNotEmpty())
                 <div class="accordion" id="accordionActual">
                     @foreach ($tipos_subcomites as $tipo_subcomite)
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading-actual-{{ $loop->index }}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapse-actual-{{ $loop->index }}" aria-expanded="false"
-                                    aria-controls="collapse-actual-{{ $loop->index }}">
-                                    <strong>{{ $tipo_subcomite }}</strong>
-                                </button>
-                            </h2>
-                            <div id="collapse-actual-{{ $loop->index }}" class="accordion-collapse collapse"
-                                aria-labelledby="heading-actual-{{ $loop->index }}" data-bs-parent="#accordionActual">
-                                <div class="accordion-body">
-                                    <ul class="list-group list-group-flush">
-                                        @foreach ($subcomites_actual->where('tipo_subcomite', $tipo_subcomite) as $subcomite)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                {{ $subcomite->nombre }}
-                                                <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}"
-                                                    class="btn btn-sm btn-outline-color-1" rel="noopener"
-                                                    title="Ver detalle de {{ $subcomite->nombre }}">
-                                                    Ver detalle
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                        @php
+                            $subcomites_del_tipo = $subcomites_actual->where('tipo_subcomite', $tipo_subcomite);
+                        @endphp
+                        @if ($subcomites_del_tipo->isNotEmpty())
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading-actual-{{ $loop->index }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse-actual-{{ $loop->index }}" aria-expanded="false"
+                                        aria-controls="collapse-actual-{{ $loop->index }}">
+                                        <strong>{{ $tipo_subcomite }}</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapse-actual-{{ $loop->index }}" class="accordion-collapse collapse"
+                                    aria-labelledby="heading-actual-{{ $loop->index }}" data-bs-parent="#accordionActual">
+                                    <div class="accordion-body">
+                                        <ul class="list-group list-group-flush">
+                                            @foreach ($subcomites_del_tipo as $subcomite)
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ $subcomite->nombre }}
+                                                    <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}"
+                                                        class="btn btn-sm btn-outline-color-1" rel="noopener"
+                                                        title="Ver detalle de {{ $subcomite->nombre }}">
+                                                        Ver detalle
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     @endforeach
                 </div>
             @else
