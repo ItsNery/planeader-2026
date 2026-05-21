@@ -66,8 +66,8 @@ class SubcomiteController extends Controller
         $this->validate($request, [
             'nombre' => 'required|string|max:150',
             'tipo_subcomite' => 'required|string',
-            'conformacion' => 'required|image|mimes:jpeg,png,svg,jpg|max:6144',
-            'icono' => 'required|image|mimes:jpeg,png,svg,jpg|max:6144',
+            'conformacion' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
+            'icono' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
             'objetivo' => 'required',
             'planestatal_id' => 'required|exists:plan_estatals,id',
             'publicado' => 'nullable|boolean'
@@ -80,12 +80,12 @@ class SubcomiteController extends Controller
             'tipo_subcomite.string' => 'El tipo de subcomité no es válido',
 
             'conformacion.mimes' => 'El archivo debe ser una imagen',
-            'conformacion.required' => 'No ha cargado una imagen',
+            'conformacion.nullable' => 'No ha cargado una imagen',
             'conformacion.max' => 'El archivo no debe pesar mas de 6MB',
             'conformacion.image' => 'El archivo debe ser una imagen',
 
             'icono.mimes' => 'El archivo debe ser una imagen',
-            'icono.required' => 'No ha cargado una imagen',
+            'icono.nullable' => 'No ha cargado una imagen',
             'icono.max' => 'El archivo no debe pesar mas de 6MB',
             'icono.image' => 'El archivo debe ser una imagen',
 
