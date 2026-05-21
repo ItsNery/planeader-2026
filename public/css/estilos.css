@@ -2521,7 +2521,7 @@ footer {
 
     .titulo-subcomite {
         font-weight: bold;
-        font-size: 2.5vw !important;
+        font-size: 3.5vw !important;
     }
 
     .subcomite-icono {
@@ -2533,6 +2533,10 @@ footer {
         img {
             width: 200px;
         }
+    }
+
+    .titulo-tematica {
+        font-size: 3vw;
     }
 
     .ficha-subcomite {
@@ -2567,7 +2571,10 @@ footer {
 
 .coplademun-agendar {
     background: url(../img/fondos-seccion/3.png) no-repeat center center/cover;
-    /* background: var(--colorBlanco); */
+
+    .titulo-tematica {
+        font-size: 3vw !important;
+    }
 }
 
 /* Terminan estilos de subcomites */

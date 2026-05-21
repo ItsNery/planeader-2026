@@ -49,18 +49,20 @@
                 </p>
             </div>
         </div>
-        <div class="container">
-            <div class="py-3 integracion-titulo-subcomite">
-                <h2 class="titulo-tematica">
-                    Integración
-                </h2>
+        @if ($subcomite->planestatal->nombre != 'Plan Estatal de Desarrollo 2024-2030')
+            <div class="container">
+                <div class="py-3 titulo-tematica">
+                    <h2 class="titulo-tematica">
+                        Integración
+                    </h2>
+                </div>
+                <div class="integracion-imagen-subcomite">
+                    <img src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}"
+                        title="Integración del {{ $subcomite->nombre }}" alt="Integración del {{ $subcomite->nombre }}"
+                        width="100%">
+                </div>
             </div>
-            <div class="integracion-imagen-subcomite">
-                <img src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}"
-                    title="Integración del {{ $subcomite->nombre }}" alt="Integración del {{ $subcomite->nombre }}"
-                    width="100%">
-            </div>
-        </div>
+        @endif
     </div>
 </section>
 @if($documentosAgrupados->isNotEmpty())
@@ -168,7 +170,7 @@
     <div class="col py-4">
         <div class="text-center mb-3 pb-3 d-flex justify-content-center flex-column align-items-center">
             <span class="text-dark fs-4">¿Gustas agendar una cita para tu sesión de Subcomité o
-                Mesas Técnicas?
+                Mesas Técnicas de Trabajo?
             </span>
             <span class="subtitulo_sitios text-dark fs-5">
                 Usa nuestros calendarios
@@ -185,7 +187,7 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="mesas-tab" data-bs-toggle="tab" data-bs-target="#mesas" type="button"
-                        role="tab" aria-controls="mesas" aria-selected="false">Mesas técnicas</button>
+                        role="tab" aria-controls="mesas" aria-selected="false">Mesas Técnicas de Trabajo</button>
                 </li>
             </ul>
             <div class="tab-content">

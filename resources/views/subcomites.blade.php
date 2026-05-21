@@ -36,7 +36,13 @@
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapse-actual-{{ $loop->index }}" aria-expanded="false"
                                         aria-controls="collapse-actual-{{ $loop->index }}">
-                                        <strong>{{ $tipo_subcomite }}</strong>
+                                        <strong>
+                                            @if($tipo_subcomite === 'Sectoriales')
+                                                Subcomités Sectoriales para el Desarrollo Regional y Riqueza Comunitaria
+                                            @else
+                                                {{ $tipo_subcomite }}
+                                            @endif
+                                        </strong>
                                     </button>
                                 </h2>
                                 <div id="collapse-actual-{{ $loop->index }}" class="accordion-collapse collapse"
