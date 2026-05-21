@@ -31,9 +31,11 @@
                 @endif
             </h6>
             <h2 class="titulo-subcomite text-black pb-3">{{ $subcomite->nombre }}</h2>
+            @if ($subcomite->planestatal->nombre != 'Plan Estatal de Desarrollo 2024-2030')
             <div class="container flex-container-centro subcomite-icono">
                 <img src="{{ asset('icono_subcomites/' . $subcomite->icono) }}" alt="">
             </div>
+            @endif
         </div>
     </div>
     <div class="container py-2 ficha-subcomite">
