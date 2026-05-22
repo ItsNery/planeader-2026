@@ -38,7 +38,6 @@
                 <thead class="table-light">
                     <tr>
                         <th>Información del subcomité</th>
-                        <th class="text-center">Conformacion</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -67,20 +66,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="imagen-grande bg-white" id="imagen-{{ $subcomite->id }}">
-                                        <img src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}">
-                                        <div class="container">
-                                            <p class="text-black my-5 mx-5">De clic en cualquier lugar fuera de
-                                                la imagen para salir</p>
-                                        </div>
-                                    </div>
-                                    <img style="cursor: pointer"
-                                        src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}"
-                                        class="img-thumbnail mx-2 mw-100px" onclick="mostrarImagenGrande({{ $subcomite->id }})"
-                                        alt="Conformación del {{ $subcomite->nombre }}"
-                                        title="{{ $subcomite->nombre }}">
                                 </td>
                                 <td class="text-center" style="width: 150px;">
                                     @if (Auth::user()->validador)

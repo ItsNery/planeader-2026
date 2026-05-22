@@ -45,11 +45,31 @@ class SubcomiteController extends Controller
         $subcomite = new Subcomite();
         $planes_estatales = PlanEstatal::all();
         $tipos_subcomites = [
-            'Sectoriales',
-            'Especiales',
+            'Sectorial',
+            'Especial',
             'Regional',
+            'Institucional'
         ];
-        return view('panel-subcomites.form', compact('tipos_subcomites', 'planes_estatales', 'subcomite'));
+
+        // Calcular lugares disponibles y utilizados por plan estatal
+        $ordenes_disponibles_por_plan = [];
+        $ordenes_utilizados_por_plan = [];
+        foreach($planes_estatales as $plan) {
+            $subcomitesPlan = Subcomite::where('planestatal_id', $plan->id)->get();
+            $utilizados = $subcomitesPlan->pluck('orden')->filter()->toArray();
+            $maxOrden = empty($utilizados) ? 0 : max($utilizados);
+
+            $disponibles = [];
+            for ($i = 1; $i <= $maxOrden + 2; $i++) {
+                if (!in_array($i, $utilizados)) {
+                    $disponibles[] = $i;
+                }
+            }
+            $ordenes_disponibles_por_plan[$plan->id] = $disponibles;
+            $ordenes_utilizados_por_plan[$plan->id] = array_values($utilizados);
+        }
+
+        return view('panel-subcomites.form', compact('tipos_subcomites', 'planes_estatales', 'subcomite', 'ordenes_disponibles_por_plan', 'ordenes_utilizados_por_plan'));
     }
 
     /**
@@ -65,6 +85,7 @@ class SubcomiteController extends Controller
 
         $this->validate($request, [
             'nombre' => 'required|string|max:150',
+            'orden' => 'required|integer',
             'tipo_subcomite' => 'required|string',
             'conformacion' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
             'icono' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
@@ -75,6 +96,9 @@ class SubcomiteController extends Controller
             'nombre.required' => 'El nombre del subcomite es requerido',
             'nombre.string' => 'El nombre del subcomite no es válido',
             'nombre.max' => 'El nombre del subcomite no puede tener más de :max carácteres',
+
+            'orden.required' => 'El orden es requerido',
+            'orden.integer' => 'El orden debe ser un número',
 
             'tipo_subcomite.required' => 'Se necesita especificar el tipo',
             'tipo_subcomite.string' => 'El tipo de subcomité no es válido',
@@ -150,7 +174,40 @@ class SubcomiteController extends Controller
             'Especiales',
             'Regional',
         ];
-        return view('panel-subcomites.form', compact('subcomite', 'tipos_subcomites', 'planes_estatales'));
+
+        // Calcular lugares disponibles y utilizados por plan estatal
+        $ordenes_disponibles_por_plan = [];
+        $ordenes_utilizados_por_plan = [];
+        foreach($planes_estatales as $plan) {
+            $subcomitesPlan = Subcomite::where('planestatal_id', $plan->id)->get();
+            $utilizados = $subcomitesPlan->pluck('orden')->filter()->toArray();
+            
+            // Si estamos editando, queremos asegurar que el orden actual del subcomité 
+            // esté disponible para seleccionarlo de nuevo.
+            if ($subcomite->planestatal_id == $plan->id) {
+                $utilizados = array_diff($utilizados, [$subcomite->orden]);
+            }
+
+            $maxOrden = empty($utilizados) ? 0 : max($utilizados);
+
+            $disponibles = [];
+            for ($i = 1; $i <= $maxOrden + 2; $i++) {
+                if (!in_array($i, $utilizados)) {
+                    $disponibles[] = $i;
+                }
+            }
+            
+            // Si el orden actual es mayor al maxOrden+1 (caso raro), agregarlo a la lista de disponibles
+            if ($subcomite->planestatal_id == $plan->id && !in_array($subcomite->orden, $disponibles)) {
+                $disponibles[] = $subcomite->orden;
+                sort($disponibles);
+            }
+
+            $ordenes_disponibles_por_plan[$plan->id] = $disponibles;
+            $ordenes_utilizados_por_plan[$plan->id] = array_values($utilizados);
+        }
+
+        return view('panel-subcomites.form', compact('subcomite', 'tipos_subcomites', 'planes_estatales', 'ordenes_disponibles_por_plan', 'ordenes_utilizados_por_plan'));
     }
 
     /**
@@ -167,6 +224,7 @@ class SubcomiteController extends Controller
 
         $this->validate($request, [
             'nombre' => 'required|string|max:150',
+            'orden' => 'required|integer',
             'tipo_subcomite' => 'required|string',
             'conformacion' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
             'icono' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
@@ -177,6 +235,9 @@ class SubcomiteController extends Controller
             'nombre.required' => 'El nombre del subcomite es requerido',
             'nombre.string' => 'El nombre del subcomite no es válido',
             'nombre.max' => 'El nombre del subcomite no puede tener más de 150 carácteres',
+
+            'orden.required' => 'El orden es requerido',
+            'orden.integer' => 'El orden debe ser un número',
 
             'tipo_subcomite.required' => 'Se necesita especificar el tipo',
 
@@ -199,6 +260,7 @@ class SubcomiteController extends Controller
         $subcomites = Subcomite::findOrFail($id);
 
         $subcomites->nombre = $request->nombre;
+        $subcomites->orden = $request->orden;
         $subcomites->tipo_subcomite = $request->tipo_subcomite;
         $subcomites->objetivo = $request->objetivo;
         $subcomites->planestatal_id = $request->planestatal_id;

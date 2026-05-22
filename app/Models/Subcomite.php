@@ -34,7 +34,7 @@ class Subcomite extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['nombre', 'tipo_subcomite', 'objetivo', 'conformacion', 'icono', 'planestatal_id', 'slug', 'publicado'];
+    protected $fillable = ['nombre', 'tipo_subcomite', 'objetivo', 'conformacion', 'icono', 'planestatal_id', 'slug', 'orden', 'publicado'];
 
     /**
      * Define la relación "uno a muchos" con los registros del modelo PlanEstatal.

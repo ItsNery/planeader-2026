@@ -86,6 +86,18 @@
                                         </small>
                                     @enderror
                                 </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="orden" class="fw-bold mb-1">Orden de aparición: *</label>
+                                    <select id="orden" name="orden" class="form-control @error('orden') is-invalid @enderror" required disabled>
+                                        <option value="" disabled selected>Seleccione un plan primero</option>
+                                    </select>
+                                    <small id="orden-hint" class="text-info mt-1 d-block"><i class="fa-solid fa-circle-info"></i> Selecciona un Plan Estatal para ver y elegir los órdenes disponibles.</small>
+                                    @error('orden')
+                                        <small class="invalid-feedback d-block">
+                                            <strong>{{ $message }}</strong>
+                                        </small>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -239,4 +251,61 @@
             select.classList.add('text-info', 'border-info');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const ordenesDisponiblesPorPlan = @json($ordenes_disponibles_por_plan ?? []);
+        const ordenesUtilizadosPorPlan = @json($ordenes_utilizados_por_plan ?? []);
+        const planSelect = document.getElementById('planestatal_id');
+        const ordenSelect = document.getElementById('orden');
+        const ordenHint = document.getElementById('orden-hint');
+        const oldOrden = '{{ old("orden", $subcomite->orden ?? "") }}';
+
+        function actualizarOrdenes() {
+            const planId = planSelect.value;
+            ordenSelect.innerHTML = '<option value="" disabled selected>Seleccione un orden disponible</option>';
+
+            if (planId && (ordenesDisponiblesPorPlan[planId] || ordenesUtilizadosPorPlan[planId])) {
+                // Hay un plan seleccionado, habilitamos el select y ocultamos el aviso
+                ordenSelect.disabled = false;
+                if(ordenHint) ordenHint.style.display = 'none';
+
+                const disponibles = ordenesDisponiblesPorPlan[planId] || [];
+                const utilizados = ordenesUtilizadosPorPlan[planId] || [];
+                
+                // Encontramos el número máximo a mostrar (ya sea ocupado o disponible)
+                const maxDisp = disponibles.length > 0 ? Math.max(...disponibles) : 0;
+                const maxUtil = utilizados.length > 0 ? Math.max(...utilizados) : 0;
+                const limite = Math.max(maxDisp, maxUtil);
+                
+                for (let i = 1; i <= limite; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    
+                    if (utilizados.includes(i) && oldOrden != i) {
+                        // El orden está ocupado
+                        option.textContent = i + ' (Ocupado)';
+                        option.disabled = true;
+                        ordenSelect.appendChild(option);
+                    } else if (disponibles.includes(i) || oldOrden == i) {
+                        // El orden está disponible o es el actualmente editado
+                        option.textContent = i;
+                        if (oldOrden == i) {
+                            option.selected = true;
+                        }
+                        ordenSelect.appendChild(option);
+                    }
+                }
+            } else {
+                // No hay plan seleccionado, deshabilitamos
+                ordenSelect.disabled = true;
+                ordenSelect.innerHTML = '<option value="" disabled selected>Seleccione un plan primero</option>';
+                if(ordenHint) ordenHint.style.display = 'block';
+            }
+        }
+
+        if(planSelect) {
+            planSelect.addEventListener('change', actualizarOrdenes);
+            actualizarOrdenes(); // Llenar al cargar si ya hay un plan seleccionado o estamos editando
+        }
+    });
 </script>

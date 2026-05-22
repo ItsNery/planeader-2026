@@ -82,11 +82,6 @@
     </section>
     <section class="historicos-subcomites">
         <div class="container mt-5">
-            <div class="text-center mb-3 pb-3">
-                <p class="text-black">
-                    Órganos auxiliares del COPLADEP definidos de acuerdo a las prioridades del Gobierno del Estado.
-                </p>
-            </div>
             <div class="row">
                 <div class="row">
                     <div class="col-12">

@@ -47,7 +47,19 @@
             </div>
             @if ($programasDerivados->isEmpty())
             @else
-                <ul class="nav nav-tabs justify-content-center mt-5" id="programasActualesTab" role="tablist">
+                <!-- Buscador de Programas Derivados -->
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-6">
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" id="buscador-programas" class="form-control border-start-0 ps-0" placeholder="Buscar programa por nombre...">
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs justify-content-center mt-4" id="programasActualesTab" role="tablist">
                     @foreach ($programasDerivadosActuales as $tipo => $programas)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link @if ($loop->first) active @endif"
@@ -71,7 +83,7 @@
 
                                 <div class="d-flex flex-wrap justify-content-center">
                                     @foreach ($programasPorTipo as $programa)
-                                        <div class="m-3">
+                                        <div class="m-3 programa-card" data-nombre="{{ strtolower($programa->nombre) }}">
 
                                             <div class="tarjeta_histder">
                                                 <div class="tarjeta_histder-details">
@@ -179,7 +191,7 @@
                                                         <ul class="list-group list-group-flush">
                                                             {{-- Ahora iteramos sobre los programas de este plan en específico --}}
                                                             @foreach ($programasPorTipo as $programa)
-                                                                <li class="document-item">
+                                                                <li class="document-item programa-card" data-nombre="{{ strtolower($programa->nombre) }}">
                                                                     <div class="document-item__main-content">
                                                                         <p class="document-item__name">
                                                                             {{ $programa->nombre }}
@@ -243,4 +255,24 @@
     </section>
 @endsection
 @section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buscador = document.getElementById('buscador-programas');
+        if (buscador) {
+            buscador.addEventListener('input', function() {
+                const term = this.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.programa-card');
+                
+                cards.forEach(card => {
+                    const nombre = card.getAttribute('data-nombre');
+                    if (nombre.includes(term)) {
+                        card.style.display = ''; // Restaurar el display por defecto
+                    } else {
+                        card.style.display = 'none'; // Ocultar
+                    }
+                });
+            });
+        }
+    });
+</script>
 @endsection
