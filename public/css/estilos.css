@@ -1540,7 +1540,7 @@ footer {
     align-items: center;
 
     .derivadosnew {
-        .form-control:focus{
+        .form-control:focus {
             color: #212529;
             background-color: #fff;
             border-color: var(--color4);
@@ -1548,6 +1548,7 @@ footer {
             outline: 0;
             box-shadow: 0 0 0 .25rem rgba(231, 151, 68, 0.25);
         }
+
         .subtitulo-seccion {
             display: flex;
             justify-content: center;
@@ -2532,6 +2533,10 @@ footer {
 }
 
 .subcomite_individual {
+    p {
+        font-size: 18px !important;
+    }
+
     /* background-color: var(--bg-content); */
     background: url(../img/fondos-seccion/1.png) no-repeat center center/cover;
 

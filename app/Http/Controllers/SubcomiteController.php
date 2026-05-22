@@ -28,7 +28,7 @@ class SubcomiteController extends Controller
     public function index()
     {
         $planes_estatales = PlanEstatal::all();
-        $subcomites = Subcomite::paginate(1000);
+        $subcomites = Subcomite::with('planestatal')->paginate(50);
         return view('panel-subcomites.index', compact('subcomites', 'planes_estatales'));
     }
 
@@ -122,22 +122,14 @@ class SubcomiteController extends Controller
         ]);
 
         $subcomite = $request->all();
-        $slug = $this->generateSlug($request->nombre);
-        $subcomite = $request->all();
-        $subcomite['slug'] = $slug;
+        $subcomite['slug'] = $this->generateSlug($request->nombre);
 
         if ($conformacion = $request->file('conformacion')) {
-            $rutaGuardarImg = 'subcomitesconformacion/';
-            $nombre_conformacion = Str::slug($request->input('nombre')) . '-' . Str::random(4) . "." . $conformacion->getClientOriginalExtension();
-            $conformacion->move(public_path($rutaGuardarImg), $nombre_conformacion);
-            $subcomite['conformacion'] = $nombre_conformacion;
+            $subcomite['conformacion'] = $this->subirImagen($conformacion, $request->nombre, 'subcomitesconformacion/');
         }
 
         if ($icono = $request->file('icono')) {
-            $rutaGuardarIco = 'icono_subcomites/';
-            $nombre_icono = Str::slug($request->input('nombre')) . '-' . Str::random(4) . "." . $icono->getClientOriginalExtension();
-            $icono->move(public_path($rutaGuardarIco), $nombre_icono);
-            $subcomite['icono'] = $nombre_icono;
+            $subcomite['icono'] = $this->subirImagen($icono, $request->nombre, 'icono_subcomites/');
         }
 
         Subcomite::create($subcomite);
@@ -266,25 +258,13 @@ class SubcomiteController extends Controller
         $subcomites->planestatal_id = $request->planestatal_id;
 
         if ($request->hasFile('conformacion')) {
-            if ($subcomites->conformacion) {
-                unlink(public_path('subcomitesconformacion/') . $subcomites->conformacion);
-            }
-
-            $conformacion = $request->file('conformacion');
-            $nombre_conformacion = Str::slug($request->input('nombre')) . '-' . Str::random(4) . '.' . $conformacion->getClientOriginalExtension();
-            $conformacion->move(public_path('subcomitesconformacion/'), $nombre_conformacion);
-            $subcomites->conformacion = $nombre_conformacion;
+            $this->eliminarImagen('subcomitesconformacion/', $subcomites->conformacion);
+            $subcomites->conformacion = $this->subirImagen($request->file('conformacion'), $request->nombre, 'subcomitesconformacion/');
         }
 
         if ($request->hasFile('icono')) {
-            if ($subcomites->icono) {
-                unlink(public_path('icono_subcomites/') . $subcomites->icono);
-            }
-
-            $icono = $request->file('icono');
-            $nombre_icono = Str::slug($request->input('nombre')) . '-' . Str::random(4) . '.' . $icono->getClientOriginalExtension();
-            $icono->move(public_path('icono_subcomites/'), $nombre_icono);
-            $subcomites->icono = $nombre_icono;
+            $this->eliminarImagen('icono_subcomites/', $subcomites->icono);
+            $subcomites->icono = $this->subirImagen($request->file('icono'), $request->nombre, 'icono_subcomites/');
         }
 
         if ($request->has('publicado')) {
@@ -308,14 +288,8 @@ class SubcomiteController extends Controller
 
         $rutaArchivo = public_path('subcomitesconformacion/') . $subcomites->conformacion;
 
-        if (file_exists($rutaArchivo)) {
-            unlink($rutaArchivo);
-        }
-        $rutaArchivo2 = public_path('icono_subcomites/') . $subcomites->icono;
-
-        if (file_exists($rutaArchivo2)) {
-            unlink($rutaArchivo2);
-        }
+        $this->eliminarImagen('subcomitesconformacion/', $subcomites->conformacion);
+        $this->eliminarImagen('icono_subcomites/', $subcomites->icono);
 
         $subcomites->delete();
 
@@ -345,7 +319,7 @@ class SubcomiteController extends Controller
         // 1. ÚNICA CONSULTA a la BD
         $todos_los_subcomites = Subcomite::with('planEstatal')
             ->where('publicado', true)
-            ->orderBy('nombre')
+            ->orderBy('orden', 'desc')
             ->get();
         $plan_actual = $todos_los_subcomites->first(function ($subcomite) {
             return $subcomite->planEstatal && $subcomite->planEstatal->nombre === NOMBRE_PLAN_ACTUAL;
@@ -439,6 +413,29 @@ class SubcomiteController extends Controller
         }
 
         return $slug;
+    }
+
+    /**
+     * Sube una imagen al servidor y retorna su nombre generado.
+     */
+    private function subirImagen($file, $nombreBase, $rutaDestino)
+    {
+        $nombreFinal = Str::slug($nombreBase) . '-' . Str::random(4) . "." . $file->getClientOriginalExtension();
+        $file->move(public_path($rutaDestino), $nombreFinal);
+        return $nombreFinal;
+    }
+
+    /**
+     * Elimina un archivo de forma segura usando Laravel File Facade.
+     */
+    private function eliminarImagen($rutaBase, $nombreArchivo)
+    {
+        if ($nombreArchivo) {
+            $rutaCompleta = public_path($rutaBase) . $nombreArchivo;
+            if (\Illuminate\Support\Facades\File::exists($rutaCompleta)) {
+                \Illuminate\Support\Facades\File::delete($rutaCompleta);
+            }
+        }
     }
 
     use UpdatesPublicado;
