@@ -2159,7 +2159,7 @@ footer {
 .contenedor-imagen-subcomites {
     background-image: url('../img/fondos-seccion/subcomites.webp');
     background-size: cover;
-    background-position: center top;
+    background-position: center center;
     display: flex;
     justify-content: center;
     align-items: center;
