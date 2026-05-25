@@ -58,11 +58,11 @@
                                 COPLADEP
                             </a>
                         </li>
-                        <li class="{{ request()->is('copladep/primera-sesion-ordinaria') ? 'active' : '' }}">
+                        {{-- <li class="{{ request()->is('copladep/primera-sesion-ordinaria') ? 'active' : '' }}">
                             <a href="{{ url('/copladep/primera-sesion-ordinaria') }}">
                                 Primera sesión ordinaria
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="{{ request()->is('programas-estatales') ? 'active' : '' }}">
                             <a href="{{ url('/programas-estatales') }}">
                                 Programas Estatales
