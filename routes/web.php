@@ -25,6 +25,7 @@ use App\Http\Controllers\DocumentoSesionController;
 use App\Http\Controllers\InvitadoCopladepController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RegistroCopladepController;
+use App\Http\Controllers\DocumentoInsumoPedController;
 
 
 /*
@@ -107,6 +108,8 @@ Route::get('/documentos-metodologicos', [DocumentoMetodologicoController::class,
 // });
 
 Route::get('/herramientas-planeacion', [HerramientaPlaneacionController::class, 'mostrarHerramientas']);
+
+Route::get('/ped/insumos-ped', [DocumentoInsumoPedController::class, 'insumos'])->name('insumos-ped.public');
 
 Route::get('/planesmunicipales', [PlanMunicipalController::class, 'mostrarPlanesMunicipales']);
 
@@ -220,4 +223,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'update'])->name('panel-planes-estatales-anexos.update');
     Route::delete('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'destroy'])->name('panel-planes-estatales-anexos.destroy');
     Route::patch('/plan-estatal-anexo/{id}/publicado', [PlanEstatalAnexoController::class, 'updatePublicado'])->name('update-publicado-plan-estatal-anexo');
+    Route::resource('panel-documentos-insumo-ped', DocumentoInsumoPedController::class);
+    Route::patch('/documento-insumo-ped/{id}/publicado', [DocumentoInsumoPedController::class, 'updatePublicado'])->name('update-publicado-documento-insumo-ped');
 });

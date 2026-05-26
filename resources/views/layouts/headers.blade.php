@@ -35,10 +35,10 @@
                 </li>
                 <li class="dropdown">
                     <a href="#"
-                        class="{{ request()->is('ped', 'ped-programas', 'copladep', 'subcomites*', 'programas-estatales', 'copladep/primera-sesion-ordinaria', 'ped-programas/capacitacion', 'herramientas-planeacion') ? 'active' : '' }}">
+                        class="{{ request()->is('ped', 'ped-programas', 'copladep', 'subcomites*', 'programas-estatales', 'copladep/primera-sesion-ordinaria', 'ped-programas/capacitacion', 'herramientas-planeacion', 'ped/insumos-ped') ? 'active' : '' }}">
                         Planeación Estatal &#9662;</a>
                     <ul class="dropdown-content">
-                        <li class="{{ request()->is('ped') ? 'active' : '' }}">
+                        <li class="{{ request()->is('ped', 'ped/insumos-ped') ? 'active' : '' }}">
                             <a href="{{ url('/ped') }}">
                                 Plan Estatal
                                 de Desarrollo

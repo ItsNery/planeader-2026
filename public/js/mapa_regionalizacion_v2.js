@@ -99,6 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         const nombreMun =
                             feature.properties.nomgeo || "Municipio";
+                        const cveMun = feature.properties.cve_mun;
+                        const idMun = cveMun ? parseInt(cveMun, 10) : null;
                         const config = configCapas[capaActiva];
                         const wmsUrl =
                             `${urlGeoserver}?service=WMS&version=1.1.1&request=GetFeatureInfo` +
@@ -139,6 +141,15 @@ document.addEventListener("DOMContentLoaded", function () {
                                 } else {
                                     titulo += " (sin información)";
                                 }
+                                let btnHtml = "";
+                                if (idMun) {
+                                    btnHtml = `
+                                        <a href="https://sei.puebla.gob.mx/fichas/banco-indicadores?indicador_id=1&nivel=municipio&municipio_ids=${idMun}" target="_blank" class="custom-popup-btn">
+                                            Conozca más información del municipio en el SEI
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    `;
+                                }
                                 const popupContent = `
                                     <div class="custom-popup-container">
                                         <div class="custom-popup-header">
@@ -148,6 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                             <ul class="custom-popup-list">
                                                 <li class="custom-popup-list-item">Municipio: <strong>${nombreMun}</strong></li>
                                             </ul>
+                                            ${btnHtml}
                                         </div>
                                     </div>
                                 `;

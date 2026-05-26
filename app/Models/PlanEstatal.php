@@ -51,4 +51,14 @@ class PlanEstatal extends Model
     {
         return $this->hasMany(PlanEstatalAnexo::class, 'plan_estatal_id')->orderBy('orden');
     }
+
+    /**
+     * Define la relación "uno a muchos" con los documentos de insumos PED.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function documentoInsumoPeds()
+    {
+        return $this->hasMany(DocumentoInsumoPed::class, 'plan_estatal_id');
+    }
 }

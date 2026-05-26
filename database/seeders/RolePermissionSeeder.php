@@ -24,6 +24,7 @@ class RolePermissionSeeder extends Seeder
             'doc-metodologico',
             'doc-sesion',
             'doc-subcomite',
+            'documento-insumo-ped',
             'herramienta',
             'marco-juridico',
             'plan-estatal',

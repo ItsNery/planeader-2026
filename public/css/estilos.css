@@ -1663,7 +1663,7 @@ footer {
     }
 
     #programasActualesTab .nav-link.active {
-        color: var(--bs-white);
+        color: var(--arena);
         background-color: var(--color1);
         border-color: var(--color1);
     }
@@ -1702,7 +1702,7 @@ footer {
 
     #accordionPrincipalPlanes {
         --color-primario-acordeon: var(--color1);
-        --color-texto-activo: #ffffff;
+        --arena: #ffffff;
     }
 
     #accordionPrincipalPlanes .accordion-item {
@@ -1719,7 +1719,7 @@ footer {
 
 
     #accordionPrincipalPlanes .accordion-button:not(.collapsed) {
-        color: var(--color-texto-activo);
+        color: var(--arena);
         background-color: var(--color-primario-acordeon);
         box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
     }
@@ -2485,7 +2485,7 @@ footer {
 
     #accordionHistorico {
         --color-primario-acordeon: var(--color1);
-        --color-texto-activo: #ffffff;
+        --arena: #ffffff;
     }
 
     #accordionHistorico .accordion-item {
@@ -2502,7 +2502,7 @@ footer {
 
 
     #accordionHistorico .accordion-button:not(.collapsed) {
-        color: var(--color-texto-activo);
+        color: var(--arena);
         background-color: var(--color-primario-acordeon);
         box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
     }
@@ -2873,7 +2873,7 @@ footer {
     }
 
     #regionalizacionTab .nav-link.active {
-        color: var(--bs-white);
+        color: var(--arena);
         background-color: var(--color1);
         border-color: var(--color1);
     }
@@ -3184,6 +3184,12 @@ footer {
 }
 
 .descarga-base {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+
     .titulo {
         font-family: 'Gilroy-Bold', sans-serif;
         text-align: center;
@@ -3196,6 +3202,11 @@ footer {
     }
 }
 
+@media (max-width: 575px) {
+    .descarga-base{
+        flex-direction: column;
+    }
+}
 /* Estilos de regionalizacion terminan */
 /* Inician estilos de Planes Municipales */
 .contenedor-imagen-planesmun {
@@ -4486,6 +4497,41 @@ footer {
     filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.05));
 }
 
+.custom-popup-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background-color: var(--color1, #7d2c43);
+    color: #ffffff !important;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.custom-popup-btn:hover {
+    background-color: var(--color2, #621132);
+    color: #ffffff !important;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.custom-popup-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.custom-popup-btn i {
+    margin-left: 6px;
+    font-size: 0.75rem;
+}
+
 .iframe-documento {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -4566,4 +4612,188 @@ footer {
 .accion-programa__boton--contorno:hover {
     background-color: var(--color4);
     color: #ffffff;
+}
+
+/* Insumos PED */
+.ped-breadcrumb {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.ped-breadcrumb__list {
+    background-color: transparent;
+    padding: 0;
+}
+
+.ped-breadcrumb__item {
+    margin: 0 10px;
+}
+
+.ped-breadcrumb__link {
+    color: var(--arena);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ped-breadcrumb__link:hover {
+    text-decoration: underline;
+    color: var(--color4);
+    opacity: 0.8;
+}
+
+.ped-breadcrumb__item--active {
+    color: var(--arena);
+    font-weight: 600;
+}
+
+.ped-breadcrumb__item+.ped-breadcrumb__item::before {
+    content: "/";
+    margin: 0 8px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ped-insumos {
+    margin: 30px 0;
+}
+
+.ped-insumos--documents {
+    padding: 40px 0;
+    background-color: #f8f9fa;
+}
+
+.ped-insumos__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 30px 0 20px 0;
+    text-align: center;
+}
+
+.ped-insumos__text-container {
+    margin: 20px 0 40px 0;
+}
+
+.ped-insumos__tab-list {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.ped-insumos__tab-button.active {
+    color: var(--arena);
+    background-color: var(--color1);
+    border-color: var(--color1);
+}
+
+.ped-insumos__tab-button {
+    color: var(--color1);
+    border: none;
+}
+
+.ped-insumos__tab-button:hover {
+    border-color: #7d2c43;
+    color: var(--color1);
+}
+
+.ped-insumos__tab-content {
+    margin-top: 1rem;
+}
+
+.ped-insumos__panel {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.ped-insumos__card {
+    overflow: hidden;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.ped-insumos__card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+.ped-insumos__card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.ped-insumos__card-icon {
+    text-align: center;
+    padding: 15px 0;
+}
+
+.ped-insumos__card-title {
+    flex-grow: 1;
+}
+
+.ped-insumos__card-meta {
+    font-size: 0.85rem;
+}
+
+.ped-insumos__card-badge {
+    display: inline-flex;
+    align-items: center;
+}
+
+.ped-insumos__empty-image {
+    width: 40% !important;
+}
+
+.ped-insumos__empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 3rem 0;
+}
+
+.ped-insumos__empty-text {
+    color: var(--bs-black);
+    text-align: center;
+    padding-bottom: 3rem;
+}
+
+@media (max-width: 768px) {
+    .ped-insumos__title {
+        font-size: 1.8rem;
+    }
+
+    .ped-insumos__tab-button {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.95rem;
+    }
+
+    .ped-insumos__text {
+        font-size: 0.95rem;
+    }
+
+    .ped-breadcrumb__item {
+        margin: 0 5px;
+        font-size: 0.9rem;
+    }
+
+    .ped-breadcrumb__item+.ped-breadcrumb__item::before {
+        margin: 0 3px;
+    }
+}
+
+#mi-minimapa-estatico {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 98;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    background: white;
+    pointer-events: none;
 }

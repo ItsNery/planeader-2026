@@ -69,6 +69,11 @@
                                     {{ __('Docs. Sesiones') }}
                                 </x-dropdown-link>
                             @endcan --}}
+                            @can('ver-documento-insumo-ped')
+                                <x-dropdown-link href="{{ route('panel-documentos-insumo-ped.index') }}">
+                                    {{ __('Insumos PED') }}
+                                </x-dropdown-link>
+                            @endcan
                         </x-slot>
                     </x-dropdown>
                 @endcanany
