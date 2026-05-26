@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $ruta_documento La ruta del documento (VARCHAR, obligatorio).
  * @property string $portada La ruta de la portada del documento (VARCHAR, obligatorio).
  * @property int $orden El orden del documento en la lista (Integer, nulo).
+ * @property string $tipo El tipo de documento qu es (Enum, nulo).
  * @property \Illuminate\Support\Carbon|null $created_at La fecha y hora de creación.
  * @property \Illuminate\Support\Carbon|null $updated_at La fecha y hora de la última actualización.
  */
@@ -35,5 +36,5 @@ class MarcoJuridico extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['nombre', 'ruta_documento', 'portada', 'orden'];
+    protected $fillable = ['nombre', 'ruta_documento', 'portada', 'orden', 'tipo'];
 }

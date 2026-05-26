@@ -59,6 +59,21 @@
                             <small class="text-muted mt-1 d-block">Determina la posición en la vista
                                 pública.</small>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="tipo" class="fw-bold mb-1">Tipo de documento: *</label>
+                            <select class="form-select @error('tipo') is-invalid @enderror" id="tipo" name="tipo">
+                                <option value="" disabled {{ old('tipo', $documento->tipo ?? '') == '' ? 'selected' : '' }}>Seleccione</option>
+                                @foreach (['Federal', 'Estatal', 'Municipal'] as $tipoOption)
+                                    <option value="{{ $tipoOption }}" {{ old('tipo', $documento->tipo ?? '') == $tipoOption ? 'selected' : '' }}>
+                                        {{ $tipoOption }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('tipo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     {{-- Archivos y Visibilidad --}}

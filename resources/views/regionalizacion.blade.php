@@ -153,29 +153,35 @@
             </div>
         </div>
     </section>
-    <section class="descarga-base">
-        <div class="container">
-            <h2 class="titulo">Consulta el Anexo 5, para más información</h2>
-            <p class="descripcion">
-                Aquí podrás encontrar más información sobre la metodología para la regionalización.
-            </p>
-            <div class="contenedor-boton">
-                <a href="https://ped2024-2030.puebla.gob.mx/documentos/Anexo_5.pdf?v=1779477548476" target="_blank" class="btn-descargar"
-                    title="Base Regionalizacion 2026">
-                    <span class="btn-descargar__texto">Consultar<br>documento</span>
+    <section class="descarga-base container">
+        @if ($anexo5)
+            <div class="container d-flex justify-content-center flex-column align-items-center">
+                <h2 class="titulo">Consulta el Anexo 5, para más información</h2>
+                <p class="descripcion">
+                    Aquí podrás encontrar más información sobre la metodología para la regionalización.
+                </p>
+                <div class="container-imagen">
+                    <img src="{{ asset('img/ped/anexos/' . $anexo5->imagen) . '?v=' . $anexo5->updated_at->timestamp }}"
+                        alt="" class="w-100">
+                </div>
+                <div class="contenedor-boton">
+                    <a href="{{ $anexo5->es_enlace ? $anexo5->ruta_documento : asset('documentos/planesest/anexos/' . $anexo5->ruta_documento) . '?v=' . $anexo5->updated_at->timestamp }}" target="_blank" class="btn-descargar"
+                        title="Base Regionalizacion 2026">
 
-                    <span class="btn-descargar__icono">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 15.586l-4.293-4.293a1 1 0 0 1 1.414-1.414L11 11.586V4a1 1 0 0 1 2 0v7.586l1.879-1.879a1 1 0 0 1 1.414 1.414L12 15.586z" />
-                            <path
-                                d="M18 21H6a3 3 0 0 1-3-3V11a1 1 0 0 1 2 0v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7a1 1 0 0 1 2 0v7a3 3 0 0 1-3 3z" />
-                        </svg>
-                    </span>
-                </a>
+                        <span class="btn-descargar__texto">Consultar<br>documento</span>
+                        <span class="btn-descargar__icono">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 15.586l-4.293-4.293a1 1 0 0 1 1.414-1.414L11 11.586V4a1 1 0 0 1 2 0v7.586l1.879-1.879a1 1 0 0 1 1.414 1.414L12 15.586z" />
+                                <path
+                                    d="M18 21H6a3 3 0 0 1-3-3V11a1 1 0 0 1 2 0v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7a1 1 0 0 1 2 0v7a3 3 0 0 1-3 3z" />
+                            </svg>
+                        </span>
+                    </a>
+                </div>
             </div>
-        </div>
-                <div class="container">
+        @endif
+        <div class="container">
             <h2 class="titulo">Base de datos de las regiones</h2>
             <p class="descripcion">
                 Aquí podrás descargar la base de datos con la relación de las regiones y sus municipios.
@@ -228,6 +234,6 @@
     </script>
     {{-- <script src="{{ asset('js/mapa_regionalizacion.js') }}"></script> --}}
     <script src="{{ asset('js/mapa_regionalizacion_v2.js') }}"></script>
-    {{--<script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
+    {{-- <script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"></script>
 @endsection

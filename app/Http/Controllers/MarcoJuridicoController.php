@@ -37,7 +37,11 @@ class MarcoJuridicoController extends Controller
         $totalDocumentos = MarcoJuridico::count();
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
         $ordenesDisponibles = range(1, $totalDocumentos + 2);
-        return view('panel-marco-juridico.crear', compact('ordenesExistentes', 'ordenesDisponibles'));
+        return view('panel-marco-juridico.form')
+            ->with('documento', null)
+            ->with('ordenesExistentes', $ordenesExistentes)
+            ->with('ordenesDisponibles', $ordenesDisponibles);
+
     }
 
     /**
@@ -53,7 +57,8 @@ class MarcoJuridicoController extends Controller
             'ruta_documento' => 'required|mimes:pdf|max:500000',
             'portada' => 'required|image|mimes:jpeg,png,svg,jpg|max:6144',
             'orden' => 'required|integer',
-            'publicado' => 'nullable'
+            'publicado' => 'nullable',
+            'tipo' => 'required|in:Federal,Estatal,Municipal',
         ], [
             'nombre.required' => 'El nombre del documento es requerido',
             'ruta_documento.required' => 'No ha elegido un documento',
@@ -65,6 +70,8 @@ class MarcoJuridicoController extends Controller
             'portada.max' => 'La imagen no debe pesar mas de 6MB',
             'orden.required' => 'Se requiere un número para definir el orden, por ej.:1 o 2 o 3, etc',
             'orden.integer' => 'Se requiere un número',
+            'tipo.required' => 'Se requiere el tipo de documento',
+            'tipo.in' => 'El tipo de documento debe ser Federal, Estatal o Municipal',
         ]);
 
         // Obtener los datos individuales del formulario
@@ -72,11 +79,13 @@ class MarcoJuridicoController extends Controller
         $ruta_documento = $request->file('ruta_documento');
         $portada = $request->file('portada');
         $orden = $request->input('orden');
+        $tipo = $request->input('tipo');
 
         // Crear un nuevo registro MarcoJuridico con los datos recibidos
         $documentosMarcoJuridico = new MarcoJuridico();
         $documentosMarcoJuridico->nombre = $nombre;
         $documentosMarcoJuridico->orden = $orden;
+        $documentosMarcoJuridico->tipo = $tipo;
 
         // $documentosMarcoJuridico = $request->all();
 
@@ -130,7 +139,10 @@ class MarcoJuridicoController extends Controller
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
         $ordenesDisponibles = range(1, $totalDocumentos + 1);
         $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
-        return view('panel-marco-juridico.editar', compact('documentosMarcoJuridico', 'ordenesExistentes', 'ordenesDisponibles'));
+        return view('panel-marco-juridico.form')
+            ->with('documento', $documentosMarcoJuridico)
+            ->with('ordenesExistentes', $ordenesExistentes)
+            ->with('ordenesDisponibles', $ordenesDisponibles);
     }
 
     /**
@@ -148,7 +160,8 @@ class MarcoJuridicoController extends Controller
             'ruta_documento' => 'nullable|mimes:pdf',
             'portada' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
             'orden' => 'required|integer',
-            'publicado' => 'nullable'
+            'publicado' => 'nullable',
+            'tipo' => 'required|in:Federal,Estatal,Municipal',
         ], [
             'nombre.required' => 'El nombre del documento es requerido',
             'ruta_documento.mimes' => 'El archivo debe ser PDF (Formato de documento portátil)',
@@ -156,7 +169,9 @@ class MarcoJuridicoController extends Controller
             'portada.mimes' => 'El archivo no es una imagen',
             'portada.max' => 'La imagen no debe pesar más de 6MB',
             'orden.required' => 'Se requiere el número de ordenación del documento',
-            'orden.integer' => 'Se requiere el número'
+            'orden.integer' => 'Se requiere el número',
+            'tipo.required' => 'Se requiere el tipo de documento',
+            'tipo.in' => 'El tipo de documento debe ser Federal, Estatal o Municipal',
         ]);
 
         $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
@@ -164,6 +179,7 @@ class MarcoJuridicoController extends Controller
         // Actualizar campos no relacionados con archivos
         $documentosMarcoJuridico->nombre = $request->nombre;
         $documentosMarcoJuridico->orden = $request->orden;
+        $documentosMarcoJuridico->tipo = $request->tipo;
         $slugNombre = Str::limit(Str::slug($request->nombre), 70);
 
         // Manejar la actualización de la ruta del documento (si se proporciona un nuevo archivo)
@@ -226,7 +242,8 @@ class MarcoJuridicoController extends Controller
     {
         $documentos = MarcoJuridico::where('publicado', 1)
             ->orderBy('orden', 'asc')
-            ->get();
+            ->get()
+            ->groupBy('tipo');
         return view('marcojuridico', compact('documentos'));
     }
     public function updatePublicado(Request $request, $id)

@@ -27,12 +27,6 @@
                         Marco Jurídico
                     </a>
                 </li>
-                <li>
-                    <a href="{{ url('/regionalizacion') }}"
-                        class="{{ request()->is('regionalizacion') ? 'active' : '' }}">
-                        Regionalización
-                    </a>
-                </li>
                 <li class="dropdown">
                     <a href="#"
                         class="{{ request()->is('ped', 'ped-programas', 'copladep', 'subcomites*', 'programas-estatales', 'copladep/primera-sesion-ordinaria', 'ped-programas/capacitacion', 'herramientas-planeacion', 'ped/insumos-ped') ? 'active' : '' }}">
@@ -107,6 +101,13 @@
                         </li>
                     </ul>
                 </li>
+                <li>
+                    <a href="{{ url('/regionalizacion') }}"
+                        class="{{ request()->is('regionalizacion') ? 'active' : '' }}">
+                        Regionalización
+                    </a>
+                </li>
+
                 <li>
                     <a href="{{ url('/contacto') }}" class="{{ request()->is('contacto') ? 'active' : '' }}">
                         Contacto

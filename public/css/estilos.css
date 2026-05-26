@@ -132,7 +132,7 @@ body {
 }
 
 p {
-    font-size: 18px !important;
+    font-size: 17px !important;
 }
 
 /* Estilos del loader */
@@ -3203,10 +3203,11 @@ footer {
 }
 
 @media (max-width: 575px) {
-    .descarga-base{
+    .descarga-base {
         flex-direction: column;
     }
 }
+
 /* Estilos de regionalizacion terminan */
 /* Inician estilos de Planes Municipales */
 .contenedor-imagen-planesmun {
@@ -4511,7 +4512,7 @@ footer {
     border-radius: 6px;
     transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .custom-popup-btn:hover {
@@ -4519,12 +4520,12 @@ footer {
     color: #ffffff !important;
     text-decoration: none;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .custom-popup-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .custom-popup-btn i {
@@ -4796,4 +4797,30 @@ footer {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     background: white;
     pointer-events: none;
+}
+
+.container-imagen {
+    display: flex;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+    max-width: 200px;
+    height: auto;
+}
+
+.contenedor-tipo {
+    border-radius: 20px;
+    box-shadow: var(--boxShadow);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .contenedor-titulo {
+        font-size: 2vw;
+        font-weight: 500;
+        font-family: 'Gilroy-Bold', sans-serif;
+    }
 }
