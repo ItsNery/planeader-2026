@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('registro_copladeps', function (Blueprint $table) {
-            $table->string('tipo_asistente')->default('titular');
-            $table->foreignId('invitado_id')->constrained('invitado_copladeps');
+            if (!Schema::hasColumn('registro_copladeps', 'tipo_asistente')) {
+                $table->string('tipo_asistente', 191)->default('titular');
+            }
         });
     }
     /**
