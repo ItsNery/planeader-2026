@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('invitado_id')->constrained('invitado_copladeps');
         });
     }
-
     /**
      * Reverse the migrations.
      */

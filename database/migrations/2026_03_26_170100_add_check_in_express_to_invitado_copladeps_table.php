@@ -15,7 +15,6 @@ return new class extends Migration
             $table->boolean('check_in_express')->default(false)->after('municipio_id');
         });
     }
-
     /**
      * Reverse the migrations.
      */

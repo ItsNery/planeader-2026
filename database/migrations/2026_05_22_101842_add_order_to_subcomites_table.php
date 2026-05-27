@@ -15,7 +15,6 @@ return new class extends Migration
             $table->integer('orden')->nullable()->after('slug');
         });
     }
-
     /**
      * Reverse the migrations.
      */

@@ -15,7 +15,6 @@ return new class extends Migration
              $table->enum('tipo', ['Federal', 'Estatal', 'Municipal'])->after('orden')->nullable()->default('Municipal');
         });
     }
-
     /**
      * Reverse the migrations.
      */
