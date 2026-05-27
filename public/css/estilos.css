@@ -4824,3 +4824,81 @@ footer {
         font-family: 'Gilroy-Bold', sans-serif;
     }
 }
+
+/* --- Marco Jurídico BEM Styles --- */
+
+/* Modifier for tarjeta-marco when acting as a collapse trigger */
+.tarjeta-marco--trigger {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.tarjeta-marco--trigger:hover {
+    transform: translateY(-5px);
+    /* box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); */
+}
+
+/* Expanded state of the trigger card */
+.tarjeta-marco--trigger[aria-expanded="true"] {
+    border-color: var(--color1) !important;
+    box-shadow: 0 8px 24px rgba(95, 27, 45, 0.15) !important;
+}
+
+.tarjeta-marco--trigger[aria-expanded="true"] .btn-descargar {
+    background-color: var(--color1) !important;
+    color: #ffffff !important;
+}
+
+.tarjeta-marco--trigger[aria-expanded="true"] .btn-descargar svg {
+    fill: #ffffff !important;
+    transform: rotate(180deg);
+}
+
+.tarjeta-marco--trigger .btn-descargar svg {
+    transition: transform 0.3s ease, fill 0.3s ease;
+}
+
+/* Accordion Block for Marco Jurídico */
+.accordion-marco {
+    --color-primario-acordeon: var(--color1);
+    --arena: #ffffff;
+}
+
+.accordion-marco .accordion-item {
+    border-color: rgba(0, 0, 0, 0.05);
+    border-left: 3px solid transparent;
+    transition: border-left 0.3s ease;
+}
+
+.accordion-marco .accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(95, 27, 45, 0.25);
+    border-color: var(--color-primario-acordeon);
+}
+
+.accordion-marco .accordion-button:not(.collapsed) {
+    color: var(--arena);
+    background-color: var(--color-primario-acordeon);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
+}
+
+.accordion-marco .accordion-button:not(.collapsed):closest('.accordion-item') {
+    border-left: 3px solid var(--color-primario-acordeon);
+}
+
+.accordion-marco .accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%235f1b2d'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-marco .accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    transform: rotate(-180deg);
+}
+
+.accordion-marco .accordion-button:not(.collapsed):hover {
+    background-color: #722f43;
+}
+
+.document-item__name:hover {
+    color: var(--color2);
+    text-decoration: underline;
+}

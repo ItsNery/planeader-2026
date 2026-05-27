@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MarcoJuridico;
+use App\Models\MarcoJuridicoClasificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -23,7 +24,7 @@ class MarcoJuridicoController extends Controller
      */
     public function index()
     {
-        $documentos = MarcoJuridico::paginate(1000);
+        $documentos = MarcoJuridico::with('clasificacion.ambito', 'clasificacion.tipoDocumento')->paginate(1000);
         return view('panel-marco-juridico.index', compact('documentos'));
     }
 
@@ -37,8 +38,14 @@ class MarcoJuridicoController extends Controller
         $totalDocumentos = MarcoJuridico::count();
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
         $ordenesDisponibles = range(1, $totalDocumentos + 2);
+        $clasificaciones = MarcoJuridicoClasificacion::with('ambito', 'tipoDocumento')
+            ->orderBy('ambito_id')
+            ->orderBy('tipo_documento_id')
+            ->get();
+
         return view('panel-marco-juridico.form')
             ->with('documento', null)
+            ->with('clasificaciones', $clasificaciones)
             ->with('ordenesExistentes', $ordenesExistentes)
             ->with('ordenesDisponibles', $ordenesDisponibles);
 
@@ -58,7 +65,7 @@ class MarcoJuridicoController extends Controller
             'portada' => 'required|image|mimes:jpeg,png,svg,jpg|max:6144',
             'orden' => 'required|integer',
             'publicado' => 'nullable',
-            'tipo' => 'required|in:Federal,Estatal,Municipal',
+            'marco_juridico_clasificacion_id' => 'required|exists:marco_juridico_clasificaciones,id',
         ], [
             'nombre.required' => 'El nombre del documento es requerido',
             'ruta_documento.required' => 'No ha elegido un documento',
@@ -70,8 +77,8 @@ class MarcoJuridicoController extends Controller
             'portada.max' => 'La imagen no debe pesar mas de 6MB',
             'orden.required' => 'Se requiere un número para definir el orden, por ej.:1 o 2 o 3, etc',
             'orden.integer' => 'Se requiere un número',
-            'tipo.required' => 'Se requiere el tipo de documento',
-            'tipo.in' => 'El tipo de documento debe ser Federal, Estatal o Municipal',
+            'marco_juridico_clasificacion_id.required' => 'Se requiere la clasificación normativa',
+            'marco_juridico_clasificacion_id.exists' => 'La clasificación normativa seleccionada no es válida',
         ]);
 
         // Obtener los datos individuales del formulario
@@ -79,13 +86,14 @@ class MarcoJuridicoController extends Controller
         $ruta_documento = $request->file('ruta_documento');
         $portada = $request->file('portada');
         $orden = $request->input('orden');
-        $tipo = $request->input('tipo');
+        $clasificacion = MarcoJuridicoClasificacion::with('ambito')->findOrFail($request->input('marco_juridico_clasificacion_id'));
 
         // Crear un nuevo registro MarcoJuridico con los datos recibidos
         $documentosMarcoJuridico = new MarcoJuridico();
         $documentosMarcoJuridico->nombre = $nombre;
         $documentosMarcoJuridico->orden = $orden;
-        $documentosMarcoJuridico->tipo = $tipo;
+        $documentosMarcoJuridico->tipo = $clasificacion->ambito->nombre;
+        $documentosMarcoJuridico->marco_juridico_clasificacion_id = $clasificacion->id;
 
         // $documentosMarcoJuridico = $request->all();
 
@@ -138,9 +146,15 @@ class MarcoJuridicoController extends Controller
         $totalDocumentos = MarcoJuridico::count();
         $ordenesExistentes = MarcoJuridico::pluck('orden')->toArray();
         $ordenesDisponibles = range(1, $totalDocumentos + 1);
-        $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
+        $documentosMarcoJuridico = MarcoJuridico::with('clasificacion.ambito', 'clasificacion.tipoDocumento')->findOrFail($id);
+        $clasificaciones = MarcoJuridicoClasificacion::with('ambito', 'tipoDocumento')
+            ->orderBy('ambito_id')
+            ->orderBy('tipo_documento_id')
+            ->get();
+
         return view('panel-marco-juridico.form')
             ->with('documento', $documentosMarcoJuridico)
+            ->with('clasificaciones', $clasificaciones)
             ->with('ordenesExistentes', $ordenesExistentes)
             ->with('ordenesDisponibles', $ordenesDisponibles);
     }
@@ -161,7 +175,7 @@ class MarcoJuridicoController extends Controller
             'portada' => 'nullable|image|mimes:jpeg,png,svg,jpg|max:6144',
             'orden' => 'required|integer',
             'publicado' => 'nullable',
-            'tipo' => 'required|in:Federal,Estatal,Municipal',
+            'marco_juridico_clasificacion_id' => 'required|exists:marco_juridico_clasificaciones,id',
         ], [
             'nombre.required' => 'El nombre del documento es requerido',
             'ruta_documento.mimes' => 'El archivo debe ser PDF (Formato de documento portátil)',
@@ -170,16 +184,18 @@ class MarcoJuridicoController extends Controller
             'portada.max' => 'La imagen no debe pesar más de 6MB',
             'orden.required' => 'Se requiere el número de ordenación del documento',
             'orden.integer' => 'Se requiere el número',
-            'tipo.required' => 'Se requiere el tipo de documento',
-            'tipo.in' => 'El tipo de documento debe ser Federal, Estatal o Municipal',
+            'marco_juridico_clasificacion_id.required' => 'Se requiere la clasificación normativa',
+            'marco_juridico_clasificacion_id.exists' => 'La clasificación normativa seleccionada no es válida',
         ]);
 
         $documentosMarcoJuridico = MarcoJuridico::findOrFail($id);
+        $clasificacion = MarcoJuridicoClasificacion::with('ambito')->findOrFail($request->marco_juridico_clasificacion_id);
 
         // Actualizar campos no relacionados con archivos
         $documentosMarcoJuridico->nombre = $request->nombre;
         $documentosMarcoJuridico->orden = $request->orden;
-        $documentosMarcoJuridico->tipo = $request->tipo;
+        $documentosMarcoJuridico->tipo = $clasificacion->ambito->nombre;
+        $documentosMarcoJuridico->marco_juridico_clasificacion_id = $clasificacion->id;
         $slugNombre = Str::limit(Str::slug($request->nombre), 70);
 
         // Manejar la actualización de la ruta del documento (si se proporciona un nuevo archivo)
@@ -240,10 +256,18 @@ class MarcoJuridicoController extends Controller
 
     public function mostrarDocumentosMarco()
     {
-        $documentos = MarcoJuridico::where('publicado', 1)
-            ->orderBy('orden', 'asc')
+        $documentos = MarcoJuridico::with('clasificacion.ambito', 'clasificacion.tipoDocumento')
+            ->where('publicado', 1)
             ->get()
-            ->groupBy('tipo');
+            ->sortBy(function ($doc) {
+                return [
+                    optional(optional($doc->clasificacion)->ambito)->orden ?? 99,
+                    $doc->orden
+                ];
+            })
+            ->groupBy('ambito_nombre')
+            ->map(fn($docs) => $docs->groupBy('tipo_documento_nombre'));
+
         return view('marcojuridico', compact('documentos'));
     }
     public function updatePublicado(Request $request, $id)

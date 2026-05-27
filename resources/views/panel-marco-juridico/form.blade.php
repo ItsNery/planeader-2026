@@ -61,18 +61,35 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="tipo" class="fw-bold mb-1">Tipo de documento: *</label>
-                            <select class="form-select @error('tipo') is-invalid @enderror" id="tipo" name="tipo">
-                                <option value="" disabled {{ old('tipo', $documento->tipo ?? '') == '' ? 'selected' : '' }}>Seleccione</option>
-                                @foreach (['Federal', 'Estatal', 'Municipal'] as $tipoOption)
-                                    <option value="{{ $tipoOption }}" {{ old('tipo', $documento->tipo ?? '') == $tipoOption ? 'selected' : '' }}>
-                                        {{ $tipoOption }}
-                                    </option>
+                            @php
+                                $clasificacionSeleccionada = old(
+                                    'marco_juridico_clasificacion_id',
+                                    $documento->marco_juridico_clasificacion_id ?? '',
+                                );
+                            @endphp
+                            <label for="marco_juridico_clasificacion_id" class="fw-bold mb-1">Clasificación normativa: *</label>
+                            <select class="form-select @error('marco_juridico_clasificacion_id') is-invalid @enderror"
+                                id="marco_juridico_clasificacion_id" name="marco_juridico_clasificacion_id">
+                                <option value="" disabled {{ $clasificacionSeleccionada === '' ? 'selected' : '' }}>
+                                    Seleccione
+                                </option>
+                                @foreach ($clasificaciones->groupBy(fn($clasificacion) => $clasificacion->ambito->nombre) as $ambito => $items)
+                                    <optgroup label="{{ $ambito }}">
+                                        @foreach ($items as $clasificacion)
+                                            <option value="{{ $clasificacion->id }}"
+                                                {{ (string) $clasificacionSeleccionada === (string) $clasificacion->id ? 'selected' : '' }}>
+                                                {{ $clasificacion->tipoDocumento->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
                             </select>
-                            @error('tipo')
+                            @error('marco_juridico_clasificacion_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            @if (isset($documento->id) && !$documento->marco_juridico_clasificacion_id)
+                                <small class="text-warning d-block mt-1">Este documento es anterior a la normalización. Asígnale una clasificación para completar la migración funcional.</small>
+                            @endif
                         </div>
                     </div>
 

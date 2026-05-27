@@ -36,5 +36,20 @@ class MarcoJuridico extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['nombre', 'ruta_documento', 'portada', 'orden', 'tipo'];
+    protected $fillable = ['nombre', 'ruta_documento', 'portada', 'orden', 'tipo', 'marco_juridico_clasificacion_id'];
+
+    public function clasificacion()
+    {
+        return $this->belongsTo(MarcoJuridicoClasificacion::class, 'marco_juridico_clasificacion_id');
+    }
+
+    public function getAmbitoNombreAttribute()
+    {
+        return optional(optional($this->clasificacion)->ambito)->nombre ?? $this->tipo ?? 'Sin ámbito';
+    }
+
+    public function getTipoDocumentoNombreAttribute()
+    {
+        return optional(optional($this->clasificacion)->tipoDocumento)->nombre ?? 'Sin clasificar';
+    }
 }

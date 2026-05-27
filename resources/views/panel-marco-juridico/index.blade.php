@@ -44,8 +44,13 @@
                             <td class="d-flex flex-start flex-row">
                                 <img src="{{ asset('portadas-marcojuridico/' . $documento->portada) }}"
                                     class="img-thumbnail mx-2 imagen-lista">
-                                <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
-                                    {{ $documento->nombre }}
+                                <div>
+                                    <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
+                                        {{ $documento->nombre }}
+                                    </div>
+                                    <div class="small text-muted">
+                                        {{ $documento->ambito_nombre }} / {{ $documento->tipo_documento_nombre }}
+                                    </div>
                                 </div>
                             </td>
                             <td class="text-center">

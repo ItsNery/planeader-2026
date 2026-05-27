@@ -13,6 +13,7 @@
 @section('twitter-description',
     'Bienvenido a la página del Marco Jurídico del Sistema Estatal de Planeación Democrática
     del Estado de Puebla.')
+
 @section('css')
 @endsection
 
@@ -28,8 +29,8 @@
                         objetivos y procedimientos en materia de planeación en el marco estatal</p>
                 </div>
             </div>
-            <div class="contenedor-flex">
-                <div class="container row">
+            <div class="contenedor-flex w-100">
+                <div class="container">
                     @if ($documentos->isEmpty())
                         <div class="container flex-container-centro">
                             <img src="{{ asset('imagen/no-file.png') }}" alt="Imagen de Not Found"
@@ -38,43 +39,120 @@
                                 jurídico.</p>
                         </div>
                     @else
-                        @foreach ($documentos as $tipo => $docs)
-                            <div class="contenedor-tipo">
-                                <h2 class="contenedor-titulo">{{ $tipo }}</h2>
-                            </div>
-                            <div class="row">
-                                @foreach ($docs as $documento)
-                                    <div class="container px-4 col-12 col-lg-3 col-md-6">
-                                        <div class="tarjeta-marco">
-                                            <div class="imagen">
-                                                <img src="{{ asset('portadas-marcojuridico/' . $documento->portada) }}"
-                                                    alt="Portada de {{ $documento->nombre }}"
-                                                    title="{{ $documento->nombre }}">
-                                            </div>
-                                            <div class="contenedor-boton">
-                                                <a href="{{ asset('marco-juridico/' . $documento->ruta_documento) }}"
-                                                    target="_blank" class="btn-descargar" title="{{ $documento->nombre }}">
-                                                    <span class="btn-descargar__texto">Consultar documento</span>
-                                                    <span class="btn-descargar__icono">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                                            fill="currentColor">
-                                                            <path
-                                                                d="M12 15.586l-4.293-4.293a1 1 0 0 1 1.414-1.414L11 11.586V4a1 1 0 0 1 2 0v7.586l1.879-1.879a1 1 0 0 1 1.414 1.414L12 15.586z" />
-                                                            <path
-                                                                d="M18 21H6a3 3 0 0 1-3-3V11a1 1 0 0 1 2 0v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7a1 1 0 0 1 2 0v7a3 3 0 0 1-3 3z" />
-                                                        </svg>
-                                                    </span>
-                                                </a>
+                        <!-- Grid de Tarjetas para cada Ámbito -->
+                        <div class="row justify-content-center mb-5">
+                            @foreach ($documentos as $ambito => $tiposDocumento)
+                                @php
+                                    $ambitoId = Str::slug($ambito);
+                                    $primeroDoc = $tiposDocumento->flatten()->first();
+                                    $ambitoModel = optional(optional($primeroDoc)->clasificacion)->ambito;
+                                    
+                                    $portadaSrc = asset('imagen/no-file.png');
+                                    if ($ambitoModel && $ambitoModel->portada) {
+                                        $portadaSrc = asset('portadas-marcojuridico/' . $ambitoModel->portada);
+                                    } elseif ($primeroDoc && $primeroDoc->portada) {
+                                        $portadaSrc = asset('portadas-marcojuridico/' . $primeroDoc->portada);
+                                    }
+                                @endphp
+                                <div class="container px-4 col-12 col-lg-3 col-md-6 mb-4">
+                                    <div class="tarjeta-marco tarjeta-marco--trigger"
+                                         data-bs-toggle="collapse"
+                                         data-bs-target="#collapseAmbito-{{ $ambitoId }}"
+                                         aria-expanded="false"
+                                         aria-controls="collapseAmbito-{{ $ambitoId }}"
+                                         role="button">
+                                        <div class="imagen">
+                                            <img src="{{ $portadaSrc }}"
+                                                alt="Portada de {{ $ambito }}"
+                                                title="{{ $ambito }}">
+                                        </div>
+                                        <div class="contenedor-boton">
+                                            <div class="btn-descargar m-0 w-100 justify-content-between px-3">
+                                                <span class="btn-descargar__texto">{{ $ambito }}</span>
+                                                <span class="btn-descargar__icono">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                        fill="currentColor" width="20px" height="20px">
+                                                        <path d="M12 15.586l-4.293-4.293a1 1 0 0 1 1.414-1.414L11 11.586V4a1 1 0 0 1 2 0v7.586l1.879-1.879a1 1 0 0 1 1.414 1.414L12 15.586z" />
+                                                        <path d="M18 21H6a3 3 0 0 1-3-3V11a1 1 0 0 1 2 0v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7a1 1 0 0 1 2 0v7a3 3 0 0 1-3 3z" />
+                                                    </svg>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
-                        @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Secciones colapsables que contienen los acordeones de los Subtipos -->
+                        <div class="row w-100 m-0">
+                            @foreach ($documentos as $ambito => $tiposDocumento)
+                                @php
+                                    $ambitoId = Str::slug($ambito);
+                                @endphp
+                                <div class="collapse col-12 mb-4" id="collapseAmbito-{{ $ambitoId }}" data-bs-parent=".documentos-marco">
+                                    <div class="p-4 bg-white rounded-3 shadow-sm border">
+                                        <h3 class="text-black h5 mb-3">Ámbito: {{ $ambito }}</h3>
+                                        
+                                        <div class="accordion accordion-marco" id="accordionSubtipos-{{ $ambitoId }}">
+                                            @foreach ($tiposDocumento as $tipoDocumento => $docs)
+                                                @php
+                                                    $tipoId = Str::slug($ambito . '-' . $tipoDocumento);
+                                                @endphp
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="heading-{{ $tipoId }}">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#collapse-{{ $tipoId }}" aria-expanded="false"
+                                                            aria-controls="collapse-{{ $tipoId }}">
+                                                            <strong>{{ $tipoDocumento }}</strong>
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapse-{{ $tipoId }}" class="accordion-collapse collapse"
+                                                        aria-labelledby="heading-{{ $tipoId }}" data-bs-parent="#accordionSubtipos-{{ $ambitoId }}">
+                                                        <div class="accordion-body bg-white">
+                                                            <ul class="list-group list-group-flush p-0 m-0">
+                                                                @foreach ($docs as $documento)
+                                                                    <li class="document-item">
+                                                                        <div class="document-item__main-content">
+                                                                            <p class="document-item__name js-ver-documento m-0"
+                                                                                data-src="{{ asset('marco-juridico/' . $documento->ruta_documento) }}"
+                                                                                data-title="{{ $documento->nombre }}">
+                                                                                {{ $documento->nombre }}
+                                                                            </p>
+                                                                            <span class="document-badge badge-pdf">{{ strtoupper(pathinfo($documento->ruta_documento, PATHINFO_EXTENSION)) }}</span>
+                                                                        </div>
+                                                                        <div class="document-item__actions">
+                                                                            <a href="#" class="js-ver-documento"
+                                                                                data-src="{{ asset('marco-juridico/' . $documento->ruta_documento) }}"
+                                                                                data-title="{{ $documento->nombre }}" title="Ver documento">
+                                                                                <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                                                            </a>
+                                                                            <a href="{{ asset('marco-juridico/' . $documento->ruta_documento) }}"
+                                                                                target="_blank" rel="noopener noreferrer"
+                                                                                title="Abrir en nueva pestaña">
+                                                                                <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                            </a>
+                                                                            <a href="{{ asset('marco-juridico/' . $documento->ruta_documento) }}"
+                                                                                download rel="noopener" title="Descargar documento">
+                                                                                <i class="fas fa-download"></i>
+                                                                                <span>Descargar</span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     @endif
-                    @if ($docs->isNotEmpty())
+                    @if ($documentos->isNotEmpty())
                         @php
-                            $ultimaActualizacion = $docs->max('updated_at');
+                            $ultimaActualizacion = $documentos->flatten(2)->max('updated_at');
                         @endphp
                         <p class="text-black small">Última actualización:
                             {{ $ultimaActualizacion->format('d/m/Y H:i:s') }} UTC</p>
