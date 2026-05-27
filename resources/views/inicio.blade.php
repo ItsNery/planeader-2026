@@ -26,7 +26,6 @@
             if (d.head) d.head.appendChild(s);
         })(document, window, 'Chatra');
     </script> --}}
-
     <section class="carrusel">
         <div class="container-fluid p-0">
             <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
