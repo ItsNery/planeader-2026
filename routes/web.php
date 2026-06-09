@@ -11,6 +11,7 @@ use App\Http\Controllers\EncuestaController;
 use App\Http\Controllers\FormularioContactoController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\MarcoJuridicoController;
+use App\Http\Controllers\MarcoJuridicoAmbitoController;
 use App\Http\Controllers\PlanEstatalController;
 use App\Http\Controllers\PlanMunicipalController;
 use App\Http\Controllers\ProgramaDerivadoController;
@@ -163,6 +164,7 @@ Route::get('/coplademun/listado', [RegistroController::class, 'index'])->name('r
 // Rutas protegidas
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('panel-marco-juridico-ambitos', MarcoJuridicoAmbitoController::class);
     Route::resource('panel-marco-juridico', MarcoJuridicoController::class);
     Route::resource('panel-documentos-subcomites', DocumentoSubcomiteController::class);
 

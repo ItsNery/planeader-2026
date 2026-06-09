@@ -68,7 +68,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <img src="{{ asset('img/integracioncoplademun.png') }}" alt="Esquema de la conformación del Coplademun"
+                    <img src="{{ asset('img/integracion-del-coplademun.png') }}" alt="Esquema de la conformación del Coplademun"
                         title="Conformación del Coplademun" class="esquema-visual">
                 </div>
             </div>

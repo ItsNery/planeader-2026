@@ -25,6 +25,7 @@
                         'panel-documentos-subcomites*',
                         'panel-documentos-copladep*',
                         'panel-marco-juridico*',
+                        'panel-marco-juridico-ambitos*',
                         'panel-documentos-apoyo-coplademun*',
                         'panel-documentos-metodologicos*',
                         'copladep-registro.index'
@@ -46,7 +47,10 @@
                             @endcan
                             @can('ver-marco-juridico')
                                 <x-dropdown-link href="{{ route('panel-marco-juridico.index') }}">
-                                    {{ __('Marco Jurídico') }}
+                                    {{ __('Marco Jurídico (Docs)') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link href="{{ route('panel-marco-juridico-ambitos.index') }}">
+                                    {{ __('Marco Jurídico (Ámbitos)') }}
                                 </x-dropdown-link>
                             @endcan
                             @can('ver-doc-apoyo')
