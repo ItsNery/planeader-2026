@@ -398,7 +398,7 @@
             <section class="inicio-eventos">
                 <div class="container py-5">
                     <h2 class="titulo-tematica text-center">
-                        Eventos
+                        Fechas actualmente bloqueadas
                     </h2>
                 </div>
                 <div class="container">
