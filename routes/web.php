@@ -24,6 +24,7 @@ use App\Http\Controllers\DocumentoMetodologicoController;
 use App\Http\Controllers\DocumentoSesionController;
 use App\Http\Controllers\InvitadoCopladepController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\EventoController;
 use App\Http\Controllers\RegistroCopladepController;
 
 
@@ -220,4 +221,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'update'])->name('panel-planes-estatales-anexos.update');
     Route::delete('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'destroy'])->name('panel-planes-estatales-anexos.destroy');
     Route::patch('/plan-estatal-anexo/{id}/publicado', [PlanEstatalAnexoController::class, 'updatePublicado'])->name('update-publicado-plan-estatal-anexo');
+    Route::resource('panel-eventos', EventoController::class);
 });

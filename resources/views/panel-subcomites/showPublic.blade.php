@@ -20,6 +20,185 @@
 @section('twitter:image', asset('icono_subcomites/' . $subcomite->icono))
 
 @section('css')
+    <style>
+        .inicio-eventos {
+            margin-top: 3rem;
+        }
+        .inicio-eventos .calendar-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        /* --- Contenedor Principal del Calendario --- */
+        .inicio-eventos .calendar-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            font-family: sans-serif;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Flechas de navegación */
+        .inicio-eventos .calendar-nav-arrow {
+            color: #333;
+            background-color: var(--color4);
+            text-decoration: none;
+            font-size: 2rem;
+            transition: all 0.2s ease;
+            padding: 1rem;
+            border-radius: 50%;
+        }
+
+        .inicio-eventos .calendar-nav-arrow:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.1);
+        }
+
+        /* Lógica de visibilidad */
+        .inicio-eventos .desktop-arrow {
+            display: none;
+            /* Ocultas por defecto (móvil) */
+        }
+
+        .inicio-eventos .mobile-arrow {
+            display: block;
+            /* Visibles por defecto (móvil) */
+        }
+
+        /* Media Query para pantallas anchas */
+        @media (min-width: 1024px) {
+            .inicio-eventos .calendar-header {
+                justify-content: center !important;
+            }
+
+            .inicio-eventos .desktop-arrow {
+                display: block;
+                /* Muestra las flechas de escritorio */
+            }
+
+            .inicio-eventos .mobile-arrow {
+                display: none;
+                /* Oculta las flechas de móvil */
+            }
+        }
+
+        /* --- Navegación (Mes Anterior/Siguiente) --- */
+        .inicio-eventos .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .inicio-eventos .current-month {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--color1);
+            font-family: 'Gilroy-Black', sans-serif;
+            text-align: center;
+        }
+
+        .inicio-eventos .nav-arrow {
+            font-size: 2rem;
+            text-decoration: none;
+            color: #555;
+            padding: 0 1rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .inicio-eventos .nav-arrow:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* --- La Cuadrícula del Calendario --- */
+        .inicio-eventos .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 5px;
+        }
+
+        /* --- Estilo de los encabezados (Lun, Mar...) --- */
+        .inicio-eventos .weekday-header {
+            font-weight: 600;
+            text-align: center;
+            padding-bottom: 0.5rem;
+            color: #666;
+            font-size: 1.1rem;
+            font-family: 'Gilroy-Black', sans-serif;
+        }
+
+        /* --- Estilo de cada celda de día --- */
+        .inicio-eventos .day-cell {
+            border: 1px solid #e0e0e0;
+            min-height: 120px;
+            padding: 0.5rem;
+            position: relative;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .inicio-eventos .day-cell.empty {
+            background-color: #f9f9f9;
+        }
+
+        .inicio-eventos .day-cell:not(.empty):hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        /* --- Número del día en la esquina --- */
+        .inicio-eventos .day-number {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* --- Estilo para días que SÍ tienen evento --- */
+        .inicio-eventos .day-cell.has-event {
+            background-color: #e8f4f8;
+            border-color: #a2c4d2;
+        }
+
+        /* --- Marcador del evento dentro de la celda --- */
+        .inicio-eventos .event-marker {
+            background-color: var(--color6);
+            color: white;
+            padding: 0.4rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .inicio-eventos .event-marker-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .inicio-eventos .event-marker-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+            font-family: 'Corra-Montserra-Regular', sans-serif;
+        }
+    </style>
 @endsection
 @section('content')
     <section class="subcomite_individual">
@@ -165,11 +344,10 @@
     @endif
 
     @if ($subcomite->planestatal->nombre === 'Plan Estatal de Desarrollo 2024-2030')
-        {
         <section class="coplademun-agendar py-4">
             <div class="container">
                 <div class="text-center">
-                    <h2 class="titulo-tematica">Agendar citas</h2>
+                    <h2 class="titulo-tematica">Bloquear una fecha</h2>
                 </div>
             </div>
             <div class="col py-4">
@@ -216,10 +394,113 @@
                     </div>
                 </div>
             </div>
+
+            <section class="inicio-eventos">
+                <div class="container py-5">
+                    <h2 class="titulo-tematica text-center">
+                        Eventos
+                    </h2>
+                </div>
+                <div class="container">
+                    <div class="calendar-wrapper">
+                        <a href="?mes={{ $mesAnterior }}" class="calendar-nav-arrow desktop-arrow prev" title="Mes anterior">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </a>
+                        <div class="calendar-container">
+                            <header class="calendar-header">
+                                <a href="?mes={{ $mesAnterior }}" class="nav-arrow mobile-arrow">&lt;</a>
+                                <h2 class="current-month">{{ ucfirst($fechaBase->isoFormat('MMMM YYYY')) }}</h2>
+                                <a href="?mes={{ $mesSiguiente }}" class="nav-arrow mobile-arrow">&gt;</a>
+                            </header>
+
+                            <div class="calendar-grid">
+                                <div class="weekday-header">Dom</div>
+                                <div class="weekday-header">Lun</div>
+                                <div class="weekday-header">Mar</div>
+                                <div class="weekday-header">Mié</div>
+                                <div class="weekday-header">Jue</div>
+                                <div class="weekday-header">Vie</div>
+                                <div class="weekday-header">Sáb</div>
+
+                                @for ($i = 0; $i < $diaDeLaSemanaInicio; $i++)
+                                    <div class="day-cell empty"></div>
+                                @endfor
+
+                                @for ($dia = 1; $dia <= $diasEnMes; $dia++)
+                                    @php
+                                        $evento = $eventosPorDia->get($dia);
+                                    @endphp
+                                    <div class="day-cell {{ $evento ? 'has-event' : '' }}">
+                                        <span class="day-number">{{ $dia }}</span>
+
+                                        @if ($evento)
+                                            <div class="event-marker" data-bs-toggle="modal" data-bs-target="#eventDetailModal"
+                                                data-titulo="{{ $evento->titulo }}"
+                                                data-fecha="{{ Carbon\Carbon::parse($evento->fecha_evento)->isoFormat('dddd, D [de] MMMM, YYYY') }}"
+                                                data-icono="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
+                                                title="Ver detalles de: {{ $evento->titulo }}">
+
+                                                <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}" alt="Icono"
+                                                    class="event-marker-icon">
+                                                <span class="event-marker-title">{{ $evento->titulo }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+                        <a href="?mes={{ $mesSiguiente }}" class="calendar-nav-arrow desktop-arrow next" title="Mes siguiente">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="eventDetailModalLabel">Detalles del Evento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-3">
+                                    <img src="" id="modal-event-icon" alt="Icono del evento" style="max-width: 80px;">
+                                </div>
+                                <h3 id="modal-event-title" class="text-center mb-3 text-dark"></h3>
+                                <p class="text-dark"><strong>Fecha:</strong> <span id="modal-event-date"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </section>
-        }
     @endif
 
 @endsection
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var eventDetailModal = document.getElementById('eventDetailModal');
+
+            eventDetailModal.addEventListener('show.bs.modal', function(event) {
+                // Botón o elemento que activó el modal
+                var triggerElement = event.relatedTarget;
+
+                // Extraer la información de los atributos data-*
+                var titulo = triggerElement.getAttribute('data-titulo');
+                var fecha = triggerElement.getAttribute('data-fecha');
+                var icono = triggerElement.getAttribute('data-icono');
+
+                // Seleccionar los elementos dentro del modal
+                var modalTitle = eventDetailModal.querySelector('#modal-event-title');
+                var modalDate = eventDetailModal.querySelector('#modal-event-date');
+                var modalIcon = eventDetailModal.querySelector('#modal-event-icon');
+
+                // Actualizar el contenido del modal
+                modalTitle.textContent = titulo;
+                modalDate.textContent = fecha;
+                modalIcon.src = icono;
+            });
+        });
+    </script>
 @endsection

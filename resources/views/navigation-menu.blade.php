@@ -27,7 +27,7 @@
                         'panel-marco-juridico*',
                         'panel-documentos-apoyo-coplademun*',
                         'panel-documentos-metodologicos*',
-                        'copladep-registro.index'
+                        'copladep-registro.index',
                         // 'panel-documentos-sesiones*',
                     ])">
                         <x-slot name="trigger">
@@ -145,6 +145,7 @@
                         'panel-contacto*',
                         'panel-admin*',
                         'panel-roles*',
+                        'panel-eventos*',
                     ])">
                         <x-slot name="trigger">
                             {{ __('Gestión') }}
@@ -168,6 +169,11 @@
                             @can('ver-rol')
                                 <x-dropdown-link href="{{ route('panel-roles.index') }}">
                                     {{ __('Roles y Permisos') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-eventos')
+                                <x-dropdown-link href="{{ route('panel-eventos.index') }}">
+                                    {{ __('Eventos') }}
                                 </x-dropdown-link>
                             @endcan
                         </x-slot>

@@ -9,6 +9,9 @@ use App\Models\DocumentoSubcomite;
 use Illuminate\Support\Str;
 use App\Traits\UpdatesPublicado;
 
+use App\Models\Evento;
+use Carbon\Carbon;
+
 class SubcomiteController extends Controller
 {
     public function __construct()
@@ -18,6 +21,7 @@ class SubcomiteController extends Controller
         $this->middleware('permission:editar-subcomite', ['only' => ['edit', 'update']]);
         $this->middleware('permission:borrar-subcomite', ['only' => ['destroy']]);
     }
+
 
     /**
      * Muestra un listado paginado de los subcomités, paginado cada 1000 registros.
@@ -370,7 +374,38 @@ class SubcomiteController extends Controller
 
         $ultimaActualizacionDocSubcomite = $documentosAgrupados->isEmpty() ? null : $documentosAgrupados->flatten()->max('updated_at');
 
-        return view('panel-subcomites.showPublic', compact('subcomite', 'documentos', 'documentosAgrupados', 'ultimaActualizacionDocSubcomite'));
+        // CALENDARIO DE EVENTOS
+        Carbon::setLocale('es');
+        $mesSolicitado = request('mes', Carbon::now()->format('Y-m'));
+        $fechaBase = Carbon::createFromFormat('Y-m', $mesSolicitado)->startOfMonth();
+
+        $eventosDelMes = Evento::whereYear('fecha_evento', $fechaBase->year)
+            ->whereMonth('fecha_evento', $fechaBase->month)
+            ->orderBy('fecha_evento', 'asc')
+            ->get();
+
+        $diasEnMes = $fechaBase->daysInMonth;
+        $diaDeLaSemanaInicio = $fechaBase->dayOfWeek; // 0 para Domingo, 6 para Sábado
+
+        $eventosPorDia = $eventosDelMes->keyBy(function ($evento) {
+            return Carbon::parse($evento->fecha_evento)->day;
+        });
+
+        $mesAnterior = $fechaBase->copy()->subMonth()->format('Y-m');
+        $mesSiguiente = $fechaBase->copy()->addMonth()->format('Y-m');
+
+        return view('panel-subcomites.showPublic', compact(
+            'subcomite', 
+            'documentos', 
+            'documentosAgrupados', 
+            'ultimaActualizacionDocSubcomite',
+            'fechaBase',
+            'diasEnMes',
+            'diaDeLaSemanaInicio',
+            'eventosPorDia',
+            'mesAnterior',
+            'mesSiguiente'
+        ));
     }
 
     /**
