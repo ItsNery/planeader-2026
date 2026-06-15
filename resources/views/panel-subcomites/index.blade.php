@@ -136,7 +136,6 @@
                 <tfoot>
                     <tr>
                         <th>Información del subcomité</th>
-                        <th>Conformacion</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
