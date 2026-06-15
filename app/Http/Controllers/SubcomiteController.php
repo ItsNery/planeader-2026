@@ -323,7 +323,7 @@ class SubcomiteController extends Controller
         // 1. ÚNICA CONSULTA a la BD
         $todos_los_subcomites = Subcomite::with('planEstatal')
             ->where('publicado', true)
-            ->orderBy('orden', 'desc')
+            ->orderBy('orden', 'asc')
             ->get();
         $plan_actual = $todos_los_subcomites->first(function ($subcomite) {
             return $subcomite->planEstatal && $subcomite->planEstatal->nombre === NOMBRE_PLAN_ACTUAL;
