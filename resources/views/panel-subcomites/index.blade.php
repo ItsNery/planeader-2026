@@ -48,8 +48,12 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ asset('icono_subcomites/' . $subcomite->icono) }}"
-                                            class="img-thumbnail mx-2 imagen-lista">
+                                        @if ($subcomite->icono)
+                                            <img src="{{ asset('icono_subcomites/' . $subcomite->icono) }}"
+                                                class="img-thumbnail mx-2 imagen-lista">
+                                        @else
+                                            <span class="text-muted mx-2" style="font-size: 0.85rem;">(Sin icono)</span>
+                                        @endif
                                         <div>
                                             <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
                                                 {{ $subcomite->nombre }}
