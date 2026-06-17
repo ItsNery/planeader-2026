@@ -81,6 +81,18 @@
 
                             <div class="content-container py-4">
 
+                                @if (Str::contains(strtolower($tipo), ['institucional', 'regional']))
+                                    <div class="container mb-4">
+                                        <div class="alert alert-warning shadow-sm" role="alert">
+                                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso para PLANEADER</h4>
+                                            <p>Derivado del proceso de actualización de la regionalización del estado y con la finalidad de mantener la consistencia entre los instrumentos del Sistema Estatal de Planeación Democrática, se realizaron ajustes en los identificadores numéricos de los Programas Regionales.</p>
+                                            <p>En consecuencia, los identificadores numéricos de los Programas Regionales modificados, generaron también cambios en los Programas Institucionales, por lo que es importante tener en cuenta estos cambios.</p>
+                                            <hr>
+                                            <p class="mb-0">Es importante señalar que estas modificaciones tienen efectos exclusivamente para fines de vinculación entre los Instrumentos de Planeación y no cambios en el contenido de los componentes estratégicos.</p>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <div class="d-flex flex-wrap justify-content-center">
                                     @foreach ($programasPorTipo as $programa)
                                         <div class="m-3 programa-card" data-nombre="{{ strtolower($programa->nombre) }}">
