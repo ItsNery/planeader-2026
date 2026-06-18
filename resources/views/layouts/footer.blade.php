@@ -52,7 +52,7 @@
                             <p class="mb-2 text-black" style="font-size: 0.9rem;">Lamentamos que no te haya sido útil. ¿Cómo podemos mejorar esta página?</p>
                             <textarea id="feedbackComment" class="form-control mb-2" rows="2" placeholder="Tu comentario (opcional)"></textarea>
                             <div class="mb-2">
-                                <x-turnstile />
+                                <x-turnstile data-callback="footerTurnstileCallback" />
                             </div>
                             <button id="submitFeedbackBtn" class="btn btn-sm btn-primary">Enviar comentarios</button>
                         </div>
@@ -266,6 +266,11 @@
 </footer>
 
 <script>
+    let globalTurnstileToken = '';
+    window.footerTurnstileCallback = function(token) {
+        globalTurnstileToken = token;
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         const evaluationDiv = document.getElementById('evaluationDiv');
         const emojiContainer = document.getElementById('emojiContainer');
@@ -314,7 +319,7 @@
                     resolucion: screenRes,
                     zona_horaria: timeZone,
                     lenguaje: lang,
-                    'cf-turnstile-response': document.querySelector('#feedbackForm [name="cf-turnstile-response"]')?.value || document.querySelector('[name="cf-turnstile-response"]')?.value
+                    'cf-turnstile-response': globalTurnstileToken
                 })
             })
             .then(response => {
