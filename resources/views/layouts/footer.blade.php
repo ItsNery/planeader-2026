@@ -314,7 +314,7 @@
                     resolucion: screenRes,
                     zona_horaria: timeZone,
                     lenguaje: lang,
-                    'cf-turnstile-response': document.querySelector('[name="cf-turnstile-response"]')?.value
+                    'cf-turnstile-response': document.querySelector('#feedbackForm [name="cf-turnstile-response"]')?.value || document.querySelector('[name="cf-turnstile-response"]')?.value
                 })
             })
             .then(response => {
