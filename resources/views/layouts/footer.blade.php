@@ -300,7 +300,7 @@
                 evaluationDiv.innerHTML = '<p class="text-dark">Procesando tu voto...</p>';
             }
 
-            fetch('/guardar-respuesta', {
+            fetch('{{ url("/guardar-respuesta") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
