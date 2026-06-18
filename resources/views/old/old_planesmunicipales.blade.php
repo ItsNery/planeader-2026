@@ -112,13 +112,7 @@
                 </div>
             </div>
             <div class="row">
-                <div id="myModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeModal()">&times;</span>
-                        <h2 id="modalTitle"></h2>
-                        <iframe class="w-100 h-100" id="modalIframe" src=""></iframe>
-                    </div>
-                </div>
+
                 <div class="container pt-4">
                     <div class="tarjeta">
                         <div class="card-body">
@@ -140,17 +134,7 @@
 
 @section('scripts')
     <script src="{{ asset('web/js/mostrar-municipios.js') }}"></script>
-    <script>
-        function openModal(rutaDocumento) {
-            document.getElementById('modalIframe').src = rutaDocumento;
-            document.getElementById('myModal').style.display = 'block';
-        }
 
-        function closeModal() {
-            document.getElementById('myModal').style.display = 'none';
-            document.getElementById('modalIframe').src = '';
-        }
-    </script>
     <script>
         const $leaderboardProfile = document.querySelectorAll('.leaderboard__profile')
         const $mapa = document.getElementById('mapa')

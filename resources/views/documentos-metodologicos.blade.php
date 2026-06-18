@@ -29,16 +29,13 @@
             <div class="row my-5">
                 @foreach ($documentos as $documento)
                     <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="contenedor-tarjetadocs">
-                            <img src="{{ asset('imagen/metodologicos/' . $documento->imagen) }}" alt="Portada de Lineamientos"
-                                class="width-100" title="{{ $documento->titulo }}">
-                            <a class="btn boton-tarjetadocs"
-                                href="{{ asset('documentos/metodologicos/' . $documento->ruta_documento) . '?v=' . $documento->updated_at->timestamp }}"
-                                download="{{ $documento->titulo }}" rel="noopener" title="{{ $documento->titulo }}">
-                                Descarga <i class="fas fa-download"></i>
-                                <i class="fas fa-file-pdf pdf"></i>
-                            </a>
-                        </div>
+                        <x-tarjeta-documento 
+                            :titulo="$documento->titulo"
+                            :imagen="$documento->imagen"
+                            :archivo="$documento->ruta_documento"
+                            rutaBase="documentos/metodologicos"
+                            rutaImagenBase="imagen/metodologicos"
+                        />
                     </div>
                 @endforeach
             </div>

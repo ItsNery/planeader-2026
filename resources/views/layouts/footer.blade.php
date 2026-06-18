@@ -87,12 +87,12 @@
                             COPLADEP
                         </a>
                         <br>
-                        <a class="text-white-50 ml-4 mb-2" href="{{ url('/ped-programas/capacitacion') }}"
+                        {{-- <a class="text-white-50 ml-4 mb-2" href="{{ url('/ped-programas/capacitacion') }}"
                             rel="noopener">
                             <i class="fa fa-angle-right mr-2"></i>
                             Capacitacion Programas Derivados
                         </a>
-                        <br>
+                        <br> --}}
                         <a class="text-white-50 ml-4 mb-2" href="{{ url('/subcomites') }}" rel="noopener">
                             <i class="fa fa-angle-right mr-2"></i>
                             Subcomités

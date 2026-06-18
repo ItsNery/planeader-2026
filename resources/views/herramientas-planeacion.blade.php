@@ -34,50 +34,44 @@
             </p>
             <div class="row my-5">
                 @foreach ($herramientas as $herramienta)
-                    <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="contenedor-tarjetadocs">
-                            @if ($herramienta->imagen)
-                                <img src="{{ asset('imagen/herramientas/' . $herramienta->imagen) }}"
-                                    alt="Portada de {{ $herramienta->titulo }}" class="width-100"
-                                    title="{{ $herramienta->titulo }}">
-                            @else
-                                <img src="{{ asset('imagen/SEATI-VF.jpg') }}" alt="Portada default" class="width-100"
-                                    title="{{ $herramienta->titulo }}">
-                            @endif
-                            <a class="btn boton-tarjetadocs"
-                                href="{{ asset('documentos/herramientas/' . $herramienta->archivo) }}" download
-                                rel="noopener">
-                                Descarga <i class="fas fa-download"></i>
-                                <i class="fas fa-file-pdf pdf"></i>
-                            </a>
-                        </div>
+                    <div class="mx-auto px-4 py-4 col-12 col-md-6 col-lg-3">
+                        <x-tarjeta-documento 
+                            :titulo="$herramienta->titulo"
+                            :imagen="$herramienta->imagen"
+                            :archivo="$herramienta->archivo"
+                        />
+
+                        @if ($herramienta->anexos->isNotEmpty())
+                            <div class="w-100 text-center mt-3">
+                                <button class="btn btn-sm btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#anexos-{{ $herramienta->id }}" aria-expanded="false" aria-controls="anexos-{{ $herramienta->id }}" style="border-radius: 20px;">
+                                    Ver {{ $herramienta->anexos->count() }} Anexos <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="collapse w-100 mt-3" id="anexos-{{ $herramienta->id }}">
+                                <div class="anexos-container">
+                                    <div class="row">
+                                        @foreach ($herramienta->anexos as $anexo)
+                                            <div class="col-12 mb-3">
+                                                <div class="contenedor-tarjetadocs-compacta">
+                                                    <p class="titulo-documento-compacta text-center mb-2">{{ $anexo->titulo }}</p>
+                                                    <a href="javascript:void(0);"
+                                                        class="boton-descargar-compacta btn btn-sm btn-block text-center"
+                                                        onclick="openModal('{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}', '{{ $anexo->titulo }}')">
+                                                        <i class="fas fa-file-pdf pdf"></i> Ver / Descargar
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>
-
-            @foreach ($herramientas as $herramienta)
-                @if ($herramienta->anexos->count() > 0)
-                    <div class="row">
-                        <div class="col-12 titulo-tematica">
-                            Anexos de: {{ $herramienta->titulo }}
-                        </div>
-                        @foreach ($herramienta->anexos as $anexo)
-                            <div class="mx-auto px-4 col-lg-3 col-md-6 col-sm-12 col-12">
-                                <div class="contenedor-tarjetadocs-compacta">
-                                    <p class="titulo-documento-compacta">{{ $anexo->titulo }}</p>
-                                    <a href="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
-                                        class="boton-descargar-compacta" download="" rel="noopener">
-                                        <i class="fas fa-file-pdf pdf"></i>
-                                        Descargar
-                                    </a>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            @endforeach
         </div>
     </section>
 @endsection
 @section('scripts')
+
 @endsection

@@ -91,17 +91,16 @@
                     <div class="container row">
                         @foreach ($documentos as $documento)
                             <div class="mx-auto px-4 py-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                                <div class="contenedor-tarjetadocs">
-                                    <img src="{{ asset('imagen/apoyo-coplademun/' . $documento->imagen) }}"
-                                        alt="Portada de {{ $documento->titulo }}" class="width-100"
-                                        title="{{ $documento->titulo }}">
-                                    <a class="btn boton-tarjetadocs"
-                                        href="{{ asset('documentos/apoyo-coplademun/' . $documento->ruta_documento) . '?v=' . $documento->updated_at->timestamp }}"
-                                        download="{{ $documento->titulo }}" rel="noopener" title="{{ $documento->titulo }}">
-                                        Descarga <i class="fas fa-download"></i>
-                                        <i class="fa-regular fa-file-word"></i>
-                                    </a>
-                                </div>
+                                <x-tarjeta-documento 
+                                    :titulo="$documento->titulo"
+                                    :imagen="$documento->imagen"
+                                    :archivo="$documento->ruta_documento"
+                                    rutaBase="documentos/apoyo-coplademun"
+                                    rutaImagenBase="imagen/apoyo-coplademun"
+                                    :esDescarga="true"
+                                    textoBoton="Descarga"
+                                    icono="fa-file-word"
+                                />
                             </div>
                         @endforeach
                     </div>

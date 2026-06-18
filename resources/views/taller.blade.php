@@ -14,22 +14,7 @@
 @section('css')
 @endsection
 @section('content')
-    <script>
-        function openModal(url, title) {
-            var modal = document.getElementById('myModal');
-            var modalIframe = document.getElementById('modalIframe');
-            var modalTitle = document.getElementById('modalTitle');
 
-            modalIframe.src = url;
-            modalTitle.textContent = title;
-            modal.style.display = 'block';
-        }
-
-        function closeModal() {
-            var modal = document.getElementById('myModal');
-            modal.style.display = 'none';
-        }
-    </script>
     <section id="contact">
         <div class="container-fluid bg-breadcrumb-contacto">
             <div class="container text-center py-5" style="max-width: 900px;">

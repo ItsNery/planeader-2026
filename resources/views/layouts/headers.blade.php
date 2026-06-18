@@ -42,11 +42,11 @@
                             <a href="{{ url('/ped-programas') }}">
                                 Programas Derivados</a>
                         </li>
-                        <li class="{{ request()->is('ped-programas/capacitacion') ? 'active' : '' }}">
+                        {{-- <li class="{{ request()->is('ped-programas/capacitacion') ? 'active' : '' }}">
                             <a href="{{ url('/ped-programas/capacitacion') }}">
                                 Capacitacion Programas Derivados
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="{{ request()->is('copladep') ? 'active' : '' }}">
                             <a href="{{ url('/copladep') }}">
                                 COPLADEP

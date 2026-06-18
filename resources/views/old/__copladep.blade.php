@@ -157,20 +157,7 @@
                             <div class="divider-line"></div>
                         </div>
                         <div class="container row">
-                            <div id="myModal" class="modal">
-                                <div class="modal-content">
-                                    <span class="close" onclick="closeModal()">
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="12" cy="12" r="10" stroke="#1C274C"
-                                                stroke-width="1.5" />
-                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#1C274C"
-                                                stroke-width="1.5" stroke-linecap="round" />
-                                        </svg>
-                                    </span>
-                                    <iframe src="" width="100%" height="100%"></iframe>
-                                </div>
-                            </div>
+
                             <div class="container mx-auto px-4">
                                 <h3 class="font-bold text-white text-center text-5xl titulo-seccion-inicio">
                                     Documentos
@@ -282,19 +269,7 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function openModal(src) {
-            var iframe = document.querySelector('#myModal iframe');
-            if (iframe) {
-                iframe.setAttribute('src', src);
-                document.getElementById('myModal').style.display = 'block'; // Mostrar la ventana modal
-            }
-        }
 
-        function closeModal() {
-            document.getElementById('myModal').style.display = 'none'; // Ocultar la ventana modal
-        }
-    </script>
     <script src="{{ asset('web/js/popper.min.js') }}"></script>
 @endsection
 {{-- Borradores --}}

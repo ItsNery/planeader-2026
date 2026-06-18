@@ -65,7 +65,7 @@
 
     @yield('page_css')
     @yield('jss')
-    <script src="{{ asset('js/nuevos-scripts.js') }}"></script>
+    <script src="{{ asset('js/scripts.js') }}"></script>
     @yield('css')
 </head>
 
