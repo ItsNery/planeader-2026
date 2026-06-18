@@ -189,6 +189,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('panel-subcomites', SubcomiteController::class);
     Route::resource('panel-banners', BannerController::class);
     Route::resource('panel-contacto', FormularioContactoController::class);
+    Route::get('panel-encuestas', [EncuestaController::class, 'index'])->name('panel-encuestas.index');
     // Route::resource('panel-capacitaciones', CapacitacionController::class);
     Route::resource('capacitaciones', CapacitacionController::class);
     Route::resource('panel-documentos-metodologicos', DocumentoMetodologicoController::class);

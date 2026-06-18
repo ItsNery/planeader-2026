@@ -168,6 +168,9 @@
                                 <x-dropdown-link href="{{ route('panel-contacto.index') }}">
                                     {{ __('Mensajes de contacto') }}
                                 </x-dropdown-link>
+                                <x-dropdown-link href="{{ route('panel-encuestas.index') }}">
+                                    {{ __('Evaluaciones y Comentarios') }}
+                                </x-dropdown-link>
                             @endcan
                             @can('ver-usuario')
                                 <x-dropdown-link href="{{ route('panel-admin.index') }}">

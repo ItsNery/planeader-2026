@@ -13,7 +13,8 @@ class EncuestaController extends Controller
      */
     public function index()
     {
-        //
+        $encuestas = Encuesta::orderBy('created_at', 'desc')->get();
+        return view('panel-encuestas.index', compact('encuestas'));
     }
 
     /**
@@ -97,6 +98,11 @@ class EncuestaController extends Controller
     {
         $rules = [
             'satisfaccion' => 'required|in:1,2,3',
+            'comentario' => 'nullable|string|max:1000',
+            'url_evaluada' => 'nullable|string|max:255',
+            'resolucion' => 'nullable|string|max:50',
+            'zona_horaria' => 'nullable|string|max:100',
+            'lenguaje' => 'nullable|string|max:50',
         ];
 
         // Solo validamos Turnstile si no es calificación 3 (para envíos inmediatos)
