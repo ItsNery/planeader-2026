@@ -25,5 +25,14 @@ class Encuesta extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['satisfaccion'];
+    protected $fillable = [
+        'satisfaccion',
+        'comentario',
+        'url_evaluada',
+        'resolucion',
+        'zona_horaria',
+        'lenguaje',
+        'ip',
+        'user_agent'
+    ];
 }

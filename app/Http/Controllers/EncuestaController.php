@@ -95,12 +95,30 @@ class EncuestaController extends Controller
      */
     public function guardarRespuesta(Request $request)
     {
-        $request->validate([
+        $rules = [
             'satisfaccion' => 'required|in:1,2,3',
-        ]);
+        ];
+
+        // Solo validamos Turnstile si no es calificación 3 (para envíos inmediatos)
+        if ($request->input('satisfaccion') != 3) {
+            if (app()->environment('local')) {
+                $rules['cf-turnstile-response'] = 'nullable'; // Ignorar en localhost
+            } else {
+                $rules['cf-turnstile-response'] = 'required|turnstile';
+            }
+        }
+
+        $request->validate($rules);
 
         $respuesta = new Encuesta();
         $respuesta->satisfaccion = $request->input('satisfaccion');
+        $respuesta->comentario = $request->input('comentario');
+        $respuesta->url_evaluada = $request->input('url_evaluada');
+        $respuesta->resolucion = $request->input('resolucion');
+        $respuesta->zona_horaria = $request->input('zona_horaria');
+        $respuesta->lenguaje = $request->input('lenguaje');
+        $respuesta->ip = $request->ip();
+        $respuesta->user_agent = $request->userAgent();
         $respuesta->save();
 
         return response()->json(['success' => true]);

@@ -34,16 +34,27 @@
                         <p class="text-black">
                             ¡Ayúdanos a mejorar! Por favor, evalúa la utilidad del sitio:
                         </p>
-                        <div class="emoji-container">
-                            <span class="emoji big-emoji cursor-pointer" onclick="submitEvaluation(3)">
-                                😊
-                            </span>
-                            <span class="emoji big-emoji cursor-pointer" onclick="submitEvaluation(2)">
-                                😐
-                            </span>
-                            <span class="emoji big-emoji cursor-pointer" onclick="submitEvaluation(1)">
-                                😞
-                            </span>
+                        <div class="emoji-container" id="emojiContainer">
+                            <div class="emoji-wrapper" data-score="3" title="¡Muy útil!">
+                                <span class="emoji big-emoji cursor-pointer">😊</span>
+                                <span class="emoji-label">Útil</span>
+                            </div>
+                            <div class="emoji-wrapper" data-score="2" title="Más o menos">
+                                <span class="emoji big-emoji cursor-pointer">😐</span>
+                                <span class="emoji-label">Regular</span>
+                            </div>
+                            <div class="emoji-wrapper" data-score="1" title="No me sirvió">
+                                <span class="emoji big-emoji cursor-pointer">😞</span>
+                                <span class="emoji-label">Poco útil</span>
+                            </div>
+                        </div>
+                        <div id="feedbackForm" style="display: none; margin-top: 15px;">
+                            <p class="mb-2 text-black" style="font-size: 0.9rem;">Lamentamos que no te haya sido útil. ¿Cómo podemos mejorar esta página?</p>
+                            <textarea id="feedbackComment" class="form-control mb-2" rows="2" placeholder="Tu comentario (opcional)"></textarea>
+                            <div class="mb-2">
+                                <x-turnstile />
+                            </div>
+                            <button id="submitFeedbackBtn" class="btn btn-sm btn-primary">Enviar comentarios</button>
                         </div>
                     </div>
                 </div>
@@ -251,29 +262,108 @@
             </div>
         </div>
     </div>
+    <x-turnstile.scripts />
 </footer>
-<script>
-    function submitEvaluation(satisfaccion) {
-        // Obtener el token CSRF de la página
-        var token = $('meta[name="csrf-token"]').attr('content');
 
-        // Realizar una solicitud AJAX para enviar la evaluación al controlador
-        $.ajax({
-            url: '/guardar-respuesta',
-            type: 'POST',
-            data: {
-                satisfaccion: satisfaccion,
-                _token: token // Incluir el token CSRF en los datos de la solicitud
-            },
-            success: function(response) {
-                // Manejar la respuesta del servidor si es necesario
-                console.log('La evaluación se ha enviado correctamente.');
-                $('#evaluationDiv').hide();
-            },
-            error: function(xhr, status, error) {
-                // Manejar errores si los hay
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const evaluationDiv = document.getElementById('evaluationDiv');
+        const emojiContainer = document.getElementById('emojiContainer');
+        const emojiWrappers = document.querySelectorAll('.emoji-container .emoji-wrapper');
+        const feedbackForm = document.getElementById('feedbackForm');
+        const feedbackComment = document.getElementById('feedbackComment');
+        const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+        let selectedScore = null;
+
+        if (!evaluationDiv || emojiWrappers.length === 0) return;
+
+        // Revisa si ya votó
+        if (localStorage.getItem('siteEvaluationVoted') === 'true') {
+            evaluationDiv.style.display = 'none';
+            return;
+        }
+
+        // Función para enviar el voto con datos extra del User Agent
+        function submitEvaluation(score, comment = null) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Datos del cliente recolectados con JS
+            const currentUrl = window.location.href;
+            const screenRes = window.innerWidth + 'x' + window.innerHeight;
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const lang = navigator.language;
+
+            // Feedback visual de espera
+            if (comment !== null) {
+                feedbackForm.innerHTML = '<p class="text-dark">Procesando tu voto...</p>';
+            } else {
+                evaluationDiv.innerHTML = '<p class="text-dark">Procesando tu voto...</p>';
+            }
+
+            fetch('/guardar-respuesta', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    satisfaccion: score,
+                    comentario: comment,
+                    url_evaluada: currentUrl,
+                    resolucion: screenRes,
+                    zona_horaria: timeZone,
+                    lenguaje: lang,
+                    'cf-turnstile-response': document.querySelector('[name="cf-turnstile-response"]')?.value
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la respuesta del servidor.');
+                return response.json();
+            })
+            .then(data => {
+                localStorage.setItem('siteEvaluationVoted', 'true');
+                evaluationDiv.innerHTML = '<p class="text-success font-weight-bold">¡Gracias por tu evaluación!</p>';
+                evaluationDiv.classList.add('thank-you');
+                setTimeout(() => {
+                    evaluationDiv.style.transition = 'opacity 0.5s ease-out';
+                    evaluationDiv.style.opacity = '0';
+                    setTimeout(() => evaluationDiv.style.display = 'none', 500);
+                }, 1500);
+            })
+            .catch(error => {
                 console.error('Error al enviar la evaluación:', error);
+                let targetDiv = comment !== null ? feedbackForm : evaluationDiv;
+                targetDiv.innerHTML = '<p class="text-danger font-weight-bold">Hubo un error. Intenta más tarde.</p>';
+            });
+        }
+
+        // Lógica de clic en emojis
+        emojiWrappers.forEach(wrapper => {
+            wrapper.addEventListener('click', function () {
+                selectedScore = this.dataset.score;
+
+                if (selectedScore === "3") {
+                    // Envía inmediatamente
+                    submitEvaluation(selectedScore);
+                } else {
+                    // Muestra el formulario de feedback
+                    emojiWrappers.forEach(w => w.style.opacity = '0.5'); // atenuar los otros
+                    this.style.opacity = '1'; // resaltar el seleccionado
+                    this.style.transform = 'scale(1.1)'; // opcional: hacer un poco más grande
+
+                    feedbackForm.style.display = 'block';
+                    feedbackComment.focus();
+                }
+            });
+        });
+
+        // Lógica de clic en el botón de enviar
+        submitFeedbackBtn.addEventListener('click', function () {
+            if (selectedScore) {
+                const comment = feedbackComment.value.trim();
+                submitEvaluation(selectedScore, comment);
             }
         });
-    }
+    });
 </script>
