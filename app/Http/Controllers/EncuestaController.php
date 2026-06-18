@@ -102,9 +102,9 @@ class EncuestaController extends Controller
         // Solo validamos Turnstile si no es calificación 3 (para envíos inmediatos)
         if ($request->input('satisfaccion') != 3) {
             if (app()->environment('local')) {
-                $rules['cf-turnstile-response'] = 'nullable'; // Ignorar en localhost
+                $rules['cf-turnstile-response'] = ['nullable']; // Ignorar en localhost
             } else {
-                $rules['cf-turnstile-response'] = 'required|turnstile';
+                $rules['cf-turnstile-response'] = ['required', new \RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile()];
             }
         }
 
