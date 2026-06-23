@@ -84,7 +84,7 @@
                                 @if (Str::contains(strtolower($tipo), ['institucional', 'regional']))
                                     <div class="container mb-4">
                                         <div class="alert alert-warning shadow-sm" role="alert">
-                                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso para PLANEADER</h4>
+                                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso</h4>
                                             <p>Derivado del proceso de actualización de la regionalización del estado y con la finalidad de mantener la consistencia entre los instrumentos del Sistema Estatal de Planeación Democrática, se realizaron ajustes en los identificadores numéricos de los Programas Regionales.</p>
                                             <p>En consecuencia, los identificadores numéricos de los Programas Regionales modificados, generaron también cambios en los Programas Institucionales, por lo que es importante tener en cuenta estos cambios.</p>
                                             <hr>
