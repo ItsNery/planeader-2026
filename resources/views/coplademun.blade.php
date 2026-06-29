@@ -124,8 +124,9 @@
             <div class="col-md-6">
                 <div class="container">
                     <iframe
-                        src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FMexico_City&bgcolor=%23ffffff&hl=es_419&src=MzljNGIyMzEwNGNjYjRkOGM4YzIyMDNiYzI4NzEwMGUwOTJiZmU2YTAyZWQ1Mzg2NTZjNTFmZTUxNzUxZjdmY0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=aHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23E67C73&color=%23B39DDB"
-                        style="border:solid 1px #777" class="w-100" height="600"></iframe>
+                        src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=America%2FMexico_City&src=c2Nvb2RpbmFjaW9uLnRlcnJpdG9yaWFsQHB1ZWJsYS5nb2IubXg&color=%23e67c73"
+                        style="border:solid 1px #777" height="600" frameborder="0" scrolling="no" class="w-100"
+                        height="600"></iframe>
                 </div>
             </div>
             <div class="col-md-3">
