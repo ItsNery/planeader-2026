@@ -300,7 +300,7 @@
 {{-- Borradores --}}
 
 {{-- <div class="col-md-12 col-lg-4 mb-3">
-                                <div class="services-item-no-anim bg-light">
+    <div class="services-item-no-anim bg-light">
                                     <div class="p-4 text-center services-content">
                                         <div class="services-content-icon">
                                             <!-- <img

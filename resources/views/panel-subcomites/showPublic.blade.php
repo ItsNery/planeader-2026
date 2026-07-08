@@ -199,11 +199,10 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="mesas" role="tabpanel" aria-labelledby="mesas-tab">
-                            <div class="container d-flex justify-content-center align-items-center flex-column">
-                                <i class="fa-solid fa-hourglass-half fs-4 mb-3 text-secondary"></i>
-                                <span class="card border-info bg-light py-3 px-3 fs-3">
-                                    Proximamente disponible
-                                </span>
+                            <div class="container">
+                                <iframe
+                                    src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3tkB_c4aKhyuWtFztgi_2RM9PvUAESIjPg_c40XMkfxdxrHoppqwAeoKAu4szA-3MKOl_2NlGa?gv=true"
+                                    style="border: 0" width="100%" height="750" frameborder="0"></iframe>
                             </div>
                         </div>
                     </div>
