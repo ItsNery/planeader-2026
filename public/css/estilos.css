@@ -4750,6 +4750,30 @@ footer {
     font-family: 'Corra-Montserra-Regular', sans-serif;
 }
 
+/* --- Botón o badge de más eventos en el día --- */
+.inicio-eventos .more-events-badge {
+    background-color: #f0f0f0;
+    color: var(--color6);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    display: inline-block;
+    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    border: 1px solid #e2e2e2;
+}
+
+.inicio-eventos .more-events-badge:hover {
+    background-color: var(--color6);
+    color: white;
+    border-color: var(--color6);
+    transform: scale(1.02);
+}
+
 /* =========================================
    Estilos Únicos para Ficha de Subcomités
 ========================================= */

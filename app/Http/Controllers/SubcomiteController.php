@@ -387,9 +387,9 @@ class SubcomiteController extends Controller
         $diasEnMes = $fechaBase->daysInMonth;
         $diaDeLaSemanaInicio = $fechaBase->dayOfWeek; // 0 para Domingo, 6 para Sábado
 
-        $eventosPorDia = $eventosDelMes->keyBy(function ($evento) {
-            return Carbon::parse($evento->fecha_evento)->day;
-        });
+ $eventosPorDia = $eventosDelMes->groupBy(function ($evento) {
+             return Carbon::parse($evento->fecha_evento)->day;
+         });
 
         $mesAnterior = $fechaBase->copy()->subMonth()->format('Y-m');
         $mesSiguiente = $fechaBase->copy()->addMonth()->format('Y-m');

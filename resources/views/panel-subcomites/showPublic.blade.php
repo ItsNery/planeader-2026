@@ -36,7 +36,8 @@
                 @if ($subcomite->planestatal->nombre === 'Plan Estatal de Desarrollo 2024-2030')
                     <div class="mt-3">
                         <a href="#fechas-bloqueadas" class="btn btn-subcomite-calendario-unico">
-                            <i class="fa-solid fa-calendar-days me-2"></i> Conoce el Calendario de Subcomités y Mesas Técnicas de Trabajo
+                            <i class="fa-solid fa-calendar-days me-2"></i> Conoce el Calendario de Subcomités y Mesas
+                            Técnicas de Trabajo
                         </a>
                     </div>
                 @endif
@@ -62,7 +63,8 @@
                             Integración
                         </h2>
                     </div>
-                    <div class="subcomite-integracion-img-unica text-center" data-bs-toggle="modal" data-bs-target="#imagenIntegracionModal">
+                    <div class="subcomite-integracion-img-unica text-center" data-bs-toggle="modal"
+                        data-bs-target="#imagenIntegracionModal">
                         <img src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}"
                             title="Clic para ver en pantalla completa" alt="Integración del {{ $subcomite->nombre }}"
                             class="img-fluid rounded-3 shadow-sm border subcomite-img-responsiva-unica">
@@ -172,7 +174,8 @@
         <section class="coplademun-agendar py-3">
             <div class="container text-center mb-3">
                 <h2 class="titulo-tematica mb-2">Bloquear una fecha</h2>
-                <p class="text-dark fs-5 mb-1">¿Gustas bloquear una fecha para tu sesión de Subcomité o Mesas Técnicas de Trabajo?</p>
+                <p class="text-dark fs-5 mb-1">¿Gustas bloquear una fecha para tu sesión de Subcomité o Mesas Técnicas de
+                    Trabajo?</p>
                 <span class="subtitulo_sitios text-secondary fs-6">Usa nuestros calendarios</span>
             </div>
             <div class="row">
@@ -217,15 +220,17 @@
                 </div>
                 <div class="container">
                     <div class="calendar-wrapper">
-                        <a href="?mes={{ $mesAnterior }}#fechas-bloqueadas" class="calendar-nav-arrow desktop-arrow prev"
-                            title="Mes anterior">
+                        <a href="?mes={{ $mesAnterior }}#fechas-bloqueadas"
+                            class="calendar-nav-arrow desktop-arrow prev" title="Mes anterior">
                             <i class="fa-solid fa-chevron-left"></i>
                         </a>
                         <div class="calendar-container">
                             <header class="calendar-header">
-                                <a href="?mes={{ $mesAnterior }}#fechas-bloqueadas" class="nav-arrow mobile-arrow">&lt;</a>
+                                <a href="?mes={{ $mesAnterior }}#fechas-bloqueadas"
+                                    class="nav-arrow mobile-arrow">&lt;</a>
                                 <h2 class="current-month">{{ ucfirst($fechaBase->isoFormat('MMMM YYYY')) }}</h2>
-                                <a href="?mes={{ $mesSiguiente }}#fechas-bloqueadas" class="nav-arrow mobile-arrow">&gt;</a>
+                                <a href="?mes={{ $mesSiguiente }}#fechas-bloqueadas"
+                                    class="nav-arrow mobile-arrow">&gt;</a>
                             </header>
 
                             <div class="calendar-grid">
@@ -243,29 +248,43 @@
 
                                 @for ($dia = 1; $dia <= $diasEnMes; $dia++)
                                     @php
-                                        $evento = $eventosPorDia->get($dia);
+                                        // Obtenemos la colección de eventos de este día (o una vacía si no hay)
+                                        $eventos = $eventosPorDia->get($dia) ?? collect();
                                     @endphp
-                                    <div class="day-cell {{ $evento ? 'has-event' : '' }}">
+
+                                    <div class="day-cell {{ $eventos->isNotEmpty() ? 'has-event' : '' }}">
                                         <span class="day-number">{{ $dia }}</span>
+                                        @if ($eventos->isNotEmpty())
+                                            <div class="events-container"
+                                                style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                                                @foreach ($eventos->take(2) as $evento)
+                                                    <div class="event-marker" data-bs-toggle="modal"
+                                                        data-bs-target="#eventDetailModal"
+                                                        data-titulo="{{ $evento->titulo }}"
+                                                        data-fecha="{{ Carbon\Carbon::parse($evento->fecha_evento)->isoFormat('dddd, D [de] MMMM, YYYY') }}"
+                                                        data-icono="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
+                                                        title="Ver detalles de: {{ $evento->titulo }}">
+                                                        <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
+                                                            alt="Icono" class="event-marker-icon">
+                                                        <span class="event-marker-title">{{ $evento->titulo }}</span>
+                                                    </div>
+                                                @endforeach
 
-                                        @if ($evento)
-                                            <div class="event-marker" data-bs-toggle="modal"
-                                                data-bs-target="#eventDetailModal" data-titulo="{{ $evento->titulo }}"
-                                                data-fecha="{{ Carbon\Carbon::parse($evento->fecha_evento)->isoFormat('dddd, D [de] MMMM, YYYY') }}"
-                                                data-icono="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
-                                                title="Ver detalles de: {{ $evento->titulo }}">
-
-                                                <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
-                                                    alt="Icono" class="event-marker-icon">
-                                                <span class="event-marker-title">{{ $evento->titulo }}</span>
+                                                @if ($eventos->count() > 2)
+                                                    <span class="more-events-badge" data-bs-toggle="modal"
+                                                        data-bs-target="#dayEventsModal-{{ $dia }}"
+                                                        title="Ver los {{ $eventos->count() }} eventos de este día">
+                                                        +{{ $eventos->count() - 2 }} más
+                                                    </span>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
                                 @endfor
                             </div>
                         </div>
-                        <a href="?mes={{ $mesSiguiente }}#fechas-bloqueadas" class="calendar-nav-arrow desktop-arrow next"
-                            title="Mes siguiente">
+                        <a href="?mes={{ $mesSiguiente }}#fechas-bloqueadas"
+                            class="calendar-nav-arrow desktop-arrow next" title="Mes siguiente">
                             <i class="fa-solid fa-chevron-right"></i>
                         </a>
                     </div>
@@ -290,19 +309,62 @@
                         </div>
                     </div>
                 </div>
+
+                @for ($dia = 1; $dia <= $diasEnMes; $dia++)
+                    @php
+                        $eventos = $eventosPorDia->get($dia) ?? collect();
+                    @endphp
+                    @if ($eventos->count() > 2)
+                        <div class="modal fade" id="dayEventsModal-{{ $dia }}" tabindex="-1"
+                            aria-labelledby="dayEventsModalLabel-{{ $dia }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="dayEventsModalLabel-{{ $dia }}">
+                                            Eventos del {{ Carbon\Carbon::create($fechaBase->year, $fechaBase->month, $dia)->isoFormat('D [de] MMMM, YYYY') }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            @foreach ($eventos as $evento)
+                                                <button type="button"
+                                                    class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-0"
+                                                    data-bs-toggle="modal" data-bs-target="#eventDetailModal"
+                                                    data-bs-dismiss="modal"
+                                                    data-titulo="{{ $evento->titulo }}"
+                                                    data-fecha="{{ Carbon\Carbon::parse($evento->fecha_evento)->isoFormat('dddd, D [de] MMMM, YYYY') }}"
+                                                    data-icono="{{ asset('imagen-eventos/' . $evento->icono_evento) }}">
+                                                    <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
+                                                        alt="Icono" class="event-marker-icon" style="width: 24px; height: 24px;">
+                                                    <span class="text-dark text-start" style="font-family: 'Corra-Montserra-Regular', sans-serif; font-size: 0.95rem;">{{ $evento->titulo }}</span>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endfor
             </section>
         </section>
     @endif
 
     <!-- Modal de Imagen de Integración (Lightbox) -->
-    <div class="modal fade" id="imagenIntegracionModal" tabindex="-1" aria-labelledby="imagenIntegracionModalLabel" aria-hidden="true">
+    <div class="modal fade" id="imagenIntegracionModal" tabindex="-1" aria-labelledby="imagenIntegracionModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content bg-transparent border-0">
                 <div class="modal-header border-0 p-0 position-relative">
-                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 1055;"></button>
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal" aria-label="Close" style="z-index: 1055;"></button>
                 </div>
                 <div class="modal-body p-0 text-center">
-                    <img src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}" alt="Integración de {{ $subcomite->nombre }}" class="img-fluid rounded shadow-lg" style="max-height: 85vh; object-fit: contain;">
+                    <img src="{{ asset('subcomitesconformacion/' . $subcomite->conformacion) }}"
+                        alt="Integración de {{ $subcomite->nombre }}" class="img-fluid rounded shadow-lg"
+                        style="max-height: 85vh; object-fit: contain;">
                 </div>
             </div>
         </div>
