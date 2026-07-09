@@ -160,22 +160,22 @@ class HerramientaPlaneacionController extends Controller
 
         // Handle Deletions
         if ($request->has('deleted_anexos')) {
-            foreach ($request->deleted_anexos as $deletedId) {
-                $anexo = HerramientaAnexo::find($deletedId);
-                if ($anexo) {
-                    $this->deleteFile('documentos/herramientas/anexos/' . $anexo->archivo);
-                    $anexo->delete();
-                }
+            // ponytail: optimize N+1 query by loading all annexes to delete at once
+            $anexosAEliminar = HerramientaAnexo::whereIn('id', $request->deleted_anexos)->get();
+            foreach ($anexosAEliminar as $anexo) {
+                $this->deleteFile('documentos/herramientas/anexos/' . $anexo->archivo);
+                $anexo->delete();
             }
         }
 
-        // Handle Annexes (Updates 
+        // Handle Annexes (Updates & New)
         if ($request->has('anexos')) {
+            // ponytail: optimize N+1 query by batch loading existing annexes
+            $ids = collect($request->anexos)->pluck('id')->filter()->toArray();
+            $anexosExistentes = HerramientaAnexo::whereIn('id', $ids)->get()->keyBy('id');
+
             foreach ($request->anexos as $index => $anexoData) {
-                $anexo = null;
-                if (isset($anexoData['id'])) {
-                    $anexo = HerramientaAnexo::find($anexoData['id']);
-                }
+                $anexo = isset($anexoData['id']) ? $anexosExistentes->get($anexoData['id']) : null;
 
                 if ($anexo) {
                     // Update existing

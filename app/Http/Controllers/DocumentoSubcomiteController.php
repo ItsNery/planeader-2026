@@ -284,8 +284,6 @@ class DocumentoSubcomiteController extends Controller
             unset($docSubco['ruta_documento']);
         }
 
-
-        $documentoSubcomite = DocumentoSubcomite::find($id);
         $documentoSubcomite->update($docSubco);
         return redirect()->route('panel-documentos-subcomites.index')->with('success', 'Documento actualizado exitosamente.');
     }
@@ -317,7 +315,6 @@ class DocumentoSubcomiteController extends Controller
      *
      * @return string La ruta completa de la clase del modelo.
      */
-    use UpdatesPublicado;
     protected function getModel()
     {
         return DocumentoSubcomite::class;

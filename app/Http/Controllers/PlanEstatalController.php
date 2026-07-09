@@ -26,13 +26,7 @@ class PlanEstatalController extends Controller
      */
     public function index()
     {
-
-        $planesEst = PlanEstatal::all();
-        $planesEst = $planesEst->sortBy(function ($plan) {
-            $periodo = $plan->periodo;
-            $inicioPeriodo = explode('-', $periodo)[0];
-            return intval($inicioPeriodo);
-        });
+        $planesEst = PlanEstatal::orderBy('periodo', 'asc')->get();
         return view('panel-planes-estatales.index', compact('planesEst'));
     }
 

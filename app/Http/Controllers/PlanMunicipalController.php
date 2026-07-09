@@ -285,14 +285,7 @@ class PlanMunicipalController extends Controller
     public function mostrarPlanesMunicipales()
     {
         $municipios = Municipio::all();
-        $planesPorMunicipio = [];
-        foreach ($municipios as $municipio) {
-            $planesPorMunicipio[$municipio->id] = PlanMunicipal::where('municipio_id', $municipio->id)
-                ->orderBy('periodo', 'desc')
-                ->get()
-                ->groupBy('periodo');
-        }
-        return view('planesmunicipales', compact('municipios', 'planesPorMunicipio'));
+        return view('planesmunicipales', compact('municipios'));
     }
 
     /**

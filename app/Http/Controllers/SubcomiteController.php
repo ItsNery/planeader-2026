@@ -55,12 +55,15 @@ class SubcomiteController extends Controller
             'Institucional'
         ];
 
-        // Calcular lugares disponibles y utilizados por plan estatal
+        // ponytail: optimize N+1 query by retrieving and grouping all subcomites at once
+        $subcomitesPorPlan = Subcomite::whereNotNull('orden')
+            ->get(['planestatal_id', 'orden'])
+            ->groupBy('planestatal_id');
+
         $ordenes_disponibles_por_plan = [];
         $ordenes_utilizados_por_plan = [];
         foreach($planes_estatales as $plan) {
-            $subcomitesPlan = Subcomite::where('planestatal_id', $plan->id)->get();
-            $utilizados = $subcomitesPlan->pluck('orden')->filter()->toArray();
+            $utilizados = ($subcomitesPorPlan->get($plan->id) ?? collect())->pluck('orden')->toArray();
             $maxOrden = empty($utilizados) ? 0 : max($utilizados);
 
             $disponibles = [];
@@ -171,12 +174,15 @@ class SubcomiteController extends Controller
             'Regional',
         ];
 
-        // Calcular lugares disponibles y utilizados por plan estatal
+        // ponytail: optimize N+1 query by retrieving and grouping all subcomites at once
+        $subcomitesPorPlan = Subcomite::whereNotNull('orden')
+            ->get(['planestatal_id', 'orden'])
+            ->groupBy('planestatal_id');
+
         $ordenes_disponibles_por_plan = [];
         $ordenes_utilizados_por_plan = [];
         foreach($planes_estatales as $plan) {
-            $subcomitesPlan = Subcomite::where('planestatal_id', $plan->id)->get();
-            $utilizados = $subcomitesPlan->pluck('orden')->filter()->toArray();
+            $utilizados = ($subcomitesPorPlan->get($plan->id) ?? collect())->pluck('orden')->toArray();
             
             // Si estamos editando, queremos asegurar que el orden actual del subcomité 
             // esté disponible para seleccionarlo de nuevo.
@@ -361,16 +367,14 @@ class SubcomiteController extends Controller
         $subcomite = Subcomite::where('slug', $slug)->firstOrFail();
         $id = $subcomite->id; // Obtener el id del subcomité
 
-        // Obtener los documentos asociados
-        $documentos = DocumentoSubcomite::where('subcomite_id', $id)->get();
-
-        $documentosAgrupados = $documentos->where('publicado', 1) // Filtrar solo los documentos que estén publicados
-            ->groupBy(['anio', 'tipo_documento']);
-
-        // Ordenar los documentos agrupados por año de forma descendente
-        $documentosAgrupados = $documentosAgrupados->sortByDesc(function ($group, $anio) {
-            return $anio;
-        });
+        // ponytail: optimize by only loading published documents and sorting them directly
+        $documentosAgrupados = DocumentoSubcomite::where('subcomite_id', $id)
+            ->where('publicado', 1)
+            ->get()
+            ->groupBy(['anio', 'tipo_documento'])
+            ->sortByDesc(function ($group, $anio) {
+                return $anio;
+            });
 
         $ultimaActualizacionDocSubcomite = $documentosAgrupados->isEmpty() ? null : $documentosAgrupados->flatten()->max('updated_at');
 
@@ -396,7 +400,6 @@ class SubcomiteController extends Controller
 
         return view('panel-subcomites.showPublic', compact(
             'subcomite', 
-            'documentos', 
             'documentosAgrupados', 
             'ultimaActualizacionDocSubcomite',
             'fechaBase',
@@ -408,26 +411,7 @@ class SubcomiteController extends Controller
         ));
     }
 
-    /**
-     * Evalúa si un acta (documento) tiene la palabra "segunda" en su título (sin importar mayúsculas/minúsculas).
-     *
-     * Este método privado se utiliza para verificar una condición específica dentro de la lógica de negocio.
-     * Si el título del acta contiene la palabra "segunda", el acta se devuelve tal cual.
-     * Si no contiene la palabra, también devuelve el acta original, lo que indica que
-     * no realiza ninguna priorización o modificación de la acta.
-     *
-     * @param  object|null  $acta El objeto del acta (documento) a evaluar, o null.
-     * @return object|null Retorna el mismo objeto $acta recibido, sin modificaciones basadas en la prioridad.
-     * Devuelve null si el acta de entrada es null.
-     */
-    private function priorizarSegunda($acta)
-    {
-        if ($acta && strpos(strtolower($acta->titulo), 'segunda') !== false) {
-            return $acta;
-        }
 
-        return $acta;
-    }
     /**
      * Genera un slug único para el nombre de un subcomité.
      *

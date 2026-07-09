@@ -169,22 +169,22 @@ class CapacitacionController extends Controller
 
         // Manejar eliminaciones
         if ($request->has('deleted_documentos')) {
-            foreach ($request->deleted_documentos as $deletedId) {
-                $documento = DocumentoCapacitacion::find($deletedId);
-                if ($documento) {
-                    Storage::disk('capacitaciones_public')->delete($documento->ruta_archivo);
-                    $documento->delete();
-                }
+            // ponytail: optimize N+1 query by loading all documents to delete at once
+            $documentosAEliminar = DocumentoCapacitacion::whereIn('id', $request->deleted_documentos)->get();
+            foreach ($documentosAEliminar as $documento) {
+                Storage::disk('capacitaciones_public')->delete($documento->ruta_archivo);
+                $documento->delete();
             }
         }
 
         // Manejar documentos (Actualizaciones y Nuevos)
         if ($request->has('documentos')) {
+            // ponytail: optimize N+1 query by batch loading existing documents
+            $ids = collect($request->documentos)->pluck('id')->filter()->toArray();
+            $documentosExistentes = DocumentoCapacitacion::whereIn('id', $ids)->get()->keyBy('id');
+
             foreach ($request->documentos as $index => $docData) {
-                $documento = null;
-                if (isset($docData['id'])) {
-                    $documento = DocumentoCapacitacion::find($docData['id']);
-                }
+                $documento = isset($docData['id']) ? $documentosExistentes->get($docData['id']) : null;
 
                 if ($documento) {
                     // Actualizar existente
