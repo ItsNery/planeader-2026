@@ -71,9 +71,15 @@
                                 </div>
                             </div>
                         @endif
+                    </div>
                     @endforeach
+
             </div>
+
+
         </div>
+
+
     </section>
 @endsection
 @section('scripts')
