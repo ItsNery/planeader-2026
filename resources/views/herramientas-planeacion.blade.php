@@ -53,27 +53,25 @@
                             </div>
                             <div class="collapse w-100 mt-3" id="anexos-{{ $herramienta->id }}">
                                 <div class="anexos-container">
-                                    <div class="row">
-                                        @foreach ($herramienta->anexos as $anexo)
-                                            <div class="col-12 mb-3">
-                                                <div class="contenedor-tarjetadocs-compacta">
-                                                    <p class="titulo-documento-compacta text-center mb-2">
-                                                        {{ $anexo->titulo }}
-                                                    </p>
-                                                    <a class="boton-descargar-compacta btn btn-sm btn-block text-center js-open-modal"
-                                                        href="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
-                                                        data-src="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
-                                                        data-title="{{ $anexo->titulo }}">
-                                                        <i class="fas fa-file-pdf pdf"></i> Ver / Descargar
-                                                    </a>
-                                                </div>
+                                    @foreach ($herramienta->anexos as $anexo)
+                                        <div class="anexo-item mb-3">
+                                            <div class="contenedor-tarjetadocs-compacta">
+                                                <p class="titulo-documento-compacta text-center mb-2">
+                                                    {{ $anexo->titulo }}
+                                                </p>
+                                                <a class="boton-descargar-compacta btn btn-sm btn-block text-center js-open-modal"
+                                                    href="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
+                                                    data-src="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
+                                                    data-title="{{ $anexo->titulo }}">
+                                                    <i class="fas fa-file-pdf pdf"></i> Ver / Descargar
+                                                </a>
                                             </div>
-                                        @endforeach
-                                    </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         @endif
-                @endforeach
+                    @endforeach
             </div>
         </div>
     </section>

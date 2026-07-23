@@ -66,9 +66,6 @@ Route::post('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepCont
 
 Route::get('/ped-programas', [ProgramaDerivadoController::class, 'mostrarProgramasDerivados']);
 
-Route::get('/ped-programas/capacitacion', function () {
-    return view('capacitacion-derivados');
-});
 Route::get('/ped', [PlanEstatalController::class, 'mostrarPlanEstatal']);
 
 // Route::get('/nuevo-ped', function () {

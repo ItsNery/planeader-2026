@@ -4146,6 +4146,24 @@ footer {
     }
 }
 
+.herramientas-planeacion .anexos-container {
+    width: 100%;
+}
+
+.herramientas-planeacion .anexo-item {
+    width: 100%;
+}
+
+.herramientas-planeacion .anexos-container .contenedor-tarjetadocs-compacta {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+.herramientas-planeacion .anexos-container .boton-descargar-compacta {
+    width: 100%;
+}
+
 /* Estilos de boton copiar */
 .boton-copiar {
     border-radius: 50%;

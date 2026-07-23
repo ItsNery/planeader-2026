@@ -35,7 +35,7 @@
                 </li>
                 <li class="dropdown">
                     <a href="#"
-                        class="{{ request()->is('ped', 'ped-programas', 'copladep', 'subcomites*', 'programas-estatales', 'copladep/primera-sesion-ordinaria', 'ped-programas/capacitacion', 'herramientas-planeacion') ? 'active' : '' }}">
+                        class="{{ request()->is('ped', 'ped-programas', 'copladep', 'subcomites*', 'programas-estatales', 'copladep/primera-sesion-ordinaria', 'herramientas-planeacion') ? 'active' : '' }}">
                         Planeación Estatal &#9662;</a>
                     <ul class="dropdown-content">
                         <li class="{{ request()->is('ped') ? 'active' : '' }}">
@@ -47,11 +47,6 @@
                         <li class="{{ request()->is('ped-programas') ? 'active' : '' }}">
                             <a href="{{ url('/ped-programas') }}">
                                 Programas Derivados</a>
-                        </li>
-                        <li class="{{ request()->is('ped-programas/capacitacion') ? 'active' : '' }}">
-                            <a href="{{ url('/ped-programas/capacitacion') }}">
-                                Capacitacion Programas Derivados
-                            </a>
                         </li>
                         <li class="{{ request()->is('copladep') ? 'active' : '' }}">
                             <a href="{{ url('/copladep') }}">
