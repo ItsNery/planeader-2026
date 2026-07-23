@@ -4134,6 +4134,49 @@ footer {
     }
 }
 
+/* Estilos para las tarjetas documentales de la vista renovada */
+.herramientas-planeacion .contenedor-tarjetadocs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #ffffff;
+}
+
+.herramientas-planeacion .contenedor-tarjetadocs .width-100 {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.herramientas-planeacion .contenedor-tarjetadocs > .text-center {
+    margin-top: auto !important;
+    padding: 0 15px 15px;
+}
+
+.herramientas-planeacion .contenedor-tarjetadocs .boton-descargar-compacta {
+    display: block;
+    padding: 10px 15px;
+    background-color: var(--color1);
+    color: #ffffff !important;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.herramientas-planeacion .contenedor-tarjetadocs .boton-descargar-compacta:hover {
+    background-color: var(--color2);
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 575.98px) {
+    .herramientas-planeacion .contenedor-tarjetadocs {
+        max-width: 100%;
+    }
+}
+
 /* Estilos de boton copiar */
 .boton-copiar {
     border-radius: 50%;
