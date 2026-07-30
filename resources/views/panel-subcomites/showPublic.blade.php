@@ -212,38 +212,38 @@
                 </div>
             </div>
 
-            <section id="fechas-bloqueadas" class="inicio-eventos">
+            <section id="fechas-bloqueadas" class="subcomite-calendar">
                 <div class="container">
                     <h2 class="titulo-tematica text-center">
                         Calendario de Subcomités y Mesas Técnicas de Trabajo
                     </h2>
                 </div>
                 <div class="container">
-                    <div class="calendar-wrapper">
+                    <div class="subcomite-calendar__wrapper">
                         <a href="?mes={{ $mesAnterior }}#fechas-bloqueadas"
-                            class="calendar-nav-arrow desktop-arrow prev" title="Mes anterior">
+                            class="subcomite-calendar__navigation subcomite-calendar__navigation--desktop" title="Mes anterior">
                             <i class="fa-solid fa-chevron-left"></i>
                         </a>
-                        <div class="calendar-container">
-                            <header class="calendar-header">
+                        <div class="subcomite-calendar__container">
+                            <header class="subcomite-calendar__header">
                                 <a href="?mes={{ $mesAnterior }}#fechas-bloqueadas"
-                                    class="nav-arrow mobile-arrow">&lt;</a>
-                                <h2 class="current-month">{{ ucfirst($fechaBase->isoFormat('MMMM YYYY')) }}</h2>
+                                    class="subcomite-calendar__navigation subcomite-calendar__navigation--mobile">&lt;</a>
+                                <h2 class="subcomite-calendar__month">{{ ucfirst($fechaBase->isoFormat('MMMM YYYY')) }}</h2>
                                 <a href="?mes={{ $mesSiguiente }}#fechas-bloqueadas"
-                                    class="nav-arrow mobile-arrow">&gt;</a>
+                                    class="subcomite-calendar__navigation subcomite-calendar__navigation--mobile">&gt;</a>
                             </header>
 
-                            <div class="calendar-grid">
-                                <div class="weekday-header">Dom</div>
-                                <div class="weekday-header">Lun</div>
-                                <div class="weekday-header">Mar</div>
-                                <div class="weekday-header">Mié</div>
-                                <div class="weekday-header">Jue</div>
-                                <div class="weekday-header">Vie</div>
-                                <div class="weekday-header">Sáb</div>
+                            <div class="subcomite-calendar__grid">
+                                <div class="subcomite-calendar__weekday">Dom</div>
+                                <div class="subcomite-calendar__weekday">Lun</div>
+                                <div class="subcomite-calendar__weekday">Mar</div>
+                                <div class="subcomite-calendar__weekday">Mié</div>
+                                <div class="subcomite-calendar__weekday">Jue</div>
+                                <div class="subcomite-calendar__weekday">Vie</div>
+                                <div class="subcomite-calendar__weekday">Sáb</div>
 
                                 @for ($i = 0; $i < $diaDeLaSemanaInicio; $i++)
-                                    <div class="day-cell empty"></div>
+                                    <div class="subcomite-calendar__day subcomite-calendar__day--empty"></div>
                                 @endfor
 
                                 @for ($dia = 1; $dia <= $diasEnMes; $dia++)
@@ -252,26 +252,25 @@
                                         $eventos = $eventosPorDia->get($dia) ?? collect();
                                     @endphp
 
-                                    <div class="day-cell {{ $eventos->isNotEmpty() ? 'has-event' : '' }}">
-                                        <span class="day-number">{{ $dia }}</span>
+                                    <div class="subcomite-calendar__day {{ $eventos->isNotEmpty() ? 'subcomite-calendar__day--has-event' : '' }}">
+                                        <span class="subcomite-calendar__day-number">{{ $dia }}</span>
                                         @if ($eventos->isNotEmpty())
-                                            <div class="events-container"
-                                                style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                                            <div class="subcomite-calendar__events">
                                                 @foreach ($eventos->take(2) as $evento)
-                                                    <div class="event-marker" data-bs-toggle="modal"
+                                                    <div class="subcomite-calendar__event" data-bs-toggle="modal"
                                                         data-bs-target="#eventDetailModal"
                                                         data-titulo="{{ $evento->titulo }}"
                                                         data-fecha="{{ Carbon\Carbon::parse($evento->fecha_evento)->isoFormat('dddd, D [de] MMMM, YYYY') }}"
                                                         data-icono="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
                                                         title="Ver detalles de: {{ $evento->titulo }}">
                                                         <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
-                                                            alt="Icono" class="event-marker-icon">
-                                                        <span class="event-marker-title">{{ $evento->titulo }}</span>
+                                                            alt="Icono" class="subcomite-calendar__event-icon">
+                                                        <span class="subcomite-calendar__event-title">{{ $evento->titulo }}</span>
                                                     </div>
                                                 @endforeach
 
                                                 @if ($eventos->count() > 2)
-                                                    <span class="more-events-badge" data-bs-toggle="modal"
+                                                    <span class="subcomite-calendar__more-events" data-bs-toggle="modal"
                                                         data-bs-target="#dayEventsModal-{{ $dia }}"
                                                         title="Ver los {{ $eventos->count() }} eventos de este día">
                                                         +{{ $eventos->count() - 2 }} más
@@ -284,7 +283,7 @@
                             </div>
                         </div>
                         <a href="?mes={{ $mesSiguiente }}#fechas-bloqueadas"
-                            class="calendar-nav-arrow desktop-arrow next" title="Mes siguiente">
+                            class="subcomite-calendar__navigation subcomite-calendar__navigation--desktop" title="Mes siguiente">
                             <i class="fa-solid fa-chevron-right"></i>
                         </a>
                     </div>
@@ -300,8 +299,8 @@
                             </div>
                             <div class="modal-body">
                                 <div class="text-center mb-3">
-                                    <img src="" id="modal-event-icon" alt="Icono del evento"
-                                        style="max-width: 80px;">
+                                    <img src="" id="modal-event-icon" class="subcomite-calendar__modal-icon"
+                                        alt="Icono del evento">
                                 </div>
                                 <h3 id="modal-event-title" class="text-center mb-3 text-dark"></h3>
                                 <p class="text-dark"><strong>Fecha:</strong> <span id="modal-event-date"></span></p>
@@ -336,9 +335,9 @@
                                                     data-titulo="{{ $evento->titulo }}"
                                                     data-fecha="{{ Carbon\Carbon::parse($evento->fecha_evento)->isoFormat('dddd, D [de] MMMM, YYYY') }}"
                                                     data-icono="{{ asset('imagen-eventos/' . $evento->icono_evento) }}">
-                                                    <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
-                                                        alt="Icono" class="event-marker-icon" style="width: 24px; height: 24px;">
-                                                    <span class="text-dark text-start" style="font-family: 'Corra-Montserra-Regular', sans-serif; font-size: 0.95rem;">{{ $evento->titulo }}</span>
+                                                     <img src="{{ asset('imagen-eventos/' . $evento->icono_evento) }}"
+                                                         alt="Icono" class="subcomite-calendar__event-icon subcomite-calendar__event-icon--list">
+                                                     <span class="subcomite-calendar__event-title subcomite-calendar__event-title--list">{{ $evento->titulo }}</span>
                                                 </button>
                                             @endforeach
                                         </div>

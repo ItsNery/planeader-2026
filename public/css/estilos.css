@@ -4920,3 +4920,218 @@ footer {
     color: var(--color2);
     text-decoration: underline;
 }
+
+/* Calendario de subcomites */
+.subcomite-calendar {
+    margin-top: 3rem;
+}
+
+.subcomite-calendar__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.subcomite-calendar__container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    font-family: sans-serif;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.subcomite-calendar__navigation {
+    color: #333;
+    text-decoration: none;
+    font-size: 2rem;
+    transition: all 0.2s ease;
+}
+
+.subcomite-calendar__navigation--desktop {
+    background-color: var(--color4);
+    padding: 1rem;
+    border-radius: 50%;
+}
+
+.subcomite-calendar__navigation--desktop:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.subcomite-calendar__navigation--desktop {
+    display: none;
+}
+
+.subcomite-calendar__navigation--mobile {
+    display: block;
+    color: #555;
+    padding: 0 1rem;
+    border-radius: 5px;
+}
+
+.subcomite-calendar__navigation--mobile:hover {
+    background-color: #f0f0f0;
+}
+
+.subcomite-calendar__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.subcomite-calendar__month {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--color1);
+    font-family: 'Gilroy-Black', sans-serif;
+    text-align: center;
+}
+
+.subcomite-calendar__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+}
+
+.subcomite-calendar__weekday {
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 0.5rem;
+    color: #666;
+    font-size: 1.1rem;
+    font-family: 'Gilroy-Black', sans-serif;
+}
+
+.subcomite-calendar__day {
+    border: 1px solid #e0e0e0;
+    min-height: 120px;
+    padding: 0.5rem;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+}
+
+.subcomite-calendar__day--empty {
+    background-color: #f9f9f9;
+}
+
+.subcomite-calendar__day:not(.subcomite-calendar__day--empty):hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.subcomite-calendar__day-number {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #333;
+}
+
+.subcomite-calendar__day--has-event {
+    background-color: #e8f4f8;
+    border-color: #a2c4d2;
+}
+
+.subcomite-calendar__events {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.subcomite-calendar__event {
+    background-color: var(--color6);
+    color: white;
+    padding: 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8em;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.subcomite-calendar__event-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.subcomite-calendar__event-icon--list {
+    width: 24px;
+    height: 24px;
+}
+
+.subcomite-calendar__event-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    font-family: 'Corra-Montserra-Regular', sans-serif;
+}
+
+.subcomite-calendar__event-title--list {
+    color: #212529;
+    text-align: start;
+    font-size: 0.95rem;
+}
+
+.subcomite-calendar__more-events {
+    color: var(--color1);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.subcomite-calendar__modal-icon {
+    max-width: 80px;
+}
+
+@media (min-width: 1024px) {
+    .subcomite-calendar__header {
+        justify-content: center;
+    }
+
+    .subcomite-calendar__navigation--desktop {
+        display: block;
+    }
+
+    .subcomite-calendar__navigation--mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .subcomite-calendar__container {
+        padding: 0.75rem;
+    }
+
+    .subcomite-calendar__day {
+        min-height: 75px;
+        padding: 0.25rem;
+    }
+
+    .subcomite-calendar__weekday {
+        font-size: 0.8rem;
+    }
+
+    .subcomite-calendar__event {
+        padding: 0.25rem;
+    }
+
+    .subcomite-calendar__event-icon {
+        width: 16px;
+        height: 16px;
+    }
+}
