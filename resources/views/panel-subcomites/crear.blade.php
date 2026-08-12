@@ -43,7 +43,7 @@
                             Subir icono: *
                         </div>
                         <div class="container d-flex justify-content-center">
-                            <img id="iconoElegido" style="max-height: 300px;">
+                            <img id="iconoElegido" class="subcomite-create-preview">
                         </div>
                         <input accept=".jpg,.png,.svg,.jpeg" name="icono" id="icono" type='file'
                             class="hidden form-control @error('icono') is-invalid @enderror"
@@ -59,7 +59,7 @@
                             Subir imagen de conformación: *
                         </div>
                         <div class="container d-flex justify-content-center">
-                            <img id="imagenSeleccionada" style="max-height: 300px;">
+                            <img id="imagenSeleccionada" class="subcomite-create-preview">
                         </div>
                         <input accept=".jpg,.png,.svg,.jpeg" name="conformacion" id="conformacion" type='file'
                             class="hidden form-control @error('conformacion') is-invalid @enderror"

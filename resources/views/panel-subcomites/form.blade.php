@@ -106,7 +106,7 @@
                             <div class="custom-section-title">
                                 <i class="fa-solid fa-image text-primary-integration"></i> Icono: *
                             </div>
-                            <div class="file-upload-wrapper overflow-hidden position-relative" style="height: 200px;">
+                            <div class="file-upload-wrapper file-upload-wrapper--subcomite overflow-hidden position-relative">
                                 {{-- Placeholder --}}
                                 <div id="icono-placeholder"
                                     class="upload-content text-center {{ $subcomite->exists && $subcomite->icono ? 'd-none' : '' }}">
@@ -121,12 +121,10 @@
                                 <img id="preview-icono"
                                     src="{{ $subcomite->exists && $subcomite->icono ? asset('icono_subcomites/' . $subcomite->icono) : '#' }}"
                                     alt="Vista previa"
-                                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain {{ $subcomite->exists && $subcomite->icono ? '' : 'd-none' }}"
-                                    style="z-index: 1;">
+                                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain upload-preview upload-preview--base {{ $subcomite->exists && $subcomite->icono ? '' : 'd-none' }}">
 
                                 <input type="file" id="icono" name="icono" accept="image/*"
-                                    class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
-                                    style="z-index: 2; cursor: pointer;"
+                                    class="position-absolute top-0 start-0 w-100 h-100 opacity-0 upload-input"
                                     onchange="updateFileName(this, 'iconoNameDisplay', 'preview-icono', 'icono-placeholder')">
                             </div>
 
@@ -140,7 +138,7 @@
                             <div class="custom-section-title">
                                 <i class="fa-solid fa-image text-primary-integration"></i> Conformación del comité: *
                             </div>
-                            <div class="file-upload-wrapper overflow-hidden position-relative" style="height: 200px;">
+                            <div class="file-upload-wrapper file-upload-wrapper--subcomite overflow-hidden position-relative">
                                 {{-- Placeholder --}}
                                 <div id="conformacion-placeholder"
                                     class="upload-content text-center {{ $subcomite->exists && $subcomite->conformacion ? 'd-none' : '' }}">
@@ -155,12 +153,10 @@
                                 <img id="preview-conformacion"
                                     src="{{ $subcomite->exists && $subcomite->conformacion ? asset('subcomitesconformacion/' . $subcomite->conformacion) : '#' }}"
                                     alt="Vista previa"
-                                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain {{ $subcomite->exists && $subcomite->conformacion ? '' : 'd-none' }}"
-                                    style="z-index: 1;">
+                                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain upload-preview upload-preview--base {{ $subcomite->exists && $subcomite->conformacion ? '' : 'd-none' }}">
 
                                 <input type="file" id="conformacion" name="conformacion" accept="image/*"
-                                    class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
-                                    style="z-index: 2; cursor: pointer;"
+                                    class="position-absolute top-0 start-0 w-100 h-100 opacity-0 upload-input"
                                     onchange="updateFileName(this, 'conformacionNameDisplay', 'preview-conformacion', 'conformacion-placeholder')">
                             </div>
 

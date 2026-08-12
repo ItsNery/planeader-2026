@@ -52,10 +52,10 @@
                                             <img src="{{ asset('icono_subcomites/' . $subcomite->icono) }}"
                                                 class="img-thumbnail mx-2 imagen-lista">
                                         @else
-                                            <span class="text-muted mx-2" style="font-size: 0.85rem;">(Sin icono)</span>
+                                            <span class="text-muted mx-2 subcomite-no-icon">(Sin icono)</span>
                                         @endif
                                         <div>
-                                            <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
+                                            <div class="fw-bold text-dark mb-1 subcomite-list-name">
                                                 {{ $subcomite->nombre }}
                                             </div>
                                             <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-center" style="width: 150px;">
+                                <td class="text-center subcomite-status-cell">
                                     @if (Auth::user()->validador)
                                         <form action="{{ route('update-publicado-subcomite', $subcomite->id) }}"
                                             method="POST" class="d-inline">

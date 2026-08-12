@@ -33,7 +33,8 @@ class RolePermissionSeeder extends Seeder
             'subcomite',
             'usuario',
             'rol',
-            'registro-capacitacion'
+            'registro-capacitacion',
+            'agenda-evento'
         ];
 
         $permissions = [];

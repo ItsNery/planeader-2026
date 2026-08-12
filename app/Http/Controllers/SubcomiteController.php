@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use App\Traits\UpdatesPublicado;
 
 use App\Models\Evento;
+use App\Models\AgendaEvento;
 use Carbon\Carbon;
 
 class SubcomiteController extends Controller
@@ -388,12 +389,43 @@ class SubcomiteController extends Controller
             ->orderBy('fecha_evento', 'asc')
             ->get();
 
+        $agendaEventosDelMes = \App\Models\AgendaEvento::with('subcomite')
+            ->where('publicado', true)
+            ->whereIn('estado', ['pendiente', 'confirmado'])
+            ->whereYear('fecha_evento', $fechaBase->year)
+            ->whereMonth('fecha_evento', $fechaBase->month)
+            ->orderBy('fecha_evento')
+            ->get();
+
         $diasEnMes = $fechaBase->daysInMonth;
         $diaDeLaSemanaInicio = $fechaBase->dayOfWeek; // 0 para Domingo, 6 para Sábado
 
- $eventosPorDia = $eventosDelMes->groupBy(function ($evento) {
+        $fechasNoLaborables = collect(range(1, $diasEnMes))
+            ->map(fn ($dia) => $fechaBase->copy()->day($dia)->format('Y-m-d'))
+            ->filter(fn ($fecha) => AgendaEvento::fechaEsNoLaborable($fecha))
+            ->values();
+
+        $subcomitesAgenda = Subcomite::where('publicado', true)
+            ->whereHas('planestatal', function ($query) {
+                $query->where('nombre', 'Plan Estatal de Desarrollo 2024-2030');
+            })
+            ->orderBy('orden')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
+
+         $eventosPorDia = $eventosDelMes->groupBy(function ($evento) {
              return Carbon::parse($evento->fecha_evento)->day;
          });
+
+        $agendaEventosPorDia = $agendaEventosDelMes->groupBy(function ($evento) {
+            return Carbon::parse($evento->fecha_evento)->day;
+        });
+
+        $fechasAgendaOcupadas = \App\Models\AgendaEvento::activos()
+            ->whereDate('fecha_evento', '>=', Carbon::today())
+            ->pluck('fecha_evento')
+            ->map(fn ($fecha) => Carbon::parse($fecha)->format('Y-m-d'))
+            ->values();
 
         $mesAnterior = $fechaBase->copy()->subMonth()->format('Y-m');
         $mesSiguiente = $fechaBase->copy()->addMonth()->format('Y-m');
@@ -406,6 +438,10 @@ class SubcomiteController extends Controller
             'diasEnMes',
             'diaDeLaSemanaInicio',
             'eventosPorDia',
+            'agendaEventosPorDia',
+            'fechasAgendaOcupadas',
+            'fechasNoLaborables',
+            'subcomitesAgenda',
             'mesAnterior',
             'mesSiguiente'
         ));

@@ -3,14 +3,18 @@
 @section('meta-description', 'Subcomités que conforman el Comite de Planeación para el Desarrollo del Estado de Puebla')
 @section('canonical-url', url()->current())
 @section('og-title', 'Subcomités - Sistema Estatal de Planeación Democrática')
-@section('og-description',
+@section(
+    'og-description',
     'Bienvenido a la página de visión general de los subcomités del COPLADEP, parte del Sistema
-    Estatal de Planeación Democrática del Estado de Puebla.')
+    Estatal de Planeación Democrática del Estado de Puebla.'
+)
 @section('og:url', url()->current())
 @section('twitter-title', 'Subcomités - Sistema Estatal de Planeación Democrática')
-@section('twitter-description',
+@section(
+    'twitter-description',
     'Bienvenido a la página de visión general de los subcomités del COPLADEP, parte del
-    Sistema Estatal de Planeación Democrática del Estado de Puebla.')
+    Sistema Estatal de Planeación Democrática del Estado de Puebla.'
+)
 @section('content')
     <section class="contenedor-imagen-subcomites">
         <h1>Subcomités</h1>
@@ -25,6 +29,7 @@
         </div>
         <div class="container">
             @if ($subcomites_actual->isNotEmpty())
+                @php $primerGrupoActual = true; @endphp
                 <div class="accordion" id="accordionActual">
                     @foreach ($tipos_subcomites as $tipo_subcomite)
                         @php
@@ -33,8 +38,9 @@
                         @if ($subcomites_del_tipo->isNotEmpty())
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading-actual-{{ $loop->index }}">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapse-actual-{{ $loop->index }}" aria-expanded="false"
+                                    <button class="accordion-button {{ $primerGrupoActual ? '' : 'collapsed' }}" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapse-actual-{{ $loop->index }}"
+                                        aria-expanded="{{ $primerGrupoActual ? 'true' : 'false' }}"
                                         aria-controls="collapse-actual-{{ $loop->index }}">
                                         <strong>
                                             @if($tipo_subcomite === 'Sectoriales')
@@ -45,7 +51,8 @@
                                         </strong>
                                     </button>
                                 </h2>
-                                <div id="collapse-actual-{{ $loop->index }}" class="accordion-collapse collapse"
+                                <div id="collapse-actual-{{ $loop->index }}"
+                                    class="accordion-collapse collapse {{ $primerGrupoActual ? 'show' : '' }}"
                                     aria-labelledby="heading-actual-{{ $loop->index }}" data-bs-parent="#accordionActual">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
@@ -63,6 +70,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @php $primerGrupoActual = false; @endphp
                         @endif
                     @endforeach
                 </div>
@@ -74,7 +82,8 @@
                     $ultimaActualizacion = $subcomites_actual->max('updated_at');
                 @endphp
                 <p class="text-black" style="font-size: 10px; margin-bottom:inherit; margin-top: 1rem;">Última actualización:
-                    {{ $ultimaActualizacion->format('d/m/Y H:i:s') }}</p>
+                    {{ $ultimaActualizacion->format('d/m/Y H:i:s') }}
+                </p>
             @else
                 <p>No hay información disponible.</p>
             @endif
@@ -112,14 +121,14 @@
                                     </h2>
 
                                     {{-- El ID aquí debe coincidir con el `data-bs-target` del botón --}}
-                                    {{-- El `data-bs-parent` apunta al ID del acordeón padre para que solo uno esté abierto a la vez --}}
+                                    {{-- El `data-bs-parent` apunta al ID del acordeón padre para que solo uno esté abierto a la vez
+                                    --}}
                                     <div id="collapse-{{ $plan_id }}" class="accordion-collapse collapse"
                                         aria-labelledby="heading-{{ $plan_id }}" data-bs-parent="#accordionHistorico">
                                         <div class="accordion-body">
                                             <ul class="list-group list-group-flush">
                                                 @foreach ($subcomites_del_plan as $subcomite)
-                                                    <li
-                                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
                                                         {{ $subcomite->nombre }}
                                                         <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}"
                                                             class="btn btn-sm btn-outline-color-1" rel="noopener"

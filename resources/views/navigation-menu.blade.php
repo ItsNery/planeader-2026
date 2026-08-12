@@ -139,13 +139,14 @@
                 @endcanany
 
                 <!-- Gestión Dropdown -->
-                @canany(['ver-banner', 'ver-contacto', 'ver-usuario'])
+                @canany(['ver-banner', 'ver-contacto', 'ver-usuario', 'ver-agenda-evento'])
                     <x-dropdown id="gestionDropdown" :active="request()->routeIs([
                         'panel-banners*',
                         'panel-contacto*',
                         'panel-admin*',
                         'panel-roles*',
                         'panel-eventos*',
+                        'panel-agenda-eventos*',
                     ])">
                         <x-slot name="trigger">
                             {{ __('Gestión') }}
@@ -174,6 +175,11 @@
                             @can('ver-eventos')
                                 <x-dropdown-link href="{{ route('panel-eventos.index') }}">
                                     {{ __('Eventos') }}
+                                </x-dropdown-link>
+                            @endcan
+                            @can('ver-agenda-evento')
+                                <x-dropdown-link href="{{ route('panel-agenda-eventos.index') }}">
+                                    {{ __('Solicitudes de agenda') }}
                                 </x-dropdown-link>
                             @endcan
                         </x-slot>

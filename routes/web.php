@@ -25,6 +25,8 @@ use App\Http\Controllers\DocumentoSesionController;
 use App\Http\Controllers\InvitadoCopladepController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\AgendaEventoController;
+use App\Http\Controllers\PanelAgendaEventoController;
 use App\Http\Controllers\RegistroCopladepController;
 
 
@@ -77,6 +79,10 @@ Route::get('/copladep', [DocumentoCopladepController::class, 'mostrarDocumentosC
 Route::get('/subcomites', [SubcomiteController::class, 'mostrarSubcomites']);
 
 Route::get('/subcomites/{slug}', [SubcomiteController::class, 'showPublic'])->name('subcomites.showPublic');
+Route::post('/agenda-eventos', [AgendaEventoController::class, 'store'])->name('agenda-eventos.store');
+Route::get('/agenda-eventos/consulta', [AgendaEventoController::class, 'consulta'])->name('agenda-eventos.consulta');
+Route::get('/agenda-eventos/{agendaEvento}/google-calendar', [AgendaEventoController::class, 'googleCalendar'])->name('agenda-eventos.google-calendar');
+Route::get('/agenda-eventos/{agendaEvento}/ics', [AgendaEventoController::class, 'ics'])->name('agenda-eventos.ics');
 Route::get('/coplademun', [DocumentoApoyoCoplademunController::class, 'mostrarCoplademun']);
 
 
@@ -219,4 +225,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'destroy'])->name('panel-planes-estatales-anexos.destroy');
     Route::patch('/plan-estatal-anexo/{id}/publicado', [PlanEstatalAnexoController::class, 'updatePublicado'])->name('update-publicado-plan-estatal-anexo');
     Route::resource('panel-eventos', EventoController::class);
+    Route::get('/panel-agenda-eventos-exportar', [PanelAgendaEventoController::class, 'export'])
+        ->name('panel-agenda-eventos.export')
+        ->middleware('permission:ver-agenda-evento');
+    Route::resource('panel-agenda-eventos', PanelAgendaEventoController::class)
+        ->parameters(['panel-agenda-eventos' => 'agendaEvento']);
+    Route::patch('/panel-agenda-eventos/{agendaEvento}/estado', [PanelAgendaEventoController::class, 'status'])
+        ->name('panel-agenda-eventos.status');
 });
