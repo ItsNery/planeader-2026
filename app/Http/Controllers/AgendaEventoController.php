@@ -93,15 +93,13 @@ class AgendaEventoController extends Controller
     {
         $evento = null;
 
-        if ($request->filled(['folio', 'solicitante_email'])) {
+        if ($request->filled('folio')) {
             $request->validate([
                 'folio' => 'required|string|max:30',
-                'solicitante_email' => 'required|email|max:255',
             ]);
 
             $evento = AgendaEvento::with('subcomite')
                 ->where('folio', Str::upper(trim($request->folio)))
-                ->where('solicitante_email', Str::lower(trim($request->solicitante_email)))
                 ->first();
         }
 
@@ -248,12 +246,12 @@ class AgendaEventoController extends Controller
 
         $start = SupportCarbon::createFromFormat('H:i', $data['hora_inicio']);
         $end = !empty($data['hora_fin']) ? SupportCarbon::createFromFormat('H:i', $data['hora_fin']) : null;
-        $opening = SupportCarbon::createFromFormat('H:i', '11:00');
+        $opening = SupportCarbon::createFromFormat('H:i', '10:00');
         $closing = SupportCarbon::createFromFormat('H:i', '18:00');
 
         if ($start->lt($opening) || $start->gt($closing) || ($end && ($end->lt($opening) || $end->gt($closing)))) {
             throw ValidationException::withMessages([
-                'hora_inicio' => 'El horario permitido es de 11:00 a 18:00 horas.',
+                'hora_inicio' => 'El horario permitido es de 10:00 a 18:00 horas.',
             ]);
         }
     }

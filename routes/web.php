@@ -228,6 +228,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel-agenda-eventos-exportar', [PanelAgendaEventoController::class, 'export'])
         ->name('panel-agenda-eventos.export')
         ->middleware('permission:ver-agenda-evento');
+    Route::get('/panel-agenda-eventos-exportar/sesiones', [PanelAgendaEventoController::class, 'exportSesiones'])
+        ->name('panel-agenda-eventos.export-sesiones')
+        ->middleware('permission:ver-agenda-evento');
+    Route::get('/panel-agenda-eventos-exportar/mesas-tecnicas', [PanelAgendaEventoController::class, 'exportMesasTecnicas'])
+        ->name('panel-agenda-eventos.export-mesas-tecnicas')
+        ->middleware('permission:ver-agenda-evento');
     Route::resource('panel-agenda-eventos', PanelAgendaEventoController::class)
         ->parameters(['panel-agenda-eventos' => 'agendaEvento']);
     Route::patch('/panel-agenda-eventos/{agendaEvento}/estado', [PanelAgendaEventoController::class, 'status'])

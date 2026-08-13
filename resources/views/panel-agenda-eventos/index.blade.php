@@ -10,6 +10,8 @@
         </div>
         <div class="d-flex justify-content-end mb-3">
             <a href="{{ route('panel-agenda-eventos.export') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-csv me-1"></i>Exportar contactos</a>
+            <a href="{{ route('panel-agenda-eventos.export-sesiones') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-arrow-down me-1"></i>Sesiones</a>
+            <a href="{{ route('panel-agenda-eventos.export-mesas-tecnicas') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-arrow-down me-1"></i>Mesas técnicas</a>
             <a href="{{ route('panel-agenda-eventos.create') }}" class="btn btn-custom-primary">Crear evento</a>
         </div>
 

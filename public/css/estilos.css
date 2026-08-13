@@ -5020,6 +5020,115 @@ footer {
     text-align: center;
 }
 
+.agenda-consulta-page__heading p {
+    color: var(--agenda-muted);
+}
+
+.agenda-consulta-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    max-width: 760px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 1.25rem;
+    border: 1px solid var(--agenda-border);
+    border-radius: 0.55rem;
+    background: #fff;
+}
+
+.agenda-consulta-form__field {
+    flex: 1 1 auto;
+}
+
+.agenda-consulta-form__field label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--agenda-ink);
+    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    font-size: 0.86rem;
+}
+
+.agenda-consulta-form .form-control {
+    min-height: 2.7rem;
+    border-color: #ddd6da;
+    border-radius: 0.45rem;
+}
+
+.agenda-public-detail {
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid var(--agenda-border);
+    border-radius: 0.55rem;
+    background: #fff;
+    box-shadow: var(--agenda-shadow);
+}
+
+.agenda-public-detail__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+    color: #fff;
+    background-color: var(--color6);
+    background-image: url('../img/fondo-pajaro.png');
+    background-position: right center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.agenda-public-detail__header h2 {
+    margin: 0.25rem 0 0;
+    color: #fff;
+    font-family: 'Gilroy-Black', sans-serif;
+    font-size: 1.35rem;
+}
+
+.agenda-public-detail__eyebrow {
+    color: #fff;
+    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.agenda-public-detail__status {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    color: #fff;
+    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    font-size: 0.82rem;
+}
+
+.agenda-public-detail__status--confirmado { background: #198754; }
+.agenda-public-detail__status--pendiente { color: #212529; background: #ffc107; }
+.agenda-public-detail__status--rechazado,
+.agenda-public-detail__status--cancelado { background: #6c757d; }
+
+.agenda-public-detail__section { margin-bottom: 1.5rem; }
+.agenda-public-detail__section-title { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--agenda-border); color: var(--color1); font-family: 'Gilroy-Black', sans-serif; font-size: 1rem; }
+.agenda-public-detail__section-title i { font-size: 0.95rem; }
+.agenda-public-detail__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.agenda-public-detail__fields--single { grid-template-columns: 1fr; }
+.agenda-public-detail__field { min-width: 0; padding: 0.75rem 0.85rem; border: 1px solid #e7e3e5; border-radius: 0.45rem; background: #fff; font-family: 'Corra-Montserra-Regular', sans-serif; }
+.agenda-public-detail__field--wide { grid-column: 1 / -1; }
+.agenda-public-detail__field span { display: block; margin-bottom: 0.25rem; color: #77727a; font-family: 'Corra-Montserra-SemiBold', sans-serif; font-size: 0.73rem; text-transform: uppercase; }
+.agenda-public-detail__field strong { display: block; color: #28252a; font-weight: 600; overflow-wrap: anywhere; }
+.agenda-public-detail__break { white-space: pre-line; }
+.agenda-public-detail__copy { padding: 0.9rem; border: 1px solid #e7e3e5; border-radius: 0.45rem; color: #4f4b51; font-family: 'Corra-Montserra-Regular', sans-serif; white-space: pre-line; }
+.agenda-consulta-empty { max-width: 760px; margin: 0 auto; }
+
+@media (max-width: 575.98px) {
+    .agenda-consulta-form { align-items: stretch; flex-direction: column; }
+    .agenda-consulta-form .btn { width: 100%; }
+    .agenda-public-detail__header { align-items: flex-start; flex-direction: column; padding: 1.1rem; }
+    .agenda-public-detail .row { padding: 1.1rem !important; }
+    .agenda-public-detail__fields { grid-template-columns: 1fr; }
+    .agenda-public-detail__field--wide { grid-column: auto; }
+}
+
 .agenda-consulta-button {
     display: inline-flex;
     flex: 0 0 auto;

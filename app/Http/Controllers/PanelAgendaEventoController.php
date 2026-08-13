@@ -61,7 +61,25 @@ class PanelAgendaEventoController extends Controller
 
     public function export(): StreamedResponse
     {
-        $eventos = AgendaEvento::with('subcomite')->orderBy('fecha_evento')->get();
+        return $this->exportarEventos();
+    }
+
+    public function exportSesiones(): StreamedResponse
+    {
+        return $this->exportarEventos('sesion', 'agenda-sesiones');
+    }
+
+    public function exportMesasTecnicas(): StreamedResponse
+    {
+        return $this->exportarEventos('mesa_tecnica', 'agenda-mesas-tecnicas');
+    }
+
+    private function exportarEventos(?string $tipo = null, string $nombre = 'agenda-contactos'): StreamedResponse
+    {
+        $eventos = AgendaEvento::with('subcomite')
+            ->when($tipo, fn ($query) => $query->where('tipo_evento', $tipo))
+            ->orderBy('fecha_evento')
+            ->get();
 
         return response()->streamDownload(function () use ($eventos) {
             $output = fopen('php://output', 'w');
@@ -82,7 +100,7 @@ class PanelAgendaEventoController extends Controller
                 ], ';');
             }
             fclose($output);
-        }, 'agenda-contactos-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+        }, $nombre . '-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     public function create()
@@ -224,12 +242,12 @@ class PanelAgendaEventoController extends Controller
 
         $start = SupportCarbon::createFromFormat('H:i', $data['hora_inicio']);
         $end = !empty($data['hora_fin']) ? SupportCarbon::createFromFormat('H:i', $data['hora_fin']) : null;
-        $opening = SupportCarbon::createFromFormat('H:i', '11:00');
+        $opening = SupportCarbon::createFromFormat('H:i', '10:00');
         $closing = SupportCarbon::createFromFormat('H:i', '18:00');
 
         if ($start->lt($opening) || $start->gt($closing) || ($end && ($end->lt($opening) || $end->gt($closing)))) {
             throw ValidationException::withMessages([
-                'hora_inicio' => 'El horario permitido es de 11:00 a 18:00 horas.',
+                'hora_inicio' => 'El horario permitido es de 10:00 a 18:00 horas.',
             ]);
         }
     }

@@ -508,13 +508,13 @@
                                 <div class="col-md-3"><label class="form-label fw-bold" for="agenda-start">Hora inicio
                                         *</label>
                                     <div class="agenda-input-icon"><i class="fa-regular fa-clock"></i><input type="time"
-                                            name="hora_inicio" id="agenda-start" class="form-control" min="11:00" max="18:00"
-                                            value="{{ old('hora_inicio', '11:00') }}" required>
+                                            name="hora_inicio" id="agenda-start" class="form-control" min="10:00" max="18:00"
+                                            value="{{ old('hora_inicio', '10:00') }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-3"><label class="form-label fw-bold" for="agenda-end">Hora fin</label>
                                     <div class="agenda-input-icon"><i class="fa-regular fa-clock"></i><input type="time"
-                                            name="hora_fin" id="agenda-end" class="form-control" min="11:00" max="18:00"
+                                            name="hora_fin" id="agenda-end" class="form-control" min="10:00" max="18:00"
                                             value="{{ old('hora_fin') }}"></div>
                                 </div>
                                 <div class="col-md-6"><label class="form-label fw-bold">Modalidad *</label><select
@@ -613,10 +613,10 @@
                  const startTimeInput = document.getElementById('agenda-start');
                  const endTimeInput = document.getElementById('agenda-end');
                  const normalizeAgendaHours = () => {
-                     if (!startTimeInput.value || startTimeInput.value < '11:00') {
-                         startTimeInput.value = '11:00';
+                     if (!startTimeInput.value || startTimeInput.value < '10:00') {
+                         startTimeInput.value = '10:00';
                      }
-                     if (endTimeInput.value && endTimeInput.value < '11:00') {
+                     if (endTimeInput.value && endTimeInput.value < '10:00') {
                          endTimeInput.value = '';
                      }
                  };
