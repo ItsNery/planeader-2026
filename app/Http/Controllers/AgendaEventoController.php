@@ -17,7 +17,7 @@ class AgendaEventoController extends Controller
     {
         $data = $request->validate([
             'tipo_evento' => 'required|in:sesion,mesa_tecnica',
-            'subcomite_id' => 'nullable|required_if:tipo_evento,sesion|exists:subcomites,id',
+            'subcomite_id' => 'required|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date|after:today',
@@ -33,7 +33,7 @@ class AgendaEventoController extends Controller
             'comentarios' => 'nullable|string|max:3000',
             'g-recaptcha-response' => 'required|captcha',
         ], [
-            'subcomite_id.required_if' => 'Selecciona el subcomité de la sesión.',
+            'subcomite_id.required' => 'Selecciona el subcomité de la actividad.',
             'fecha_evento.after' => 'La fecha debe ser posterior al día actual.',
             'hora_fin.after' => 'La hora de término debe ser posterior a la hora de inicio.',
             'ubicacion.required_if' => 'La ubicación es obligatoria para eventos presenciales.',
@@ -45,9 +45,6 @@ class AgendaEventoController extends Controller
         $this->validarCorreosInvitados($data['correos_invitados'] ?? null, $data['solicitante_email']);
         $data['correos_invitados'] = $this->normalizarCorreosInvitados($data['correos_invitados'] ?? null, $data['solicitante_email']);
         $this->validateAgendaDateAndHours($data);
-        if ($data['tipo_evento'] === 'mesa_tecnica') {
-            $data['subcomite_id'] = null;
-        }
         $data['estado'] = 'pendiente';
         $data['publicado'] = true;
 

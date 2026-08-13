@@ -488,8 +488,8 @@
                                         <option value="mesa_tecnica" @selected(old('tipo_evento') === 'mesa_tecnica')>Mesa técnica
                                             de trabajo</option>
                                     </select></div>
-                                <div class="col-md-6"><label class="form-label fw-bold">Subcomité</label><select
-                                        name="subcomite_id" class="form-select" id="agenda-subcomite">
+                                <div class="col-md-6"><label class="form-label fw-bold">Subcomité *</label><select
+                                        name="subcomite_id" class="form-select" id="agenda-subcomite" required>
                                         <option value="">Selecciona un subcomité</option>
                                         @foreach ($subcomitesAgenda as $subcomiteAgenda)
                                             <option value="{{ $subcomiteAgenda->id }}" @selected(old('subcomite_id', $subcomite->id) == $subcomiteAgenda->id)>
@@ -635,11 +635,10 @@
                 };
                 dateInput.addEventListener('change', refreshDate);
                 modality.addEventListener('change', refreshModality);
-                const refreshSubcomite = () => {
-                    subcomiteInput.disabled = eventType.value !== 'sesion';
-                    subcomiteInput.required = eventType.value === 'sesion';
-                    if (eventType.value !== 'sesion') subcomiteInput.value = '';
-                };
+                 const refreshSubcomite = () => {
+                     subcomiteInput.disabled = false;
+                     subcomiteInput.required = true;
+                 };
                 eventType.addEventListener('change', refreshSubcomite);
                 document.querySelectorAll('[data-agenda-date]').forEach((day) => {
                      const openRequest = () => {

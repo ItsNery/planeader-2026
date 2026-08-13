@@ -48,14 +48,14 @@
                                     @error('tipo_evento')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="subcomite_id" class="fw-bold mb-1">Subcomité:</label>
-                                    <select id="subcomite_id" name="subcomite_id" class="form-select @error('subcomite_id') is-invalid @enderror">
-                                        <option value="">No aplica</option>
+                                    <label for="subcomite_id" class="fw-bold mb-1">Subcomité: *</label>
+                                    <select id="subcomite_id" name="subcomite_id" class="form-select @error('subcomite_id') is-invalid @enderror" required>
+                                        <option value="">Selecciona un subcomité</option>
                                         @foreach ($subcomites as $subcomite)
                                             <option value="{{ $subcomite->id }}" @selected(old('subcomite_id', $evento->subcomite_id) == $subcomite->id)>{{ $subcomite->nombre }}</option>
                                         @endforeach
                                     </select>
-                                    <div class="form-text">Requerido únicamente para una sesión.</div>
+                                    <div class="form-text">Requerido para sesiones y mesas técnicas.</div>
                                     @error('subcomite_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-12">
@@ -229,10 +229,8 @@
                 if (!type || !subcomite) return;
 
                 const refreshSubcomite = () => {
-                    const isSession = type.value === 'sesion';
-                    subcomite.disabled = !isSession;
-                    subcomite.required = isSession;
-                    if (!isSession) subcomite.value = '';
+                    subcomite.disabled = false;
+                    subcomite.required = true;
                 };
 
                 type.addEventListener('change', refreshSubcomite);

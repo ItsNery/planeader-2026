@@ -83,7 +83,8 @@ class PanelAgendaEventoController extends Controller
 
         return response()->streamDownload(function () use ($eventos) {
             $output = fopen('php://output', 'w');
-            fputcsv($output, ['Folio', 'Tipo', 'Subcomite', 'Fecha', 'Hora inicio', 'Modalidad', 'Institucion', 'Responsable', 'Correo', 'Telefono', 'Estado'], ';');
+            fwrite($output, "\xEF\xBB\xBF");
+            fputcsv($output, ['Folio', 'Tipo', 'Subcomité', 'Fecha', 'Hora inicio', 'Modalidad', 'Institución', 'Responsable', 'Correo', 'Teléfono', 'Estado'], ';');
             foreach ($eventos as $evento) {
                 fputcsv($output, [
                     $evento->folio,
@@ -198,7 +199,7 @@ class PanelAgendaEventoController extends Controller
 
         return $request->validate([
             'tipo_evento' => 'required|in:sesion,mesa_tecnica',
-            'subcomite_id' => 'nullable|required_if:tipo_evento,sesion|exists:subcomites,id',
+            'subcomite_id' => 'required|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date|after:today',
