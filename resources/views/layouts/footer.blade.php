@@ -61,10 +61,6 @@
                         <i class="fa fa-gavel mr-2" rel="noopener"></i>
                         Marco Jurídico
                     </a>
-                    <a class="text-white-50 mb-2" href="{{ url('/regionalizacion') }}">
-                        <i class="fa fa-globe mr-2" rel="noopener"></i>
-                        Regionalización
-                    </a>
                     <a class="text-white-50 mb-2" href="#" data-bs-toggle="collapse"
                         data-bs-target="#planeacionEstatalSubMenu" aria-expanded="false"
                         aria-controls="planeacionEstatalSubMenu" rel="noopener">
@@ -134,6 +130,10 @@
                         </a>
                         <br>
                     </div>
+                    <a class="text-white-50 mb-2" href="{{ url('/regionalizacion') }}">
+                        <i class="fa fa-globe mr-2" rel="noopener"></i>
+                        Regionalización
+                    </a>
                     <a class="text-white-50 mb-2" href="{{ url('/contacto') }}" rel="noopener">
                         <i class="fa-solid fa-address-book"></i>
                         Contacto
@@ -197,7 +197,7 @@
                     <i class="fa fa-phone-alt mr-2"></i>
                     <a class="no_s text-inherit" href="tel:2222297000">
                         222 229
-                        7000
+                        7000 Ext. 5014
                     </a>
                 </p>
                 <p>
