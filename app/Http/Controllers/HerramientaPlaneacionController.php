@@ -66,7 +66,7 @@ class HerramientaPlaneacionController extends Controller
         $herramienta->titulo = $request->titulo;
         $herramienta->descripcion = $request->descripcion;
         $herramienta->orden = $request->orden;
-        $herramienta->publicado = $request->has('publicado');
+        $herramienta->publicado = $request->boolean('publicado');
 
         $slug = Str::limit(Str::slug($request->titulo), 70);
 
@@ -96,7 +96,7 @@ class HerramientaPlaneacionController extends Controller
             }
         }
 
-        return redirect()->away(route('panel-herramientas.index', [], false), 303)
+        return redirect()->route('panel-herramientas.index', [], 303)
             ->with('success', 'Herramienta creada exitosamente.');
     }
 
@@ -137,7 +137,7 @@ class HerramientaPlaneacionController extends Controller
         $herramienta->titulo = $request->titulo;
         $herramienta->descripcion = $request->descripcion;
         $herramienta->orden = $request->orden;
-        $herramienta->publicado = $request->has('publicado');
+        $herramienta->publicado = $request->boolean('publicado');
 
         $slug = Str::limit(Str::slug($request->titulo), 70);
 
@@ -198,7 +198,7 @@ class HerramientaPlaneacionController extends Controller
             }
         }
 
-        return redirect()->away(route('panel-herramientas.index', [], false), 303)
+        return redirect()->route('panel-herramientas.index', [], 303)
             ->with('success', 'Herramienta actualizada exitosamente.');
     }
 

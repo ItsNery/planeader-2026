@@ -41,7 +41,7 @@ class HerramientaPlaneacionUploadValidationTest extends TestCase
         $this->assertUploadRejected($request, 'anexos.0.archivo');
     }
 
-    public function test_successful_store_redirects_to_a_relative_index_url(): void
+    public function test_successful_store_redirects_to_index(): void
     {
         Schema::create('herramientas_planeacion', function (Blueprint $table) {
             $table->id();
@@ -67,7 +67,7 @@ class HerramientaPlaneacionUploadValidationTest extends TestCase
             $response = app(HerramientaPlaneacionController::class)->store($request);
             $herramienta = HerramientaPlaneacion::first();
 
-            $this->assertSame('/panel-herramientas', $response->getTargetUrl());
+            $this->assertStringEndsWith('/panel-herramientas', $response->getTargetUrl());
         } finally {
             if ($herramienta) {
                 @unlink(public_path('documentos/herramientas/' . $herramienta->archivo));
@@ -129,6 +129,42 @@ class HerramientaPlaneacionUploadValidationTest extends TestCase
             }
 
             Schema::dropIfExists('herramientas_planeacion_anexos');
+            Schema::dropIfExists('herramientas_planeacion');
+        }
+    }
+
+    public function test_store_saves_borrador_when_publicado_is_zero(): void
+    {
+        Schema::create('herramientas_planeacion', function (Blueprint $table) {
+            $table->id();
+            $table->string('titulo');
+            $table->text('descripcion')->nullable();
+            $table->string('imagen')->nullable();
+            $table->string('archivo');
+            $table->integer('orden');
+            $table->boolean('publicado');
+            $table->timestamps();
+        });
+
+        $herramienta = null;
+
+        try {
+            $request = Request::create('/panel-herramientas', 'POST', [
+                'titulo' => 'Herramienta borrador',
+                'orden' => 1,
+                'publicado' => '0',
+            ], [], [
+                'archivo' => UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf'),
+            ]);
+
+            app(HerramientaPlaneacionController::class)->store($request);
+
+            $herramienta = HerramientaPlaneacion::first();
+            $this->assertSame(0, $herramienta->publicado);
+        } finally {
+            if ($herramienta) {
+                @unlink(public_path('documentos/herramientas/' . $herramienta->archivo));
+            }
             Schema::dropIfExists('herramientas_planeacion');
         }
     }
