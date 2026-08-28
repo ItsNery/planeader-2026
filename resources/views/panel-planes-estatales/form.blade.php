@@ -79,7 +79,7 @@
                                         </small>
                                     @enderror
                                 </div>
-                                @if (isset($planesEst->anexos) && $planesEst->anexos->count() > 0)
+                                @if (isset($planesEst) && isset($planesEst->anexos) && $planesEst->anexos->count() > 0)
                                     <div class="mb-4">
                                         <div class="custom-section-title">
                                             <i class="fa-solid fa-folder-tree text-primary-integration"></i> Recursos
@@ -98,11 +98,11 @@
                                             </a>
                                         </div>
                                     </div>
-                                    @else
+                                @elseif (isset($planesEst))
                                     <a href="{{ route('panel-planes-estatales-anexos.index', $planesEst->id) }}"
-                                                class="btn btn-custom-primary btn-sm px-3 py-2 shadow-sm">
-                                                <i class="fa-solid fa-paperclip me-1"></i> Gestionar Anexos
-                                            </a>
+                                        class="btn btn-custom-primary btn-sm px-3 py-2 shadow-sm">
+                                        <i class="fa-solid fa-paperclip me-1"></i> Gestionar Anexos
+                                    </a>
                                 @endif
                             </div>
                         </div>

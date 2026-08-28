@@ -186,7 +186,10 @@ class BannerController extends Controller
 
         if ($request->hasFile('imagen')) {
             if ($banners->imagen) {
-                unlink(public_path('baners/') . $banners->imagen);
+                $oldPath = public_path('baners/') . $banners->imagen;
+                if (file_exists($oldPath) && is_file($oldPath)) {
+                    unlink($oldPath);
+                }
             }
             $imagen = $request->file('imagen');
             $nombre_archivo_banner = Str::slug($request->input('nombre')) . '-' . Str::random(4) . '.' . $imagen->getClientOriginalExtension();

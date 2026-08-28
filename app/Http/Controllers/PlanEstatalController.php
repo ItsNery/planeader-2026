@@ -185,7 +185,10 @@ class PlanEstatalController extends Controller
 
         if ($request->hasFile('ruta_documento')) {
             if ($planesEstatales->ruta_documento) {
-                unlink(public_path('planesest/') . $planesEstatales->ruta_documento);
+                $oldDoc = public_path('planesest/') . $planesEstatales->ruta_documento;
+                if (file_exists($oldDoc) && is_file($oldDoc)) {
+                    unlink($oldDoc);
+                }
             }
 
             $ruta_documento = $request->file('ruta_documento');
@@ -197,7 +200,10 @@ class PlanEstatalController extends Controller
 
         if ($request->hasFile('portada')) {
             if ($planesEstatales->portada) {
-                unlink(public_path('portadaplanesest/') . $planesEstatales->portada);
+                $oldImg = public_path('portadaplanesest/') . $planesEstatales->portada;
+                if (file_exists($oldImg) && is_file($oldImg)) {
+                    unlink($oldImg);
+                }
             }
 
             $portada = $request->file('portada');
