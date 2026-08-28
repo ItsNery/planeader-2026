@@ -63,7 +63,7 @@
                                                     href="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
                                                     data-src="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
                                                     data-title="{{ $anexo->titulo }}">
-                                                    <i class="fas fa-file-pdf pdf"></i> Ver / Descargar
+                                                    <i class="fas fa-file-arrow-down"></i> Ver / Descargar
                                                 </a>
                                             </div>
                                         </div>

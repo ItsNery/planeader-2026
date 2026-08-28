@@ -91,13 +91,14 @@
                                                     <div class="d-flex align-items-center bg-white p-1 border rounded">
                                                         <a href="{{ asset('documentos/herramientas/anexos/' . $anexo->archivo) }}"
                                                             target="_blank" title="{{ $anexo->titulo }}">
-                                                            <i class="fa-solid fa-file-pdf text-danger mx-2"></i>
+                                                            <i class="fa-solid fa-file-arrow-down text-danger mx-2"></i>
                                                         </a>
                                                         <span
                                                             class="small text-truncate flex-grow-1">{{ $anexo->archivo }}</span>
                                                         <input name="anexos[{{ $index }}][archivo]" type="file"
                                                             class="form-control form-control-sm d-none"
-                                                            id="anexo_file_{{ $index }}" accept=".pdf"
+                                                            id="anexo_file_{{ $index }}"
+                                                            accept=".pdf,.zip,.rar,.doc,.docx,.xls,.xlsx"
                                                             onchange="validateFileSize(this, 10)">
                                                         <button type="button"
                                                             class="btn btn-sm btn-link text-primary p-0 px-2"
@@ -261,8 +262,8 @@
                             <input name="anexos[${anexoIndex}][titulo]" type="text" placeholder="Ej: Anexo A - Documentación extra" class="form-control form-control-sm border-primary-integration" required>
                         </div>
                         <div class="col-md-5">
-                            <label class="small fw-bold text-muted mb-1">Archivo PDF:</label>
-                            <input name="anexos[${anexoIndex}][archivo]" type="file" accept=".pdf" class="form-control form-control-sm border-primary-integration" onchange="validateFileSize(this, 10)" required>
+                            <label class="small fw-bold text-muted mb-1">Archivo:</label>
+                            <input name="anexos[${anexoIndex}][archivo]" type="file" accept=".pdf,.zip,.rar,.doc,.docx,.xls,.xlsx" class="form-control form-control-sm border-primary-integration" onchange="validateFileSize(this, 10)" required>
                         </div>
                         <div class="col-md-1">
                             <label class="small fw-bold text-muted mb-1">Orden:</label>

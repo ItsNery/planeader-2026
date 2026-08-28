@@ -77,6 +77,62 @@ class HerramientaPlaneacionUploadValidationTest extends TestCase
         }
     }
 
+    public function test_store_accepts_zip_annex(): void
+    {
+        Schema::create('herramientas_planeacion', function (Blueprint $table) {
+            $table->id();
+            $table->string('titulo');
+            $table->text('descripcion')->nullable();
+            $table->string('imagen')->nullable();
+            $table->string('archivo');
+            $table->integer('orden');
+            $table->boolean('publicado');
+            $table->timestamps();
+        });
+        Schema::create('herramientas_planeacion_anexos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('herramienta_id')->constrained('herramientas_planeacion')->onDelete('cascade');
+            $table->string('titulo');
+            $table->string('archivo');
+            $table->integer('orden')->default(0);
+            $table->timestamps();
+        });
+
+        $herramienta = null;
+        $anexo = null;
+
+        try {
+            $request = Request::create('/panel-herramientas', 'POST', [
+                'titulo' => 'Herramienta con anexo zip',
+                'orden' => 1,
+                'anexos' => [['titulo' => 'Anexo zip']],
+            ], [], [
+                'archivo' => UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf'),
+                'anexos' => [[
+                    'archivo' => UploadedFile::fake()->create('datos.zip', 100, 'application/zip'),
+                ]],
+            ]);
+
+            app(HerramientaPlaneacionController::class)->store($request);
+
+            $herramienta = HerramientaPlaneacion::first();
+            $anexo = $herramienta->anexos()->first();
+
+            $this->assertNotNull($anexo);
+            $this->assertStringEndsWith('.zip', $anexo->archivo);
+        } finally {
+            if ($anexo) {
+                @unlink(public_path('documentos/herramientas/anexos/' . $anexo->archivo));
+            }
+            if ($herramienta) {
+                @unlink(public_path('documentos/herramientas/' . $herramienta->archivo));
+            }
+
+            Schema::dropIfExists('herramientas_planeacion_anexos');
+            Schema::dropIfExists('herramientas_planeacion');
+        }
+    }
+
     private function assertUploadRejected(Request $request, string $field): void
     {
         try {

@@ -59,7 +59,7 @@ class HerramientaPlaneacionController extends Controller
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:6144',
             'orden' => 'required|integer|min:1',
             'anexos.*.titulo' => 'nullable|string|max:255',
-            'anexos.*.archivo' => 'nullable|file|mimes:pdf|max:10240',
+            'anexos.*.archivo' => 'nullable|file|mimes:pdf,zip,rar,doc,docx,xls,xlsx|max:10240',
         ]);
 
         $herramienta = new HerramientaPlaneacion();
@@ -71,17 +71,11 @@ class HerramientaPlaneacionController extends Controller
         $slug = Str::limit(Str::slug($request->titulo), 70);
 
         if ($request->hasFile('archivo')) {
-            $archivo = $request->file('archivo');
-            $nombreArchivo = $slug . '-' . Str::random(4) . '.' . $archivo->getClientOriginalExtension();
-            $archivo->move(public_path('documentos/herramientas/'), $nombreArchivo);
-            $herramienta->archivo = $nombreArchivo;
+            $herramienta->archivo = $this->handleFileUpload($request->file('archivo'), 'documentos/herramientas/', $slug);
         }
 
         if ($request->hasFile('imagen')) {
-            $imagen = $request->file('imagen');
-            $nombreImagen = 'Portado_de_' . $slug . '-' . Str::random(4) . '.' . $imagen->getClientOriginalExtension();
-            $imagen->move(public_path('imagen/herramientas/'), $nombreImagen);
-            $herramienta->imagen = $nombreImagen;
+            $herramienta->imagen = $this->handleFileUpload($request->file('imagen'), 'imagen/herramientas/', 'Portada_de_' . $slug);
         }
 
         $herramienta->save();
@@ -91,8 +85,7 @@ class HerramientaPlaneacionController extends Controller
                 if (isset($anexoData['archivo']) && $request->hasFile("anexos.$index.archivo")) {
                     $anexoFile = $request->file("anexos.$index.archivo");
                     $tituloAnexo = $anexoData['titulo'] ?? ('Anexo ' . ($index + 1));
-                    $nombreAnexo = Str::slug($tituloAnexo) . '-' . Str::random(4) . '.' . $anexoFile->getClientOriginalExtension();
-                    $anexoFile->move(public_path('documentos/herramientas/anexos/'), $nombreAnexo);
+                    $nombreAnexo = $this->handleFileUpload($anexoFile, 'documentos/herramientas/anexos/', Str::slug($tituloAnexo));
 
                     $herramienta->anexos()->create([
                         'titulo' => $tituloAnexo,
@@ -103,7 +96,7 @@ class HerramientaPlaneacionController extends Controller
             }
         }
 
-        return redirect()->away(route('panel-herramientas.index', [], false))
+        return redirect()->away(route('panel-herramientas.index', [], false), 303)
             ->with('success', 'Herramienta creada exitosamente.');
     }
 
@@ -137,7 +130,7 @@ class HerramientaPlaneacionController extends Controller
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:6144',
             'orden' => 'required|integer|min:1',
             'anexos.*.titulo' => 'nullable|string|max:255',
-            'anexos.*.archivo' => 'nullable|file|mimes:pdf|max:10240',
+            'anexos.*.archivo' => 'nullable|file|mimes:pdf,zip,rar,doc,docx,xls,xlsx|max:10240',
         ]);
 
         $herramienta = HerramientaPlaneacion::findOrFail($id);
@@ -205,7 +198,7 @@ class HerramientaPlaneacionController extends Controller
             }
         }
 
-        return redirect()->away(route('panel-herramientas.index', [], false))
+        return redirect()->away(route('panel-herramientas.index', [], false), 303)
             ->with('success', 'Herramienta actualizada exitosamente.');
     }
 
@@ -256,8 +249,13 @@ class HerramientaPlaneacionController extends Controller
 
     private function handleFileUpload($file, $path, $prefix)
     {
+        $directory = public_path($path);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
         $name = $prefix . '-' . Str::random(4) . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path($path), $name);
+        $file->move($directory, $name);
         return $name;
     }
 
