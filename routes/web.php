@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentoCopladepController;
 use App\Http\Controllers\DocumentoSubcomiteController;
 use App\Http\Controllers\EncuestaController;
+use App\Http\Controllers\EncuestaPed2025Controller;
 use App\Http\Controllers\FormularioContactoController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\MarcoJuridicoController;
@@ -151,6 +152,11 @@ Route::get('/programas-estatales', [ProgramaEstatalController::class, 'mostrarPr
 Route::get('/consultaciudadana2025', function () {
     return view('consulta');
 });
+
+
+Route::get('/encuesta/cuestionario', [EncuestaPed2025Controller::class, 'cuestionario'])->name('cuestionario');
+Route::post('/encuesta/cuestionario', [EncuestaPed2025Controller::class, 'cuestionario_store'])->name('cuestionario_store');
+
 // Ruta para MOSTRAR el formulario (GET)
 Route::get('/coplademun/registro', [RegistroController::class, 'create'])->name('registro.create');
 

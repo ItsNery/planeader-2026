@@ -97,7 +97,8 @@
                                                             class="small text-truncate flex-grow-1">{{ $anexo->archivo }}</span>
                                                         <input name="anexos[{{ $index }}][archivo]" type="file"
                                                             class="form-control form-control-sm d-none"
-                                                            id="anexo_file_{{ $index }}">
+                                                            id="anexo_file_{{ $index }}" accept=".pdf"
+                                                            onchange="validateFileSize(this, 10)">
                                                         <button type="button"
                                                             class="btn btn-sm btn-link text-primary p-0 px-2"
                                                             onclick="document.getElementById('anexo_file_{{ $index }}').click(); this.parentElement.querySelector('span').innerText = 'Cambiar archivo...'">
@@ -166,7 +167,7 @@
                                 <input accept=".pdf" type="file" id="archivo" name="archivo"
                                     class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
                                     style="z-index: 2; cursor: pointer;"
-                                    onchange="updateFileName(this, 'fileNameDisplay', null, 'pdf-placeholder', 'pdf-filename-container')">
+                                    onchange="if (validateFileSize(this, 10)) updateFileName(this, 'fileNameDisplay', null, 'pdf-placeholder', 'pdf-filename-container')">
                             </div>
                             @error('archivo')
                                 <small class="text-danger d-block mt-1 text-center">{{ $message }}</small>
@@ -197,7 +198,7 @@
                                 <input type="file" id="imagen" name="imagen" accept="image/*"
                                     class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
                                     style="z-index: 2; cursor: pointer;"
-                                    onchange="updateFileName(this, 'portadaNameDisplay', 'preview-portada', 'portada-placeholder')">
+                                    onchange="if (validateFileSize(this, 6)) updateFileName(this, 'portadaNameDisplay', 'preview-portada', 'portada-placeholder')">
                             </div>
 
                             <small id="portadaNameDisplay" class="d-block text-center mt-2 text-success fw-bold"></small>
@@ -261,7 +262,7 @@
                         </div>
                         <div class="col-md-5">
                             <label class="small fw-bold text-muted mb-1">Archivo PDF:</label>
-                            <input name="anexos[${anexoIndex}][archivo]" type="file" accept=".pdf" class="form-control form-control-sm border-primary-integration" required>
+                            <input name="anexos[${anexoIndex}][archivo]" type="file" accept=".pdf" class="form-control form-control-sm border-primary-integration" onchange="validateFileSize(this, 10)" required>
                         </div>
                         <div class="col-md-1">
                             <label class="small fw-bold text-muted mb-1">Orden:</label>
@@ -297,6 +298,23 @@
                     setTimeout(() => row.remove(), 500);
                 }
             });
+
+            function validateFileSize(input, maxSizeInMb) {
+                input.setCustomValidity('');
+
+                if (!input.files || !input.files[0]) {
+                    return true;
+                }
+
+                if (input.files[0].size > maxSizeInMb * 1024 * 1024) {
+                    input.value = '';
+                    input.setCustomValidity(`El archivo no debe superar ${maxSizeInMb} MB.`);
+                    input.reportValidity();
+                    return false;
+                }
+
+                return true;
+            }
 
             function updateFileName(input, displayId, previewId = null, placeholderId = null, overlayId = null) {
                 const display = document.getElementById(displayId);

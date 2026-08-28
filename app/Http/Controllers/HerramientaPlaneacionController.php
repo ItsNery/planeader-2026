@@ -55,11 +55,11 @@ class HerramientaPlaneacionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'archivo' => 'required|file|mimes:pdf|max:51200',
+            'archivo' => 'required|file|mimes:pdf|max:10240',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:6144',
             'orden' => 'required|integer|min:1',
             'anexos.*.titulo' => 'nullable|string|max:255',
-            'anexos.*.archivo' => 'nullable|file',
+            'anexos.*.archivo' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $herramienta = new HerramientaPlaneacion();
@@ -132,11 +132,11 @@ class HerramientaPlaneacionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'archivo' => 'nullable|file|mimes:pdf|max:51200',
+            'archivo' => 'nullable|file|mimes:pdf|max:10240',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:6144',
             'orden' => 'required|integer|min:1',
             'anexos.*.titulo' => 'nullable|string|max:255',
-            'anexos.*.archivo' => 'nullable|file',
+            'anexos.*.archivo' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $herramienta = HerramientaPlaneacion::findOrFail($id);
