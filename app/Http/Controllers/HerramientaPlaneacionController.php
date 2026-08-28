@@ -103,7 +103,8 @@ class HerramientaPlaneacionController extends Controller
             }
         }
 
-        return redirect()->route('panel-herramientas.index')->with('success', 'Herramienta creada exitosamente.');
+        return redirect()->away(route('panel-herramientas.index', [], false))
+            ->with('success', 'Herramienta creada exitosamente.');
     }
 
     /**
@@ -204,7 +205,8 @@ class HerramientaPlaneacionController extends Controller
             }
         }
 
-        return redirect()->route('panel-herramientas.index')->with('success', 'Herramienta actualizada exitosamente.');
+        return redirect()->away(route('panel-herramientas.index', [], false))
+            ->with('success', 'Herramienta actualizada exitosamente.');
     }
 
     /**
