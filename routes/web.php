@@ -156,6 +156,7 @@ Route::get('/consultaciudadana2025', function () {
 
 Route::get('/encuesta/cuestionario', [EncuestaPed2025Controller::class, 'cuestionario'])->name('cuestionario');
 Route::post('/encuesta/cuestionario', [EncuestaPed2025Controller::class, 'cuestionario_store'])->name('cuestionario_store');
+Route::get('/encuesta/resultados', [EncuestaPed2025Controller::class, 'resultados'])->name('cuestionario_resultados');
 
 // Ruta para MOSTRAR el formulario (GET)
 Route::get('/coplademun/registro', [RegistroController::class, 'create'])->name('registro.create');

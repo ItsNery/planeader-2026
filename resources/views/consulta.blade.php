@@ -201,9 +201,9 @@
                     Transformación
                 </p>
 
-                <button class="btn btn-lg boton-encuesta">
-                    ¡Gracias por participar!
-                </button>
+                <a href="{{ route('cuestionario') }}" class="btn btn-lg boton-encuesta">
+                    Ver resultados
+                </a>
             </div>
         </div>
     </section>

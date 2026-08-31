@@ -20,8 +20,8 @@
                         <p class="sidebar__description">
                             El siguiente cuestionario tiene como objetivo conocer su opinión sobre diversos aspectos del
                             estado de Puebla relacionados con sus problemas y su desarrollo para los próximos años. Su
-                            opinión es de gran importancia para construir un mejor futuro para Puebla. Sus respuestas serán
-                            confidenciales. ¡Gracias por participar!
+                            opinión es de gran importancia para construir un mejor futuro para Puebla. La encuesta ha
+                            concluido; puede consultar y descargar sus resultados.
                         </p>
                     </div>
                 </div>
@@ -901,9 +901,11 @@
 
                         <div
                             class="d-flex flex-column align-items-center flex-md-row justify-content-md-end align-items-end mt-4 mt-md-0">
-                            {!! NoCaptcha::display() !!}
+                            <a href="{{ route('cuestionario_resultados') }}" class="btn btn__secondary ms-md-4 mt-3">
+                                Descargar resultados en Excel
+                            </a>
 
-                            <button class="btn btn__submit ms-md-4 mt-3" type="submit">Enviar</button>
+                            <button class="btn btn__submit ms-md-4 mt-3" type="submit" disabled>Enviar</button>
                         </div>
                     </div>
                 </form>
