@@ -61,7 +61,9 @@ class AgendaEvento extends Model
     {
         $date = Carbon::parse($fecha);
 
-        return $date->isWeekend() || in_array($date->format('Y-m-d'), self::diasFestivos($date->year), true);
+        return $date->isWeekend()
+            || in_array($date->format('Y-m-d'), ['2026-09-21', '2026-09-22'], true)
+            || in_array($date->format('Y-m-d'), self::diasFestivos($date->year), true);
     }
 
     public static function diasFestivos(int $year): array
