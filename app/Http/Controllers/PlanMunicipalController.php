@@ -284,7 +284,10 @@ class PlanMunicipalController extends Controller
      */
     public function mostrarPlanesMunicipales()
     {
-        $municipios = Municipio::all();
+        $municipios = Municipio::withCount([
+            'planesMunicipales as planes_publicados_count' => fn ($query) => $query->where('publicado', 1),
+        ])->get();
+
         return view('planesmunicipales', compact('municipios'));
     }
 

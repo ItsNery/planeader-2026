@@ -38,4 +38,9 @@ class Municipio extends Model
     {
         return $this->belongsTo(Region::class, 'region_id');
     }
+
+    public function planesMunicipales()
+    {
+        return $this->hasMany(PlanMunicipal::class, 'municipio_id');
+    }
 }

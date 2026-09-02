@@ -2,7 +2,8 @@
     <div class="container custom-card">
         <div class="custom-card-header">
             <h2 class="custom-card-title">Información del Municipio</h2>
-            <button class="btn btn-close" onclick="cerrarInfoMunicipio()"></button>
+            <button class="btn btn-close" id="btnCerrarMunicipio" type="button"
+                aria-label="Volver al mapa de municipios"></button>
         </div>
         <div class="custom-card-body">
             <div class="row">
@@ -29,8 +30,7 @@
             </div>
             <div class="row mt-3">
                 <div class="col-md-12">
-                    {{-- También corregí el estilo inline aquí --}}
-                    <div class="card" style="background-color: var(--gobierno); color: black;">
+                    <div class="card municipio-info-adicional">
                         <div class="card-body">
                             <h5 class="card-title">Información adicional</h5>
                             <p class="card-text">
@@ -53,8 +53,8 @@
 
             {{-- ESTADO VACÍO --}}
             <div class="text-center py-5">
-                <img src="{{ asset('imagen/no-file.png') }}" alt="No se encontraron registros"
-                    style="width: 200px; opacity: 0.7;">
+                <img src="{{ asset('imagen/no-file.png') }}" class="empty-state-image"
+                    alt="No se encontraron registros">
                 <p class="text-muted mt-3 fs-5">Upps, no se encontraron planes municipales.</p>
             </div>
         @else
@@ -66,6 +66,7 @@
                             <p class="document-item__name">
                                 {{ $plan->nombre }}
                             </p>
+                            <span class="document-periodo">{{ $plan->periodo }}</span>
                             <span class="document-badge badge-pdf">PDF</span>
                         </div>
 

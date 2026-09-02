@@ -4291,6 +4291,260 @@ footer {
     }
 }
 
+/* Mejoras compartidas para regionalización y planes municipales */
+.map-view-toggle {
+    display: flex;
+    width: min(100%, 360px);
+    margin: 0 auto 1rem;
+    padding: 4px;
+    border: 1px solid rgba(160, 21, 62, 0.2);
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(51, 51, 51, 0.1);
+}
+
+.map-view-toggle button {
+    flex: 1;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color1);
+    font-weight: 700;
+}
+
+.map-view-toggle button.active {
+    background: var(--color1);
+    color: #fff;
+}
+
+.map-search-container,
+.regionalizacion .leaderboard__profiles > .container {
+    padding: 0.8rem 0.75rem 0;
+}
+
+.map-search,
+.regionalizacion .map-search,
+.planes-mun .map-search {
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 1rem;
+}
+
+.map-search:focus-visible,
+.leaderboard__profile:focus-visible,
+.map-view-toggle button:focus-visible,
+.map-retry-button:focus-visible {
+    outline: 3px solid rgba(160, 21, 62, 0.3);
+    outline-offset: 2px;
+}
+
+.map-search-status {
+    min-height: 1.25rem;
+    margin: 0.35rem 0 0;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.map-item-list {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem 1rem;
+}
+
+.regionalizacion .leaderboard__profile,
+.planes-mun .leaderboard__profile {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    margin: 0;
+    border: 2px solid transparent;
+}
+
+.regionalizacion .leaderboard__profile:hover,
+.planes-mun .leaderboard__profile:hover,
+.regionalizacion .leaderboard__profile:active,
+.planes-mun .leaderboard__profile:active {
+    transform: translateX(3px);
+}
+
+.leaderboard__profile.is-selected {
+    border-color: var(--color1);
+    background: rgba(160, 21, 62, 0.08);
+    box-shadow: 0 8px 24px rgba(160, 21, 62, 0.18);
+}
+
+.leaderboard__profile[hidden] {
+    display: none !important;
+}
+
+.map-item-count {
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(160, 21, 62, 0.1);
+    color: var(--color1);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.map-selection-panel {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(160, 21, 62, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 10px 30px rgba(51, 51, 51, 0.08);
+}
+
+.map-selection-panel h2 {
+    margin: 0 0 0.4rem;
+    color: var(--color1);
+    font-family: "Gilroy-Bold", sans-serif;
+    font-size: 1.3rem;
+}
+
+.map-selection-panel p {
+    margin: 0;
+}
+
+.map-selection-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+}
+
+.map-selection-heading span {
+    color: #666;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.map-selection-heading strong {
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: var(--color1);
+    color: #fff;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.map-detail-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 1rem;
+    max-height: 190px;
+    margin: 0.8rem 0 0;
+    padding: 0.8rem 0 0;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    list-style: none;
+}
+
+.map-detail-list li {
+    padding: 0.25rem 0;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+.map-retry-button {
+    padding: 0.55rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color1);
+    color: #fff;
+    font-weight: 700;
+}
+
+.controles-flotantes-regionalizacion {
+    z-index: 98;
+}
+
+.botonera-vertical {
+    pointer-events: auto;
+}
+
+.empty-state-image {
+    width: 200px;
+    max-width: 70%;
+    opacity: 0.7;
+}
+
+.map-content-loading,
+.map-inline-error {
+    display: flex;
+    min-height: 280px;
+    padding: 2rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.map-inline-error {
+    border: 1px solid rgba(160, 21, 62, 0.2);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.map-inline-error h2 {
+    color: var(--color1);
+}
+
+.municipio-info-adicional {
+    background-color: var(--gobierno);
+    color: #111;
+}
+
+.document-periodo {
+    color: #666;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+@media (max-width: 767.98px) {
+    [data-map-layout]:not([data-mobile-view="map"]) [data-map-panel="map"],
+    [data-map-layout][data-mobile-view="map"] [data-map-panel="list"] {
+        display: none;
+    }
+
+    .regionalizacion,
+    .planes-mun {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .regionalizacion .leaderboard,
+    .planes-mun .leaderboard {
+        height: min(68vh, 620px);
+    }
+
+    .mapa-wrapper,
+    .mapa {
+        height: min(68vh, 620px);
+        min-height: 460px;
+    }
+
+    #mi-minimapa-estatico {
+        width: 110px !important;
+        height: 110px !important;
+        right: 10px !important;
+        bottom: 10px !important;
+    }
+
+    .map-detail-list {
+        grid-template-columns: 1fr;
+    }
+
+    .map-selection-heading {
+        flex-direction: column;
+    }
+}
+
 .controles-flotantes {
     position: absolute;
     bottom: 10px;

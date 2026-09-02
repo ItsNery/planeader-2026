@@ -46,21 +46,25 @@
                 identificación de cada región y promover un entendimiento más claro de la estructura territorial de
                 Puebla para fomentar un desarrollo equilibrado y sostenible.
             </p>
-            <div class="row my-5">
-                <div class="col-md-4">
+            <div class="map-view-toggle d-md-none" role="group" aria-label="Cambiar vista de regionalización">
+                <button type="button" class="active" data-map-view="list">Lista</button>
+                <button type="button" data-map-view="map">Mapa</button>
+            </div>
+            <div class="row my-5 map-layout" data-map-layout>
+                <div class="col-md-4 map-list-column" data-map-panel="list">
                     <ul class="nav nav-tabs" id="regionalizacionTab" role="tablist">
 
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="macrorregiones-tab" data-bs-toggle="tab"
                                 data-bs-target="#macrorregiones-pane" type="button" role="tab"
-                                aria-controls="macrorregiones-pane" aria-selected="false" data-capa="Macrorregiones">
+                                aria-controls="macrorregiones-pane" aria-selected="true" data-capa="Macrorregiones">
                                 Macrorregiones
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link " id="microrregiones-tab" data-bs-toggle="tab"
                                 data-bs-target="#microrregiones-pane" type="button" role="tab"
-                                aria-controls="microrregiones-pane" aria-selected="true" data-capa="Microrregiones">
+                                aria-controls="microrregiones-pane" aria-selected="false" data-capa="Microrregiones">
                                 Microrregiones
                             </button>
                         </li>
@@ -80,16 +84,16 @@
                                 </header>
                                 <main class="leaderboard__profiles">
                                     <div class="container">
-                                        <input type="text" id="searchMacro"
-                                            onkeyup="searchNames('searchMacro', '#macrorregiones-pane')"
-                                            placeholder="Buscar macrorregión..."
-                                            style="margin-top: 3%; margin-bottom:0; margin-left:1%; width: 98%;">
+                                        <label class="visually-hidden" for="searchMacro">Buscar macrorregión</label>
+                                        <input type="search" id="searchMacro" class="map-search"
+                                            data-search-pane="#macrorregiones-pane" placeholder="Buscar macrorregión...">
+                                        <p class="map-search-status" aria-live="polite"></p>
                                     </div>
-                                    <table class="table"
-                                        style="border-spacing: 0 !important; border-collapse: collapse !important;">
+                                    <div class="map-item-list" role="list">
                                         @foreach ($macrorregiones as $region)
                                             <article class="leaderboard__profile item-region"
-                                                data-id="{{ $region->id_macrorregion }}" data-capa="Macrorregiones">
+                                                data-id="{{ $region->id_macrorregion }}" data-capa="Macrorregiones"
+                                                role="button" tabindex="0" aria-pressed="false">
                                                 <img src="{{ asset('Regiones/2026/Macro/' . $region->id_macrorregion . '.webp') }}"
                                                     alt="Forma con la figura de la macrorregión {{ $region->nombre_macrorregion }}"
                                                     class="leaderboard__picture w-50" loading="lazy"
@@ -98,7 +102,7 @@
                                                     {{ $region->nombre_macrorregion }}</span>
                                             </article>
                                         @endforeach
-                                    </table>
+                                    </div>
                                 </main>
                             </article>
                         </div>
@@ -116,16 +120,16 @@
                                 </header>
                                 <main class="leaderboard__profiles">
                                     <div class="container">
-                                        <input type="text" id="searchMicro"
-                                            onkeyup="searchNames('searchMicro', '#microrregiones-pane')"
-                                            placeholder="Buscar microrregión..."
-                                            style="margin-top: 3%; margin-bottom:0; margin-left:1%; width: 98%;">
+                                        <label class="visually-hidden" for="searchMicro">Buscar microrregión</label>
+                                        <input type="search" id="searchMicro" class="map-search"
+                                            data-search-pane="#microrregiones-pane" placeholder="Buscar microrregión...">
+                                        <p class="map-search-status" aria-live="polite"></p>
                                     </div>
-                                    <table class="table"
-                                        style="border-spacing: 0 !important; border-collapse: collapse !important;">
+                                    <div class="map-item-list" role="list">
                                         @foreach ($microrregiones as $region)
                                             <article class="leaderboard__profile item-region"
-                                                data-id="{{ $region->id_microrregion }}" data-capa="Microrregiones">
+                                                data-id="{{ $region->id_microrregion }}" data-capa="Microrregiones"
+                                                role="button" tabindex="0" aria-pressed="false">
                                                 <img src="{{ asset('Regiones/2026/Micro/' . $region->id_microrregion . '.webp') }}"
                                                     alt="Forma con la figura de la microrregión {{ $region->nombre_microrregion }}"
                                                     class="leaderboard__picture w-50" loading="lazy"
@@ -134,36 +138,45 @@
                                                     {{ $region->nombre_microrregion }}</span>
                                             </article>
                                         @endforeach
-                                    </table>
+                                    </div>
                                 </main>
                             </article>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-8">
-                    <div class="mapa-wrapper" style="">
-                        <div id="loader-mapa" class="loader-overlay d-flex">
+                <div class="col-md-8 map-map-column" data-map-panel="map">
+                    <div class="mapa-wrapper">
+                        <div id="loader-mapa" class="loader-overlay d-flex" role="status" aria-live="polite">
                             <div class="spinner"></div>
-                            <p>Cargando mapa...</p>
+                            <p data-loader-message>Cargando mapa...</p>
+                            <button type="button" class="map-retry-button d-none" data-map-retry>Reintentar</button>
                         </div>
 
-                        <div class="mapa wihi100" id="mapa"></div>
+                        <div class="mapa wihi100" id="mapa" role="region" aria-label="Mapa interactivo de regionalización"
+                            data-municipios-url="{{ asset('geojson/municipios.geojson') }}"
+                            data-microrregiones-url="{{ asset('geojson/microrregiones-2026.geojson') }}"
+                            data-macrorregiones-url="{{ asset('geojson/macrorregiones-2026.geojson') }}"
+                            data-region-info-url="{{ url('/get_info_region') }}"></div>
                         <div id="mi-minimapa-estatico"></div>
 
                         <!-- CONTENEDOR FLOTANTE (ABSOLUTO) -->
-                        <div class="controles-flotantes"
-                            style="position: absolute; bottom: 10px; left: 10px; z-index: 98; pointer-events: none;">
-                            <div class="botonera-vertical" style="pointer-events: auto;">
-                                <button class="btn-info" id="btnInfo"
+                        <div class="controles-flotantes controles-flotantes-regionalizacion">
+                            <div class="botonera-vertical">
+                                <button type="button" class="btn-info" id="btnInfo" aria-label="Mostrar instrucciones"
                                     title="Seleccione una región de la lista o haga clic en el mapa">
                                     <i class="fa-solid fa-circle-info"></i>
                                 </button>
-                                <button class="btn-reset" id="btnResetMap" title="Restablecer vista">
+                                <button type="button" class="btn-reset" id="btnResetMap" title="Restablecer vista"
+                                    aria-label="Restablecer vista del mapa">
                                     <i class="fa-solid fa-arrow-rotate-left"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
+                    <aside class="map-selection-panel" id="region-details" aria-live="polite">
+                        <h2>Explora las regiones</h2>
+                        <p>Selecciona una región en la lista o un municipio en el mapa para consultar sus detalles.</p>
+                    </aside>
                 </div>
             </div>
         </div>
@@ -194,32 +207,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function searchNames(inputId, paneId) {
-            // Obtener el valor del input de búsqueda
-            var input = document.getElementById(inputId);
-            var filter = input.value.toUpperCase();
-
-            // Obtener el panel contenedor para buscar solo dentro del tab activo
-            var pane = document.querySelector(paneId);
-
-            // Obtener todos los elementos <span> dentro de los <article> de ese panel
-            var names = pane.querySelectorAll('.leaderboard__name');
-
-            // Recorrer los nombres y mostrar u ocultar los elementos <article> según coincidan
-            names.forEach(function(name) {
-                if (name.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                    // Sube al elemento <article> padre para mostrarlo/ocultarlo
-                    name.closest('.leaderboard__profile').style.display = '';
-                } else {
-                    name.closest('.leaderboard__profile').style.display = 'none';
-                }
-            });
-        }
-    </script>
-    {{-- <script src="{{ asset('js/mapa_regionalizacion.js') }}"></script> --}}
     <script src="{{ asset('js/mapa_regionalizacion_v2.js') }}"></script>
-    {{--
-    <script src="{{ asset('web/js/mostrar-regiones.js') }}"></script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"></script>
 @endsection

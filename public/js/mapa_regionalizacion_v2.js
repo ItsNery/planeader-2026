@@ -1,54 +1,46 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // =========================================================================
-    // 1. CONFIGURACIÓN
-    // =========================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const mapElement = document.getElementById("mapa");
+    if (!mapElement) return;
+
     const configCapas = {
         Microrregiones: {
-            id_field: "id_micro",
-            name_field: "nom_micro",
-            data_url: "/geojson/microrregiones-2026.geojson",
+            idField: "id_micro",
+            nameField: "nom_micro",
+            url: mapElement.dataset.microrregionesUrl,
+            queryValue: "micro",
+            label: "Microrregión",
         },
         Macrorregiones: {
-            id_field: "id_macro",
-            name_field: "nom_macro",
-            data_url: "/geojson/macrorregiones-2026.geojson",
+            idField: "id_macro",
+            nameField: "nom_macro",
+            url: mapElement.dataset.macrorregionesUrl,
+            queryValue: "macro",
+            label: "Macrorregión",
         },
     };
-
-    // --- CACHÉ localStorage (24 horas) ---
-    const CACHE_TTL = 24 * 60 * 60 * 1000;
-
-    async function getCache(key) {
-        return await CacheManager.get(key, CACHE_TTL);
-    }
-
-    async function setCache(key, data) {
-        await CacheManager.set(key, data);
-    }
-
-    // Variables
-    let selectLayer = null;
-    let capaGeneral = null;
-    let municipiosLayer = null;
-    let capaActiva = "Macrorregiones";
-    const geometriasMicro = new Map();
-    const geometriasMacro = new Map();
-    const cacheCapasPrincipales = {};
-    let hoverLayer = null;
-    let bloqueosDeEvento = false;
+    const cacheTtl = 24 * 60 * 60 * 1000;
+    const initialView = [19.35, -97.8];
     const loader = document.getElementById("loader-mapa");
-
+    const loaderMessage = loader?.querySelector("[data-loader-message]");
+    const retryButton = loader?.querySelector("[data-map-retry]");
+    const details = document.getElementById("region-details");
+    const layerData = {};
+    const layerPromises = {};
+    const geometryMaps = {
+        Microrregiones: new Map(),
+        Macrorregiones: new Map(),
+    };
+    let activeLayer = new URLSearchParams(window.location.search).get("tipo") === "micro"
+        ? "Microrregiones"
+        : "Macrorregiones";
+    let generalLayer = null;
+    let municipalitiesLayer = null;
+    let selectedLayer = null;
+    let hoverLayer = null;
     let miniMapBaseLayer = null;
-    let miniMapHighlightLayer = L.layerGroup();
+    let detailsController = null;
 
-    // =========================================================================
-    // 2. MAPA PRINCIPAL
-    // =========================================================================
-    const map = L.map("mapa", {
-        zoom: 8,
-        minZoom: 8,
-    }).setView([19.35, -97.8], 8);
-
+    const map = L.map("mapa", { zoom: 8, minZoom: 8 }).setView(initialView, 8);
     hoverLayer = L.layerGroup().addTo(map);
 
     const miniMap = L.map("mi-minimapa-estatico", {
@@ -60,245 +52,150 @@ document.addEventListener("DOMContentLoaded", function () {
         boxZoom: false,
         touchZoom: false,
         keyboard: false,
-    }).setView([19.0, -97.8], 6);
+    }).setView(initialView, 6);
+    const miniMapHighlightLayer = L.layerGroup().addTo(miniMap);
 
-    L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        {
-            minZoom: 0,
-            maxZoom: 20,
-        },
-    ).addTo(miniMap);
+    function normalizeText(value) {
+        return String(value || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .trim();
+    }
 
-    miniMapHighlightLayer.addTo(miniMap);
+    function escapeHtml(value) {
+        const element = document.createElement("div");
+        element.textContent = String(value ?? "");
+        return element.innerHTML;
+    }
 
-    // =========================================================================
-    // 2. CARGA DE MUNICIPIOS
-    // =========================================================================
-    const CACHE_KEY_MUNI = "geo_regionalizacion_21mun";
-    const urlMuni = "/geojson/municipios.geojson";
+    function setMobileView(view) {
+        const layout = document.querySelector("[data-map-layout]");
+        if (!layout || window.innerWidth >= 768) return;
+        layout.dataset.mobileView = view;
+        document.querySelectorAll(".map-view-toggle [data-map-view]").forEach((button) => {
+            button.classList.toggle("active", button.dataset.mapView === view);
+        });
+        if (view === "map") setTimeout(() => map.invalidateSize(), 50);
+    }
 
-    function puntoEnAnillo([lng, lat], anillo) {
-        let dentro = false;
+    function showLoader(message = "Cargando mapa...") {
+        if (!loader) return;
+        loader.classList.add("d-flex");
+        loader.style.display = "flex";
+        loaderMessage.textContent = message;
+        loader.querySelector(".spinner")?.classList.remove("d-none");
+        retryButton?.classList.add("d-none");
+    }
 
-        for (let i = 0, j = anillo.length - 1; i < anillo.length; j = i++) {
-            const [lngI, latI] = anillo[i];
-            const [lngJ, latJ] = anillo[j];
-            const intersecta =
-                latI > lat !== latJ > lat &&
-                lng < ((lngJ - lngI) * (lat - latI)) / (latJ - latI) + lngI;
+    function hideLoader() {
+        if (!loader) return;
+        loader.classList.remove("d-flex");
+        loader.style.display = "none";
+    }
 
-            if (intersecta) dentro = !dentro;
+    function showLoadError() {
+        if (!loader) return;
+        loader.classList.add("d-flex");
+        loader.style.display = "flex";
+        loaderMessage.textContent = "No fue posible cargar la información geográfica.";
+        loader.querySelector(".spinner")?.classList.add("d-none");
+        retryButton?.classList.remove("d-none");
+    }
+
+    async function fetchGeoJson(cacheKey, url, force = false) {
+        if (!force) {
+            const cached = await CacheManager.get(cacheKey, cacheTtl);
+            if (cached) return cached;
         }
 
-        return dentro;
+        const response = await fetch(url, { headers: { Accept: "application/geo+json, application/json" } });
+        if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+        const data = await response.json();
+        if (data.type !== "FeatureCollection" || !Array.isArray(data.features)) {
+            throw new Error("El archivo no es una colección GeoJSON válida.");
+        }
+        await CacheManager.set(cacheKey, data);
+        return data;
     }
 
-    function puntoEnPoligono(punto, coordenadas) {
-        return (
-            puntoEnAnillo(punto, coordenadas[0]) &&
-            !coordenadas.slice(1).some((anillo) =>
-                puntoEnAnillo(punto, anillo),
-            )
-        );
+    function loadLayerData(layerName, force = false) {
+        if (!force && layerData[layerName]) return Promise.resolve(layerData[layerName]);
+        if (!force && layerPromises[layerName]) return layerPromises[layerName];
+
+        const config = configCapas[layerName];
+        const promise = fetchGeoJson(`geo_regionalizacion_v3_${layerName}`, config.url, force)
+            .then((data) => {
+                layerData[layerName] = data;
+                indexGeometries(layerName, data);
+                return data;
+            })
+            .finally(() => delete layerPromises[layerName]);
+        layerPromises[layerName] = promise;
+        return promise;
     }
 
-    function encontrarRegion(latlng) {
-        const data = cacheCapasPrincipales[capaActiva];
-        if (!data?.features) return null;
+    function indexGeometries(layerName, data) {
+        const config = configCapas[layerName];
+        const geometryMap = geometryMaps[layerName];
+        geometryMap.clear();
+        data.features.forEach((feature) => {
+            const id = String(Number(feature.properties?.[config.idField]));
+            if (id !== "NaN") geometryMap.set(id, feature.geometry);
+        });
+    }
 
-        const punto = [latlng.lng, latlng.lat];
-        return data.features.find((feature) => {
+    function pointInRing([lng, lat], ring) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const [lngI, latI] = ring[i];
+            const [lngJ, latJ] = ring[j];
+            const intersects = latI > lat !== latJ > lat &&
+                lng < ((lngJ - lngI) * (lat - latI)) / (latJ - latI) + lngI;
+            if (intersects) inside = !inside;
+        }
+        return inside;
+    }
+
+    function pointInPolygon(point, coordinates) {
+        return pointInRing(point, coordinates[0]) &&
+            !coordinates.slice(1).some((ring) => pointInRing(point, ring));
+    }
+
+    function findRegion(latlng) {
+        const point = [latlng.lng, latlng.lat];
+        return layerData[activeLayer]?.features.find((feature) => {
             const geometry = feature.geometry;
-            if (geometry.type === "Polygon") {
-                return puntoEnPoligono(punto, geometry.coordinates);
-            }
+            if (geometry.type === "Polygon") return pointInPolygon(point, geometry.coordinates);
             if (geometry.type === "MultiPolygon") {
-                return geometry.coordinates.some((poligono) =>
-                    puntoEnPoligono(punto, poligono),
-                );
+                return geometry.coordinates.some((polygon) => pointInPolygon(point, polygon));
             }
             return false;
         });
     }
 
-    function procesarMunicipios(data) {
-        // Capa de municipios para el mapa principal
-        municipiosLayer = L.geoJSON(data, {
-            style: {
-                color: "#fa2a6c",
-                weight: 0.6,
-                opacity: 0.6,
-                fillOpacity: 0,
-            },
-            interactive: true,
-            onEachFeature: function (feature, layer) {
-                layer.on("click", function (e) {
-                    if (bloqueosDeEvento) return;
-
-                    const nombreMun =
-                        feature.properties.nomgeo || "Municipio";
-                    const region = encontrarRegion(e.latlng);
-                    const esMicro = capaActiva === "Microrregiones";
-                    const config = configCapas[capaActiva];
-                    const regionId = region?.properties[config.id_field];
-                    const regionNombre = region?.properties[config.name_field];
-
-                    if (regionId) {
-                        highlightRegion(regionId, capaActiva, false);
-                    }
-
-                    let titulo = esMicro ? "Microrregión" : "Macrorregión";
-                    if (regionId && regionNombre) {
-                        titulo += ` ${regionId} - ${regionNombre}`;
-                    } else if (regionId) {
-                        titulo += ` ${regionId}`;
-                    } else if (regionNombre) {
-                        titulo += ` ${regionNombre}`;
-                    } else {
-                        titulo += " (sin información)";
-                    }
-                    const popupContent = `
-                        <div class="custom-popup-container">
-                            <div class="custom-popup-header">
-                                <h4 class="custom-popup-title">${titulo}</h4>
-                            </div>
-                            <div class="custom-popup-body">
-                                <ul class="custom-popup-list">
-                                    <li class="custom-popup-list-item">Municipio: <strong>${nombreMun}</strong></li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
-                    L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(popupContent)
-                        .openOn(map);
+    function renderMunicipalities(data) {
+        if (municipalitiesLayer) map.removeLayer(municipalitiesLayer);
+        municipalitiesLayer = L.geoJSON(data, {
+            style: { color: "#fa2a6c", weight: 0.6, opacity: 0.65, fillOpacity: 0 },
+            onEachFeature: (feature, layer) => {
+                layer.on("click", (event) => {
+                    const region = findRegion(event.latlng);
+                    if (!region) return;
+                    const config = configCapas[activeLayer];
+                    selectRegion(region.properties[config.idField], activeLayer, false, {
+                        latlng: event.latlng,
+                        municipality: feature.properties.nomgeo,
+                    });
                 });
             },
         }).addTo(map);
-
-        // Agregar la misma capa de municipios al minimapa (como fondo contextual)
-        if (miniMap && miniMap._map) {
-            L.geoJSON(data, {
-                style: {
-                    color: "#999999",
-                    weight: 0.4,
-                    opacity: 0.5,
-                    fillOpacity: 0,
-                },
-                interactive: false,
-            }).addTo(miniMap._map);
-        }
+        municipalitiesLayer.bringToFront();
     }
 
-    // Cargar municipios: caché o fetch
-    getCache(CACHE_KEY_MUNI).then(cachedMuni => {
-        if (cachedMuni) {
-            console.info("Capa 21mun (regionalización) cargada desde caché.");
-            procesarMunicipios(cachedMuni);
-        } else {
-            fetch(urlMuni)
-                .then((r) => r.json())
-                .then((data) => {
-                    setCache(CACHE_KEY_MUNI, data);
-                    console.info("Capa municipal local cargada y cacheada.");
-                    procesarMunicipios(data);
-                })
-                .catch((error) => console.error("Error municipios:", error));
-        }
-    });
-
-    // =========================================================================
-    // 3. PRECARGA (SOPORTE MULTI-GEOMETRÍA)
-    // =========================================================================
-
-    function procesarGeometrias(data, config, mapaDeAlmacenamiento) {
-        if (data && data.features) {
-            data.features.forEach((feature) => {
-                const id = String(Number(feature.properties[config.id_field]));
-                if (id === "NaN") return;
-
-                if (mapaDeAlmacenamiento.has(id)) {
-                    mapaDeAlmacenamiento.get(id).push(feature.geometry);
-                } else {
-                    mapaDeAlmacenamiento.set(id, [feature.geometry]);
-                }
-            });
-        }
-    }
-
-    function precargarGeometrias(claveCapa, mapaDeAlmacenamiento) {
-        const config = configCapas[claveCapa];
-        const cacheKey = `geo_regionalizacion_v2_${claveCapa}`;
-
-        getCache(cacheKey).then(cached => {
-            if (cached) {
-                console.info(`Precarga ${claveCapa} cargada desde caché.`);
-                procesarGeometrias(cached, config, mapaDeAlmacenamiento);
-                return;
-            }
-
-            fetch(config.data_url)
-                .then((response) => response.json())
-                .then((data) => {
-                    setCache(cacheKey, data);
-                    console.info(`Precarga ${claveCapa} cargada del servidor y cacheada.`);
-                    procesarGeometrias(data, config, mapaDeAlmacenamiento);
-                })
-                .catch((error) =>
-                    console.warn(`Error precarga ${claveCapa}`, error),
-                );
-        });
-    }
-
-    // =========================================================================
-    // 4. FUNCIONES DEL MAPA
-    // =========================================================================
-    function cargarCapaPrincipal(claveCapa) {
-        const config = configCapas[claveCapa];
-        if (loader) loader.classList.add("d-flex");
-
-        if (capaGeneral) {
-            map.removeLayer(capaGeneral);
-            capaGeneral = null;
-        }
-
-        // 1. Caché en memoria (ya descargado esta sesión)
-        if (cacheCapasPrincipales[claveCapa]) {
-            renderizarCapa(cacheCapasPrincipales[claveCapa]);
-            if (loader) loader.classList.remove("d-flex");
-            return;
-        }
-
-        // 2. Caché en IndexedDB
-        const cacheKey = `geo_regionalizacion_v2_${claveCapa}`;
-        getCache(cacheKey).then(cached => {
-            if (cached) {
-                cacheCapasPrincipales[claveCapa] = cached;
-                renderizarCapa(cached);
-                if (loader) loader.classList.remove("d-flex");
-                return;
-            }
-
-            // 3. Fetch del servidor
-            fetch(config.data_url)
-                .then((response) => response.json())
-                .then((data) => {
-                    cacheCapasPrincipales[claveCapa] = data;
-                    setCache(cacheKey, data);
-                    renderizarCapa(data);
-                })
-                .catch((error) => console.error(error))
-                .finally(() => {
-                    if (loader) loader.classList.remove("d-flex");
-                });
-        });
-    }
-
-    function renderizarCapa(dataGeoJSON) {
-        // 1. DIBUJAR EN EL MAPA PRINCIPAL
-        capaGeneral = L.geoJSON(dataGeoJSON, {
+    function renderMainLayer(data) {
+        if (generalLayer) map.removeLayer(generalLayer);
+        generalLayer = L.geoJSON(data, {
             style: {
                 color: "var(--color6)",
                 weight: 2,
@@ -306,213 +203,250 @@ document.addEventListener("DOMContentLoaded", function () {
                 fillColor: "#a2a2a2",
                 fillOpacity: 1,
             },
-            interactive: false,
-        }).addTo(map);
-        if (municipiosLayer) municipiosLayer.bringToFront();
-
-        // 2. DIBUJAR EN EL MINIMAPA (Contexto Gris)
-        // Limpiamos la capa base anterior del minimapa
-        if (miniMapBaseLayer) {
-            miniMap.removeLayer(miniMapBaseLayer);
-        }
-
-        // Agregamos la nueva capa base (Macro o Micro)
-        miniMapBaseLayer = L.geoJSON(dataGeoJSON, {
-            style: {
-                color: "#999", // Gris suave
-                weight: 0.5,
-                fillColor: "#e0e0e0", // Relleno gris muy claro
-                fillOpacity: 0.5,
+            onEachFeature: (feature, layer) => {
+                layer.on("click", () => {
+                    const config = configCapas[activeLayer];
+                    selectRegion(feature.properties[config.idField], activeLayer, false);
+                });
             },
+        }).addTo(map);
+        municipalitiesLayer?.bringToFront();
+
+        if (miniMapBaseLayer) miniMap.removeLayer(miniMapBaseLayer);
+        miniMapBaseLayer = L.geoJSON(data, {
+            style: { color: "#777", weight: 0.7, fillColor: "#e0e0e0", fillOpacity: 0.75 },
             interactive: false,
         }).addTo(miniMap);
-
-        // Importante: Ajustamos la vista del minimapa para que quepa toda la capa
-        miniMap.fitBounds(miniMapBaseLayer.getBounds());
+        miniMap.fitBounds(miniMapBaseLayer.getBounds(), { padding: [4, 4] });
     }
 
-    // Resalta una región y actualiza el minimapa
-// Resalta una región y actualiza el minimapa
-    function highlightRegion(idRegion, claveCapa, shouldZoom = true) {
-        const config = configCapas[claveCapa];
-        const idStr = String(idRegion);
-
-        const mapaDeUso = claveCapa === "Microrregiones" ? geometriasMicro : geometriasMacro;
-        const geometrias = mapaDeUso.get(idStr);
-
-        if (!geometrias || geometrias.length === 0) {
-            console.warn(`No hay geometrías para ${idStr} en ${claveCapa}`);
-            return;
-        }
-
-        // --- MAPA PRINCIPAL (Sin cambios) ---
-        if (selectLayer) {
-            bloqueosDeEvento = true;
-            map.removeLayer(selectLayer);
-            selectLayer = null;
-            bloqueosDeEvento = false;
-        }
-
-        const grupoGeometrias = L.featureGroup();
-        L.geoJSON(geometrias, {
-            style: {
-                color: "#ffffff",
-                weight: 2,
-                opacity: 1,
-                fillColor: "var(--color7)",
-                fillOpacity: 0.6,
-            },
-        }).addTo(grupoGeometrias);
-        
-        selectLayer = grupoGeometrias.addTo(map);
-        if (municipiosLayer) municipiosLayer.bringToFront();
-
-        if (shouldZoom) {
-            map.fitBounds(selectLayer.getBounds(), {
-                animate: true,
-                duration: 0.8,
-            });
-        }
-
-        // --- MINIMAPA (CORREGIDO) ---
-        // 1. Limpiamos cualquier selección previa en el minimapa
-        if (miniMapHighlightLayer) {
-            miniMapHighlightLayer.clearLayers();
-
-            // 2. Agregamos la geometría y guardamos la referencia en 'layerMini'
-            const layerMini = L.geoJSON(geometrias, {
-                style: {
-                    color: "#fff",
-                    weight: 1,
-                    fillColor: "#ff0000", 
-                    fillOpacity: 1
-                },
-                interactive: false
-            }).addTo(miniMapHighlightLayer);
-            
-            // 3. FIX: Aplicamos bringToFront() A LA CAPA, no al grupo contenedor
-            if (layerMini.bringToFront) {
-                layerMini.bringToFront();
-            }
+    async function loadActiveLayer(force = false) {
+        showLoader();
+        try {
+            const data = await loadLayerData(activeLayer, force);
+            renderMainLayer(data);
+            hideLoader();
+            return data;
+        } catch (error) {
+            console.error("Error cargando regionalización:", error);
+            showLoadError();
+            throw error;
         }
     }
-    // =========================================================================
-    // 5. EVENTOS
-    // =========================================================================
 
-    // Bloquear propagación de eventos en el popup (para permitir scroll)
-    map.on("popupopen", function (e) {
-        const popupNode = e.popup.getElement();
-        if (popupNode) {
-            L.DomEvent.disableClickPropagation(popupNode);
-            L.DomEvent.disableScrollPropagation(popupNode);
-            const scrollContainer = popupNode.querySelector(
-                ".custom-popup-container",
+    function updateUrl(id = null, replace = false) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("tipo", configCapas[activeLayer].queryValue);
+        if (id) url.searchParams.set("id", String(id));
+        else url.searchParams.delete("id");
+        window.history[replace ? "replaceState" : "pushState"]({}, "", url);
+    }
+
+    function markSelectedItem(id, layerName) {
+        document.querySelectorAll(".item-region").forEach((item) => {
+            const selected = item.dataset.capa === layerName && String(item.dataset.id) === String(id);
+            item.classList.toggle("is-selected", selected);
+            item.setAttribute("aria-pressed", String(selected));
+            if (selected) item.scrollIntoView({ block: "nearest" });
+        });
+    }
+
+    function showRegionPopup(id, layerName, options) {
+        if (!options?.latlng) return;
+        const config = configCapas[layerName];
+        const feature = layerData[layerName]?.features.find(
+            (item) => String(Number(item.properties?.[config.idField])) === String(Number(id)),
+        );
+        const name = feature?.properties?.[config.nameField] || "Sin información";
+        L.popup()
+            .setLatLng(options.latlng)
+            .setContent(`
+                <div class="custom-popup-container">
+                    <div class="custom-popup-header"><h4 class="custom-popup-title">${config.label} ${escapeHtml(id)} - ${escapeHtml(name)}</h4></div>
+                    ${options.municipality ? `<div class="custom-popup-body">Municipio: <strong>${escapeHtml(options.municipality)}</strong></div>` : ""}
+                </div>
+            `)
+            .openOn(map);
+    }
+
+    async function loadRegionDetails(id, layerName) {
+        const config = configCapas[layerName];
+        details.innerHTML = `<h2>${config.label} ${escapeHtml(id)}</h2><p>Cargando información...</p>`;
+        detailsController?.abort();
+        detailsController = new AbortController();
+
+        try {
+            const response = await fetch(
+                `${mapElement.dataset.regionInfoUrl}/${encodeURIComponent(layerName)}/${encodeURIComponent(id)}`,
+                { signal: detailsController.signal, headers: { Accept: "application/json" } },
             );
-            if (scrollContainer) {
-                scrollContainer.addEventListener("wheel", (event) =>
-                    event.stopPropagation(),
-                );
-                scrollContainer.addEventListener("touchmove", (event) =>
-                    event.stopPropagation(),
-                );
-            }
+            if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+            const data = await response.json();
+            const municipalities = data.municipios || [];
+            details.innerHTML = `
+                <div class="map-selection-heading">
+                    <div><span>${config.label}</span><h2>${escapeHtml(id)} - ${escapeHtml(data.nombre)}</h2></div>
+                    <strong>${municipalities.length} municipios</strong>
+                </div>
+                <ul class="map-detail-list">${municipalities.map((item) => `<li>${escapeHtml(item.nombre_municipio)}</li>`).join("")}</ul>
+            `;
+        } catch (error) {
+            if (error.name === "AbortError") return;
+            details.innerHTML = `<h2>${config.label} ${escapeHtml(id)}</h2><p>No fue posible cargar la lista de municipios.</p>`;
         }
-    });
-
-    // Cambio de pestañas (Macro/Micro)
-    document
-        .querySelectorAll("#regionalizacionTab .nav-link")
-        .forEach((tab) => {
-            tab.addEventListener("click", function () {
-                capaActiva = this.dataset.capa;
-
-                // 1. Cargar la capa en mapa principal (esto a su vez actualiza el fondo del minimapa)
-                cargarCapaPrincipal(capaActiva);
-
-                // 2. Limpiar selecciones en mapa principal
-                if (selectLayer) {
-                    bloqueosDeEvento = true;
-                    map.removeLayer(selectLayer);
-                    selectLayer = null;
-                    bloqueosDeEvento = false;
-                }
-                map.setView([19.35, -97.8], 8);
-
-                // 3. Limpiar selección (roja) del minimapa
-                miniMapHighlightLayer.clearLayers();
-            });
-        });
-
-    // Clic en elemento de la lista de regiones
-    document.querySelectorAll(".item-region").forEach((el) => {
-        el.addEventListener("click", () => {
-            highlightRegion(el.dataset.id, el.dataset.capa, true);
-        });
-
-        el.addEventListener("mouseenter", () => {
-            const mapGeo =
-                el.dataset.capa === "Microrregiones"
-                    ? geometriasMicro
-                    : geometriasMacro;
-            const idHtml = String(el.dataset.id);
-            const geometrias = mapGeo.get(idHtml);
-            if (geometrias && geometrias.length > 0) {
-                geometrias.forEach((geo) => {
-                    const h = L.geoJSON(geo, {
-                        style: {
-                            color: "black",
-                            weight: 2,
-                            fillColor: "#F7DC6F",
-                            fillOpacity: 0.5,
-                        },
-                        interactive: false,
-                    });
-                    hoverLayer.addLayer(h);
-                });
-            }
-        });
-
-        el.addEventListener("mouseleave", () => hoverLayer.clearLayers());
-    });
-
-    // Eliminamos el anterior manejador de clic en el mapa (ya no se usa)
-
-    // Al cerrar el popup, ya no restablecemos la vista ni quitamos el resaltado
-    map.on("popupclose", function () {
-        // Solo evitamos acciones si hay bloqueo
-        if (bloqueosDeEvento) return;
-        // No hacemos nada más: ni reset de zoom ni eliminación de selectLayer
-    });
-
-    // =========================================================================
-    // 6. BOTÓN PARA RESTABLECER VISTA Y BOTÓN DE INFO (con tooltip)
-    // =========================================================================
-    window.resetMapView = function () {
-        map.setView([19.35, -97.8], 8, { animate: true });
-
-        // Limpiar mapa principal
-        if (selectLayer) {
-            map.removeLayer(selectLayer);
-            selectLayer = null;
-        }
-
-        // Limpiar selección del minimapa
-        miniMapHighlightLayer.clearLayers();
-
-        // Opcional: Centrar minimapa de nuevo en el estado completo
-        if (miniMapBaseLayer) {
-            miniMap.fitBounds(miniMapBaseLayer.getBounds());
-        }
-    };
-
-    const btnReset = document.getElementById("btnResetMap");
-    if (btnReset) {
-        btnReset.addEventListener("click", resetMapView);
     }
 
-    // ARRANQUE
-    cargarCapaPrincipal(capaActiva);
-    precargarGeometrias("Microrregiones", geometriasMicro);
-    precargarGeometrias("Macrorregiones", geometriasMacro);
+    function selectRegion(id, layerName = activeLayer, shouldZoom = true, popupOptions = null, updateHistory = true) {
+        const geometry = geometryMaps[layerName].get(String(Number(id)));
+        if (!geometry) return;
+
+        if (selectedLayer) map.removeLayer(selectedLayer);
+        selectedLayer = L.geoJSON(geometry, {
+            style: { color: "#fff", weight: 2, fillColor: "var(--color7)", fillOpacity: 0.65 },
+            interactive: false,
+        }).addTo(map);
+        municipalitiesLayer?.bringToFront();
+        if (shouldZoom) map.fitBounds(selectedLayer.getBounds(), { animate: true, duration: 0.8 });
+
+        miniMapHighlightLayer.clearLayers();
+        L.geoJSON(geometry, {
+            style: { color: "#fff", weight: 1, fillColor: "#d71920", fillOpacity: 1 },
+            interactive: false,
+        }).addTo(miniMapHighlightLayer);
+
+        markSelectedItem(id, layerName);
+        loadRegionDetails(id, layerName);
+        showRegionPopup(id, layerName, popupOptions);
+        if (updateHistory) updateUrl(id);
+        setMobileView("map");
+    }
+
+    function resetSelection(updateHistory = true) {
+        if (selectedLayer) map.removeLayer(selectedLayer);
+        selectedLayer = null;
+        hoverLayer.clearLayers();
+        miniMapHighlightLayer.clearLayers();
+        map.closePopup();
+        map.setView(initialView, 8, { animate: true });
+        markSelectedItem(null, activeLayer);
+        details.innerHTML = "<h2>Explora las regiones</h2><p>Selecciona una región en la lista o un municipio en el mapa para consultar sus detalles.</p>";
+        if (updateHistory) updateUrl();
+    }
+
+    async function changeLayer(layerName, selectedId = null, updateHistory = true) {
+        activeLayer = layerName;
+        resetSelection(false);
+        await loadActiveLayer();
+        if (selectedId) selectRegion(selectedId, layerName, true, null, updateHistory);
+        else if (updateHistory) updateUrl();
+    }
+
+    function activateInitialTab() {
+        document.querySelectorAll("#regionalizacionTab .nav-link").forEach((tab) => {
+            const selected = tab.dataset.capa === activeLayer;
+            tab.classList.toggle("active", selected);
+            tab.setAttribute("aria-selected", String(selected));
+            document.querySelector(tab.dataset.bsTarget)?.classList.toggle("show", selected);
+            document.querySelector(tab.dataset.bsTarget)?.classList.toggle("active", selected);
+        });
+    }
+
+    document.querySelectorAll("#regionalizacionTab .nav-link").forEach((tab) => {
+        tab.addEventListener("shown.bs.tab", () => {
+            changeLayer(tab.dataset.capa).catch(() => {});
+        });
+    });
+
+    document.querySelectorAll(".item-region").forEach((item) => {
+        const selectItem = () => selectRegion(item.dataset.id, item.dataset.capa);
+        item.addEventListener("click", selectItem);
+        item.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                selectItem();
+            }
+        });
+        item.addEventListener("mouseenter", () => {
+            const geometry = geometryMaps[item.dataset.capa].get(String(Number(item.dataset.id)));
+            if (geometry) {
+                hoverLayer.clearLayers();
+                hoverLayer.addLayer(L.geoJSON(geometry, {
+                    style: { color: "#111", weight: 2, fillColor: "#f7dc6f", fillOpacity: 0.5 },
+                    interactive: false,
+                }));
+            }
+        });
+        item.addEventListener("mouseleave", () => hoverLayer.clearLayers());
+    });
+
+    document.querySelectorAll(".map-search").forEach((input) => {
+        input.addEventListener("input", () => {
+            const pane = document.querySelector(input.dataset.searchPane);
+            const items = [...pane.querySelectorAll(".item-region")];
+            const query = normalizeText(input.value);
+            let visible = 0;
+            items.forEach((item) => {
+                const matches = normalizeText(item.textContent).includes(query);
+                item.hidden = !matches;
+                if (matches) visible += 1;
+            });
+            input.parentElement.querySelector(".map-search-status").textContent =
+                visible ? `${visible} resultados` : "No se encontraron regiones";
+        });
+    });
+
+    document.querySelectorAll(".map-view-toggle [data-map-view]").forEach((button) => {
+        button.addEventListener("click", () => setMobileView(button.dataset.mapView));
+    });
+
+    document.getElementById("btnResetMap")?.addEventListener("click", () => resetSelection());
+    document.getElementById("btnInfo")?.addEventListener("click", () => {
+        Swal.fire({
+            icon: "info",
+            title: "Cómo explorar el mapa",
+            html: "Selecciona una región de la lista o haz clic sobre un municipio. Puedes cambiar entre macro y microrregiones sin recargar la página.",
+            confirmButtonText: "Cerrar",
+        });
+    });
+    retryButton?.addEventListener("click", async () => {
+        try {
+            const [municipalities] = await Promise.all([
+                fetchGeoJson("geo_regionalizacion_v3_municipios", mapElement.dataset.municipiosUrl, true),
+                loadActiveLayer(true),
+            ]);
+            renderMunicipalities(municipalities);
+            hideLoader();
+        } catch (error) {
+            showLoadError();
+        }
+    });
+    window.addEventListener("popstate", async () => {
+        const params = new URLSearchParams(window.location.search);
+        const nextLayer = params.get("tipo") === "micro" ? "Microrregiones" : "Macrorregiones";
+        activeLayer = nextLayer;
+        activateInitialTab();
+        await changeLayer(nextLayer, params.get("id"), false);
+    });
+
+    (async () => {
+        activateInitialTab();
+        showLoader();
+        try {
+            const [municipalities] = await Promise.all([
+                fetchGeoJson("geo_regionalizacion_v3_municipios", mapElement.dataset.municipiosUrl),
+                loadActiveLayer(),
+            ]);
+            renderMunicipalities(municipalities);
+            const selectedId = new URLSearchParams(window.location.search).get("id");
+            if (selectedId) selectRegion(selectedId, activeLayer, true, null, false);
+            updateUrl(selectedId, true);
+            hideLoader();
+            const otherLayer = activeLayer === "Microrregiones" ? "Macrorregiones" : "Microrregiones";
+            const preload = () => loadLayerData(otherLayer).catch(() => {});
+            if ("requestIdleCallback" in window) window.requestIdleCallback(preload);
+            else setTimeout(preload, 500);
+        } catch (error) {
+            showLoadError();
+        }
+    })();
 });

@@ -98,10 +98,6 @@ Route::get('/coplademun/registro', function () {
     return view('registro-coplademun');
 });
 
-Route::get('/planesmunicipales', function () {
-    return view('planesmunicipales');
-});
-
 // Route::get('/capacitacion-municipal', function () {
 //     return view('capacitaciones');
 // });

@@ -15,18 +15,6 @@
     Estatal de Planeación Democrática del Estado de Puebla.')
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
-    <style>
-        .table>:not(caption)>*>* {
-            padding: .1rem .1rem !important;
-        }
-    </style>
-    <script>
-        function cerrarInfoMunicipio() {
-            document.getElementById('informacion-municipio').style.display = 'none';
-            document.getElementById('mapa').style.display = 'block';
-            $mapa.classList.remove('d-none')
-        }
-    </script>
 @endsection
 @section('jss')
     <script src="{{ asset('js/leaflet.js') }}"></script>
@@ -53,8 +41,12 @@
             </p>
         </div>
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
+            <div class="map-view-toggle d-md-none" role="group" aria-label="Cambiar vista de planes municipales">
+                <button type="button" class="active" data-map-view="list">Lista</button>
+                <button type="button" data-map-view="map">Mapa</button>
+            </div>
+            <div class="row map-layout" data-map-layout>
+                <div class="col-md-4 map-list-column" data-map-panel="list">
                     <article class="leaderboard">
                         <header class="encabezado-municipios">
                             <img src="{{ asset('Regiones/mapas/Mapa_puebla_gris.png') }}" class="mapa-gris-puebla"
@@ -65,50 +57,55 @@
                                 </span>
                             </h2>
                         </header>
-                        <table class="table" style="border-spacing: 0 !important; border-collapse: collapse !important;">
-                            <div class="container">
-                                <input type="text" id="buscar-municipio" placeholder="Buscar municipio..."
-                                    style="margin-top: 3%; margin-bottom:0; margin-left:1%">
-                            </div>
-                            <tbody>
-                                @foreach ($municipios as $municipio)
-                                    <tr>
-                                        <td>
-                                            <article class="leaderboard__profile" id="{{ $municipio->id }}"
-                                                data-id="{{ $municipio->id }}">
-                                                <img src="{{ asset('Municipios/iconos/' . $municipio->id . '.webp') }}" loading="lazy"
-                                                    alt="Figura con la forma del municipios de {{ $municipio->nombre }}"
-                                                    title="{{ $municipio->nombre }}" class="leaderboard__picture">
-                                                <span class="leaderboard__name">{{ $municipio->id }}.
-                                                    {{ $municipio->nombre }}</span>
-                                            </article>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div class="container map-search-container">
+                            <label class="visually-hidden" for="buscar-municipio">Buscar municipio</label>
+                            <input type="search" id="buscar-municipio" class="map-search"
+                                placeholder="Buscar municipio...">
+                            <p class="map-search-status" aria-live="polite"></p>
+                        </div>
+                        <div class="map-item-list" role="list">
+                            @foreach ($municipios as $municipio)
+                                <article class="leaderboard__profile" id="municipio-{{ $municipio->id }}"
+                                    data-id="{{ $municipio->id }}" role="button" tabindex="0" aria-pressed="false">
+                                    <img src="{{ asset('Municipios/iconos/' . $municipio->id . '.webp') }}" loading="lazy"
+                                        alt="Figura con la forma del municipio de {{ $municipio->nombre }}"
+                                        title="{{ $municipio->nombre }}" class="leaderboard__picture">
+                                    <span class="leaderboard__name">{{ $municipio->id }}. {{ $municipio->nombre }}</span>
+                                    <span class="map-item-count" aria-label="{{ $municipio->planes_publicados_count }} planes publicados">
+                                        {{ $municipio->planes_publicados_count }} PMD
+                                    </span>
+                                </article>
+                            @endforeach
+                        </div>
                     </article>
                 </div>
-                <div class="col-md-8" id="main-content-area">
+                <div class="col-md-8 map-map-column" id="main-content-area" data-map-panel="map">
                     <div class="mapa-wrapper">
-                        <div id="map-loader" class="loader-overlay d-flex">
+                        <div id="map-loader" class="loader-overlay d-flex" role="status" aria-live="polite">
                             <div class="spinner"></div>
-                            <p>Cargando mapa...</p>
+                            <p data-loader-message>Cargando mapa...</p>
+                            <button type="button" class="map-retry-button d-none" data-map-retry>Reintentar</button>
                         </div>
 
-                        <div id="mapa" class="mapa"></div>
+                        <div id="mapa" class="mapa" role="region" aria-label="Mapa interactivo de municipios"
+                            data-geojson-url="{{ asset('geojson/municipios.geojson') }}"
+                            data-planes-url="{{ url('/obtener_planes') }}"></div>
 
-                        <div class="controles-flotantes"
-                            style="position: absolute; bottom: 10px; left: 10px; z-index: 1000; pointer-events: none;">
-                            <div class="botonera-vertical" style="pointer-events: auto;">
+                        <div class="controles-flotantes">
+                            <div class="botonera-vertical">
                                 <button class="btn-info" id="btnInfo"
+                                    type="button" aria-label="Mostrar instrucciones"
                                     title="Seleccione un municipio de la lista o haga clic en el mapa">
                                     <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                <button class="btn-reset" id="btnResetMap" type="button"
+                                    aria-label="Restablecer vista del mapa" title="Restablecer vista">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div id="container-results"></div>
+                    <div id="container-results" tabindex="-1" aria-live="polite"></div>
                 </div>
             </div>
         </div>
