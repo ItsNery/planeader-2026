@@ -3,9 +3,7 @@
  */
 
 // --- CONFIGURACIÓN Y CONSTANTES ---
-const URL_BASE = "https://geoportal.puebla.gob.mx/";
-const URL_WMS = `${URL_BASE}geoserver/wms`;
-const URL_WFS = `${URL_BASE}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json&typeName=21mun`;
+const URL_GEOJSON = "/geojson/municipios.geojson";
 
 // Clave y TTL para caché en IndexedDB (24 horas en milisegundos)
 const CACHE_KEY = "geojson_21mun_data";
@@ -56,6 +54,10 @@ function formatId(id) {
   return String(id).padStart(3, "0");
 }
 
+function getMunicipioId(feature) {
+  return formatId(feature.properties.cve_mun ?? feature.properties.cvemunc);
+}
+
 /**
  * Intenta obtener los datos GeoJSON de CacheManager (IndexedDB).
  */
@@ -79,11 +81,11 @@ async function initMap() {
     allMunicipiosData = await getCachedGeoJSON();
  
     if (!allMunicipiosData) {
-      // Sin caché válido — descargar del servidor
-      const response = await fetch(URL_WFS);
+      // Sin caché válido: cargar el archivo publicado con la aplicación.
+      const response = await fetch(URL_GEOJSON);
       allMunicipiosData = await response.json();
       await setCachedGeoJSON(allMunicipiosData);
-      console.info("Capa 21mun cargada desde el servidor y cacheada.");
+      console.info("Capa municipal local cargada y cacheada.");
     } else {
       console.info("Capa 21mun cargada desde caché local.");
     }
@@ -99,9 +101,9 @@ async function initMap() {
       style: styleBase,
       onEachFeature: (feature, layer) => {
         layer.on({
-          mouseover: (e) => highlightFeature(feature.properties.cve_mun),
+          mouseover: (e) => highlightFeature(getMunicipioId(feature)),
           mouseout: resetHighlight,
-          click: (e) => cargarPlanes(feature.properties.cve_mun),
+          click: (e) => cargarPlanes(getMunicipioId(feature)),
         });
       },
     }).addTo(map);
@@ -129,7 +131,7 @@ function highlightFeature(idMun) {
 
   // Encontrar el feature correspondiente
   const feature = allMunicipiosData.features.find(
-    (f) => f.properties.cve_mun == formattedId,
+    (f) => getMunicipioId(f) === formattedId,
   );
 
   if (!feature) return;
@@ -153,7 +155,7 @@ function highlightFeature(idMun) {
   `;
 
   geojsonLayer.eachLayer((layer) => {
-    if (layer.feature.properties.cve_mun === formattedId) {
+    if (getMunicipioId(layer.feature) === formattedId) {
       layer.bindPopup(popupContent).openPopup();
     }
   });

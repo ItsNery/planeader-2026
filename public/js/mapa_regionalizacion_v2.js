@@ -2,21 +2,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================================================
     // 1. CONFIGURACIÓN
     // =========================================================================
-    const url = "https://geoportal.puebla.gob.mx/",
-        urlGeoserver = `${url}geoserver/wms`;
-
-    const baseUrlWFS = `${url}geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&srsName=EPSG:4326&outputFormat=application/json`;
-
     const configCapas = {
         Microrregiones: {
             id_field: "id_micro",
-            layer_name: "Microrregiones_2026",
             name_field: "nom_micro",
+            data_url: "/geojson/microrregiones-2026.geojson",
         },
         Macrorregiones: {
             id_field: "id_macro",
-            layer_name: "Macrorregiones_2026",
             name_field: "nom_macro",
+            data_url: "/geojson/macrorregiones-2026.geojson",
         },
     };
 
@@ -81,100 +76,120 @@ document.addEventListener("DOMContentLoaded", function () {
     // 2. CARGA DE MUNICIPIOS
     // =========================================================================
     const CACHE_KEY_MUNI = "geo_regionalizacion_21mun";
-    const urlMuni = `${baseUrlWFS}&typeName=21mun`;
+    const urlMuni = "/geojson/municipios.geojson";
+
+    function puntoEnAnillo([lng, lat], anillo) {
+        let dentro = false;
+
+        for (let i = 0, j = anillo.length - 1; i < anillo.length; j = i++) {
+            const [lngI, latI] = anillo[i];
+            const [lngJ, latJ] = anillo[j];
+            const intersecta =
+                latI > lat !== latJ > lat &&
+                lng < ((lngJ - lngI) * (lat - latI)) / (latJ - latI) + lngI;
+
+            if (intersecta) dentro = !dentro;
+        }
+
+        return dentro;
+    }
+
+    function puntoEnPoligono(punto, coordenadas) {
+        return (
+            puntoEnAnillo(punto, coordenadas[0]) &&
+            !coordenadas.slice(1).some((anillo) =>
+                puntoEnAnillo(punto, anillo),
+            )
+        );
+    }
+
+    function encontrarRegion(latlng) {
+        const data = cacheCapasPrincipales[capaActiva];
+        if (!data?.features) return null;
+
+        const punto = [latlng.lng, latlng.lat];
+        return data.features.find((feature) => {
+            const geometry = feature.geometry;
+            if (geometry.type === "Polygon") {
+                return puntoEnPoligono(punto, geometry.coordinates);
+            }
+            if (geometry.type === "MultiPolygon") {
+                return geometry.coordinates.some((poligono) =>
+                    puntoEnPoligono(punto, poligono),
+                );
+            }
+            return false;
+        });
+    }
 
     function procesarMunicipios(data) {
-            // Capa de municipios para el mapa principal
-            municipiosLayer = L.geoJSON(data, {
+        // Capa de municipios para el mapa principal
+        municipiosLayer = L.geoJSON(data, {
+            style: {
+                color: "#fa2a6c",
+                weight: 0.6,
+                opacity: 0.6,
+                fillOpacity: 0,
+            },
+            interactive: true,
+            onEachFeature: function (feature, layer) {
+                layer.on("click", function (e) {
+                    if (bloqueosDeEvento) return;
+
+                    const nombreMun =
+                        feature.properties.nomgeo || "Municipio";
+                    const region = encontrarRegion(e.latlng);
+                    const esMicro = capaActiva === "Microrregiones";
+                    const config = configCapas[capaActiva];
+                    const regionId = region?.properties[config.id_field];
+                    const regionNombre = region?.properties[config.name_field];
+
+                    if (regionId) {
+                        highlightRegion(regionId, capaActiva, false);
+                    }
+
+                    let titulo = esMicro ? "Microrregión" : "Macrorregión";
+                    if (regionId && regionNombre) {
+                        titulo += ` ${regionId} - ${regionNombre}`;
+                    } else if (regionId) {
+                        titulo += ` ${regionId}`;
+                    } else if (regionNombre) {
+                        titulo += ` ${regionNombre}`;
+                    } else {
+                        titulo += " (sin información)";
+                    }
+                    const popupContent = `
+                        <div class="custom-popup-container">
+                            <div class="custom-popup-header">
+                                <h4 class="custom-popup-title">${titulo}</h4>
+                            </div>
+                            <div class="custom-popup-body">
+                                <ul class="custom-popup-list">
+                                    <li class="custom-popup-list-item">Municipio: <strong>${nombreMun}</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(popupContent)
+                        .openOn(map);
+                });
+            },
+        }).addTo(map);
+
+        // Agregar la misma capa de municipios al minimapa (como fondo contextual)
+        if (miniMap && miniMap._map) {
+            L.geoJSON(data, {
                 style: {
-                    color: "#fa2a6c",
-                    weight: 0.6,
-                    opacity: 0.6,
+                    color: "#999999",
+                    weight: 0.4,
+                    opacity: 0.5,
                     fillOpacity: 0,
                 },
-                interactive: true,
-                onEachFeature: function (feature, layer) {
-                    layer.on("click", function (e) {
-                        if (bloqueosDeEvento) return;
-
-                        const nombreMun =
-                            feature.properties.nomgeo || "Municipio";
-                        const config = configCapas[capaActiva];
-                        const wmsUrl =
-                            `${urlGeoserver}?service=WMS&version=1.1.1&request=GetFeatureInfo` +
-                            `&LAYERS=${config.layer_name}&QUERY_LAYERS=${config.layer_name}` +
-                            `&INFO_FORMAT=application/json&SRS=EPSG:4326` +
-                            `&BBOX=${map.getBounds().toBBoxString()}&WIDTH=${map.getSize().x}&HEIGHT=${map.getSize().y}` +
-                            `&X=${Math.round(e.containerPoint.x)}&Y=${Math.round(e.containerPoint.y)}`;
-
-                        fetch(wmsUrl)
-                            .then((r) => r.json())
-                            .then((d) => {
-                                let regionId = null;
-                                let regionNombre = "";
-                                if (d.features?.length > 0) {
-                                    const props = d.features[0].properties;
-                                    regionId = props[config.id_field];
-                                    regionNombre =
-                                        props[config.name_field] || "";
-
-                                    if (regionId) {
-                                        highlightRegion(
-                                            regionId,
-                                            capaActiva,
-                                            false,
-                                        );
-                                    }
-                                }
-                                let titulo =
-                                    capaActiva === "Microrregiones"
-                                        ? "Microrregión"
-                                        : "Macrorregión";
-                                if (regionId && regionNombre) {
-                                    titulo += ` ${regionId} - ${regionNombre}`;
-                                } else if (regionId) {
-                                    titulo += ` ${regionId}`;
-                                } else if (regionNombre) {
-                                    titulo += ` ${regionNombre}`;
-                                } else {
-                                    titulo += " (sin información)";
-                                }
-                                const popupContent = `
-                                    <div class="custom-popup-container">
-                                        <div class="custom-popup-header">
-                                            <h4 class="custom-popup-title">${titulo}</h4>
-                                        </div>
-                                        <div class="custom-popup-body">
-                                            <ul class="custom-popup-list">
-                                                <li class="custom-popup-list-item">Municipio: <strong>${nombreMun}</strong></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                `;
-                                L.popup()
-                                    .setLatLng(e.latlng)
-                                    .setContent(popupContent)
-                                    .openOn(map);
-                            })
-                            .catch((err) =>
-                                console.warn("Error obteniendo región:", err),
-                            );
-                    });
-                },
-            }).addTo(map);
-
-            // Agregar la misma capa de municipios al minimapa (como fondo contextual)
-            if (miniMap && miniMap._map) {
-                L.geoJSON(data, {
-                    style: {
-                        color: "#999999",
-                        weight: 0.4,
-                        opacity: 0.5,
-                        fillOpacity: 0,
-                    },
-                    interactive: false,
-                }).addTo(miniMap._map);
-            }
+                interactive: false,
+            }).addTo(miniMap._map);
+        }
     }
 
     // Cargar municipios: caché o fetch
@@ -187,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then((r) => r.json())
                 .then((data) => {
                     setCache(CACHE_KEY_MUNI, data);
-                    console.info("Capa 21mun (regionalización) cargada del servidor y cacheada.");
+                    console.info("Capa municipal local cargada y cacheada.");
                     procesarMunicipios(data);
                 })
                 .catch((error) => console.error("Error municipios:", error));
@@ -201,14 +216,13 @@ document.addEventListener("DOMContentLoaded", function () {
     function procesarGeometrias(data, config, mapaDeAlmacenamiento) {
         if (data && data.features) {
             data.features.forEach((feature) => {
-                const id = feature.properties[config.id_field];
-                if (id) {
-                    const idStr = String(id);
-                    if (mapaDeAlmacenamiento.has(idStr)) {
-                        mapaDeAlmacenamiento.get(idStr).push(feature.geometry);
-                    } else {
-                        mapaDeAlmacenamiento.set(idStr, [feature.geometry]);
-                    }
+                const id = String(Number(feature.properties[config.id_field]));
+                if (id === "NaN") return;
+
+                if (mapaDeAlmacenamiento.has(id)) {
+                    mapaDeAlmacenamiento.get(id).push(feature.geometry);
+                } else {
+                    mapaDeAlmacenamiento.set(id, [feature.geometry]);
                 }
             });
         }
@@ -216,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function precargarGeometrias(claveCapa, mapaDeAlmacenamiento) {
         const config = configCapas[claveCapa];
-        const cacheKey = `geo_regionalizacion_${claveCapa}`;
+        const cacheKey = `geo_regionalizacion_v2_${claveCapa}`;
 
         getCache(cacheKey).then(cached => {
             if (cached) {
@@ -225,8 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const urlPrecarga = `${baseUrlWFS}&typeName=${config.layer_name}`;
-            fetch(urlPrecarga)
+            fetch(config.data_url)
                 .then((response) => response.json())
                 .then((data) => {
                     setCache(cacheKey, data);
@@ -259,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // 2. Caché en IndexedDB
-        const cacheKey = `geo_regionalizacion_${claveCapa}`;
+        const cacheKey = `geo_regionalizacion_v2_${claveCapa}`;
         getCache(cacheKey).then(cached => {
             if (cached) {
                 cacheCapasPrincipales[claveCapa] = cached;
@@ -269,8 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // 3. Fetch del servidor
-            const urlFondo = `${baseUrlWFS}&typeName=${config.layer_name}`;
-            fetch(urlFondo)
+            fetch(config.data_url)
                 .then((response) => response.json())
                 .then((data) => {
                     cacheCapasPrincipales[claveCapa] = data;
