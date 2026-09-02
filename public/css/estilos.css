@@ -93,6 +93,8 @@
 :root {
     --fontFamily: "Gilroy-Regular", sans-serif;
     --fontFamilyBold: "Gilroy-Bold", sans-serif;
+    --fontFamily-textos: "Corra-Montserra-Regular", sans-serif;
+    --fontFamilyBold-textos: "Corra-Montserra-Bold", sans-serif;
     --colorBlanco: #ffffff;
     --blackColor: #1f2428;
     --colorGris: #999999;
@@ -135,6 +137,13 @@ p {
     font-size: 17px !important;
 }
 
+p,
+li,
+a,
+b,
+strong {
+    font-family: var(--fontFamily-textos) !important;
+}
 /* Estilos del loader */
 
 .loader-section {
@@ -198,7 +207,10 @@ p {
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
-    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    transition:
+        opacity 0.3s,
+        visibility 0.3s,
+        transform 0.3s;
 }
 
 /* Clase para mostrar el botón con animación */
@@ -339,7 +351,7 @@ p {
     text-decoration: none;
     color: var(--color-vino);
     /* font-weight: 550; */
-    font-family: 'Corra-Montserra-Bold', sans-serif;
+    font-family: "Corra-Montserra-Bold", sans-serif;
     border-bottom: 1px solid #f0f0f0;
     color: var(--color1);
 }
@@ -360,8 +372,8 @@ p {
     color: var(--color-texto);
 }
 
-.dropdown-content>.dropdown-content__hija {
-    font-size: .9rem;
+.dropdown-content > .dropdown-content__hija {
+    font-size: 0.9rem;
     padding: 0 0;
     margin: 0 0;
 
@@ -525,20 +537,18 @@ p {
 
     .titulo {
         color: var(--colortitulos);
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         font-size: 2rem;
         margin: 2rem 0;
-
     }
 
     .texto-container {
         .texto {
-            font-family: 'Corra-Montserra-Regular', sans-serif;
+            font-family: "Corra-Montserra-Regular", sans-serif;
             text-align: justify;
             font-weight: 500;
         }
     }
-
 
     .panel-derecho {
         display: flex;
@@ -601,7 +611,6 @@ p {
         height: 105px;
         cursor: pointer;
         transition: opacity 0.3s ease-in-out;
-
     }
 
     .eje-item .imagen-descripcion {
@@ -612,11 +621,12 @@ p {
         left: -3rem;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+        transition:
+            opacity 0.3s ease-in-out,
+            visibility 0s linear 0.3s;
         z-index: 10;
         pointer-events: none;
     }
-
 
     .eje-item:hover .imagen-bw {
         opacity: 0;
@@ -630,7 +640,6 @@ p {
     }
 
     @media (max-width: 768px) {
-
         .lado-derecho {
             align-items: center;
         }
@@ -747,7 +756,7 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
     font-size: 2.9vh;
     font-weight: 500;
     color: var(--text-color);
@@ -759,7 +768,7 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-size: 3.9vh;
     color: var(--color1);
     margin-top: 1rem;
@@ -807,7 +816,6 @@ p {
             justify-content: center;
             align-items: center;
             flex-direction: column;
-
         }
 
         .tarjetahistoricoplanes-image {
@@ -818,7 +826,7 @@ p {
             background-size: cover;
         }
 
-        .tarjetahistoricoplanes-image>img {
+        .tarjetahistoricoplanes-image > img {
             display: block;
             width: 100%;
             opacity: 0;
@@ -847,7 +855,9 @@ p {
             text-decoration: none;
             overflow: hidden;
             box-shadow: 0 0 3rem -1rem rgba(0, 0, 0, 0.5);
-            transition: transform 0.1s ease-in-out, box-shadow 0.1s;
+            transition:
+                transform 0.1s ease-in-out,
+                box-shadow 0.1s;
         }
 
         .tarjetahistoricoplanes:hover {
@@ -866,17 +876,17 @@ p {
             align-items: center;
         }
 
-        .tarjetahistoricoplanes-description>h2 {
+        .tarjetahistoricoplanes-description > h2 {
             text-align: center;
             margin: 0 0 0.5em;
         }
 
-        .tarjetahistoricoplanes-description>p {
+        .tarjetahistoricoplanes-description > p {
             text-align: center;
             margin: 0;
         }
 
-        .tarjetahistoricoplanes-description>img {
+        .tarjetahistoricoplanes-description > img {
             max-width: 10% !important;
         }
 
@@ -897,7 +907,9 @@ p {
             margin: 0 !important;
             border-radius: 50% !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition:
+                background-color 0.3s ease,
+                color 0.3s ease;
             line-height: 1;
         }
 
@@ -925,8 +937,6 @@ p {
             background: #e9754b !important;
         }
     }
-
-
 }
 
 /* Estilos de Footer */
@@ -1060,7 +1070,6 @@ footer {
     }
 }
 
-
 .text-inherit {
     color: inherit;
 
@@ -1081,15 +1090,15 @@ footer {
 }
 
 .gilroy-bold {
-    font-family: 'Gilroy-Bold', sans-serif;
+    font-family: "Gilroy-Bold", sans-serif;
 }
 
 .corra-bold {
-    font-family: 'Corra-Montserra-Bold', sans-serif;
+    font-family: "Corra-Montserra-Bold", sans-serif;
 }
 
 .corra-light {
-    font-family: 'Corra-Montserra-Light', sans-serif;
+    font-family: "Corra-Montserra-Light", sans-serif;
 }
 
 .contenedor-boton {
@@ -1113,7 +1122,9 @@ footer {
         text-decoration: none;
         overflow: hidden;
         transform: translateZ(0);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
 
         &:hover {
             color: var(--colorBlanco);
@@ -1122,7 +1133,7 @@ footer {
     }
 
     .btn-descargar::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -1134,13 +1145,18 @@ footer {
     }
 
     .btn-descargar::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.2), transparent 80%),
+        background:
+            radial-gradient(
+                circle at 50% 0%,
+                rgba(255, 255, 255, 0.2),
+                transparent 80%
+            ),
             var(--color2);
         z-index: 1;
     }
@@ -1164,7 +1180,6 @@ footer {
     }
 
     @media (max-width: 600px) {
-
         .btn-descargar {
             padding: 0.8rem 1.5rem;
             font-size: 1rem;
@@ -1195,7 +1210,9 @@ footer {
     text-decoration: none;
     overflow: hidden;
     transform: translateZ(0);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 
     &:hover {
         color: var(--colorBlanco);
@@ -1204,7 +1221,7 @@ footer {
 }
 
 .btn-descargar::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -1216,13 +1233,18 @@ footer {
 }
 
 .btn-descargar::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.2), transparent 80%),
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(255, 255, 255, 0.2),
+            transparent 80%
+        ),
         var(--color2);
     z-index: 1;
 }
@@ -1262,7 +1284,6 @@ footer {
 }
 
 @media (max-width: 600px) {
-
     .btn-descargar {
         padding: 0.8rem 1.5rem;
         font-size: 1rem;
@@ -1357,7 +1378,7 @@ footer {
 /* Inician estilos de sitios de interés */
 .contenedor-sitios-interes {
     .subtitulo_sitios {
-        font-family: 'Gilroy-Black', sans-serif;
+        font-family: "Gilroy-Black", sans-serif;
         color: var(--color1);
         font-size: 2vw;
     }
@@ -1456,9 +1477,10 @@ footer {
         justify-content: center;
         align-items: center;
 
-        transition: background-color 0.2s ease, transform 0.2s ease;
+        transition:
+            background-color 0.2s ease,
+            transform 0.2s ease;
         cursor: pointer;
-
     }
 
     .close-btn svg {
@@ -1516,7 +1538,7 @@ footer {
         justify-content: center;
         align-items: center;
         font-size: clamp(1.5rem, 5vw, 3.75rem);
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         font-weight: bold;
         color: var(--color1);
     }
@@ -1526,7 +1548,7 @@ footer {
         justify-content: center;
         align-items: center;
         font-size: clamp(1rem, 3vw, 2.75rem);
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         font-weight: bolder;
         color: var(--color4);
     }
@@ -1534,7 +1556,7 @@ footer {
 
 .programas-derivados {
     min-height: calc(60vh - 80px);
-    background-image: url('../img/fondo_maices.png');
+    background-image: url("../img/fondo_maices.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
@@ -1550,7 +1572,7 @@ footer {
             border-color: var(--color4);
             border-left-color: var(--color4);
             outline: 0;
-            box-shadow: 0 0 0 .25rem rgba(231, 151, 68, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(231, 151, 68, 0.25);
         }
 
         .subtitulo-seccion {
@@ -1558,7 +1580,7 @@ footer {
             justify-content: center;
             align-items: center;
             font-size: clamp(1rem, 3vw, 2.75rem);
-            font-family: 'Gilroy-Bold', sans-serif;
+            font-family: "Gilroy-Bold", sans-serif;
             font-weight: bolder;
             color: var(--color4);
             padding: 2rem 2rem 0 2rem;
@@ -1641,7 +1663,10 @@ footer {
         width: 100%;
         border-radius: 20px;
         filter: drop-shadow(0 0 10px #3d3d3d);
-        transition: transform 0.3s, box-shadow 0.3s, filter 0.3s;
+        transition:
+            transform 0.3s,
+            box-shadow 0.3s,
+            filter 0.3s;
     }
 
     @media screen and (max-width: 767px) {
@@ -1717,15 +1742,14 @@ footer {
         border-color: var(--color-primario-acordeon);
     }
 
-
     #accordionPrincipalPlanes .accordion-button:not(.collapsed) {
         color: var(--arena);
         background-color: var(--color-primario-acordeon);
         box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
     }
 
-
-    #accordionPrincipalPlanes .accordion-button:not(.collapsed):closest('.accordion-item') {
+    #accordionPrincipalPlanes
+        .accordion-button:not(.collapsed):closest(".accordion-item") {
         border-left: 3px solid var(--color-primario-acordeon);
     }
 
@@ -1756,7 +1780,7 @@ footer {
 /* Inician estilos de COPLADEP */
 /* Estilos para el contenedor principal */
 .contenedor-imagen-copladep {
-    background-image: url('../img/fondos-seccion/copladep.webp');
+    background-image: url("../img/fondos-seccion/copladep.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -1773,7 +1797,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
@@ -1847,7 +1871,9 @@ footer {
 .accordion-button {
     font-weight: 500;
     color: #333;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 .accordion-button:not(.collapsed) {
@@ -1857,7 +1883,9 @@ footer {
 }
 
 .accordion-button::after {
-    transition: transform 0.3s ease, filter 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        filter 0.3s ease;
 }
 
 .accordion-button:not(.collapsed)::after {
@@ -1924,7 +1952,9 @@ footer {
     color: #555;
     font-size: 1.1rem;
     text-decoration: none;
-    transition: transform 0.2s ease, color 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
 }
 
 .document-item__download:hover {
@@ -2002,27 +2032,27 @@ footer {
 }
 
 .document-badge.badge-pdf {
-    background-color: #E53E3E;
+    background-color: #e53e3e;
 }
 
 .document-badge.badge-doc,
 .document-badge.badge-docx {
-    background-color: #4285F4;
+    background-color: #4285f4;
 }
 
 .document-badge.badge-xls,
 .document-badge.badge-xlsx {
-    background-color: #34A853;
+    background-color: #34a853;
 }
 
 .document-badge.badge-ppt,
 .document-badge.badge-pptx {
-    background-color: #F9AB00;
+    background-color: #f9ab00;
 }
 
 .document-badge.badge-jpg,
 .document-badge.badge-png {
-    background-color: #8E44AD;
+    background-color: #8e44ad;
 }
 
 .document-badge:not([class*="badge-"]) {
@@ -2032,7 +2062,7 @@ footer {
 /* Terminan estilos de Copladep */
 /* Estilos de Programas Estatales inician */
 .contenedor-imagen-programasest {
-    background-image: url('../img/fondos-seccion/programas-est.webp');
+    background-image: url("../img/fondos-seccion/programas-est.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2049,7 +2079,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
@@ -2060,13 +2090,12 @@ footer {
 }
 
 .programas-estatales {
-
     .subtitulo-seccion {
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: clamp(1rem, 3vw, 2.75rem);
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         font-weight: bolder;
         color: var(--color4);
     }
@@ -2174,7 +2203,7 @@ footer {
 /* Terminan estilos de programas estatales */
 /* Inician estilos de Subcomités */
 .contenedor-imagen-subcomites {
-    background-image: url('../img/fondos-seccion/subcomites_.webp');
+    background-image: url("../img/fondos-seccion/subcomites_.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2191,7 +2220,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
@@ -2213,7 +2242,7 @@ footer {
         justify-content: center;
         align-items: center;
         font-size: clamp(1rem, 3vw, 2.75rem);
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         font-weight: bolder;
         color: var(--color4);
     }
@@ -2244,8 +2273,13 @@ footer {
         cursor: pointer;
         border: none;
         border-radius: 50%;
-        box-shadow: 0 0 3px 1px #1818183d, 2px 2px 3px #18181865, inset 2px 2px 2px #ffffff;
-        transition: all 0.3s ease-in-out, opacity 0.3s;
+        box-shadow:
+            0 0 3px 1px #1818183d,
+            2px 2px 3px #18181865,
+            inset 2px 2px 2px #ffffff;
+        transition:
+            all 0.3s ease-in-out,
+            opacity 0.3s;
         transition-delay: 0.6s, 0s;
     }
 
@@ -2293,7 +2327,10 @@ footer {
         cursor: pointer;
         border: none;
         border-radius: 8px;
-        box-shadow: 0 0 3px 1px #1818183d, 2px 2px 3px #18181865, inset 2px 2px 2px #ffffff;
+        box-shadow:
+            0 0 3px 1px #1818183d,
+            2px 2px 3px #18181865,
+            inset 2px 2px 2px #ffffff;
         visibility: hidden;
         transition: 0.3s ease-in-out;
         transition-delay: 0s;
@@ -2472,7 +2509,6 @@ footer {
             background-color: var(--color1);
         }
     }
-
 }
 
 .historicos-subcomites {
@@ -2500,15 +2536,14 @@ footer {
         border-color: var(--color-primario-acordeon);
     }
 
-
     #accordionHistorico .accordion-button:not(.collapsed) {
         color: var(--arena);
         background-color: var(--color-primario-acordeon);
         box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
     }
 
-
-    #accordionHistorico .accordion-button:not(.collapsed):closest('.accordion-item') {
+    #accordionHistorico
+        .accordion-button:not(.collapsed):closest(".accordion-item") {
         border-left: 3px solid var(--color-primario-acordeon);
     }
 
@@ -2533,9 +2568,17 @@ footer {
             background-color: var(--color1);
         }
     }
-
 }
+.mesas-tecnicas {
+    .btn-outline-color-1 {
+        border-color: var(--color4);
 
+        &:hover {
+            color: var(--colorBlanco);
+            background-color: var(--color1);
+        }
+    }
+}
 .subcomite_individual {
     /* background-color: var(--bg-content); */
     background: url(../img/fondos-seccion/1.png) no-repeat center center/cover;
@@ -2550,7 +2593,7 @@ footer {
     }
 
     .subcomite-icono {
-        background-color: #E7E7E7;
+        background-color: #e7e7e7;
         border-radius: 50%;
         width: 250px;
         height: 250px;
@@ -2565,7 +2608,6 @@ footer {
     }
 
     .ficha-subcomite {
-
         .objetivo {
             padding: 10px;
 
@@ -2610,14 +2652,14 @@ footer {
         margin-bottom: 2rem;
 
         h1 {
-            font-family: 'Gilroy-Bold', sans-serif;
+            font-family: "Gilroy-Bold", sans-serif;
             color: var(--color1);
             text-transform: uppercase;
         }
 
         h2 {
             font-size: clamp(0.5rem, 1vw, 1.15rem);
-            font-family: 'Corra-Montserra-Light', sans-serif;
+            font-family: "Corra-Montserra-Light", sans-serif;
             text-align: justify;
         }
     }
@@ -2646,14 +2688,14 @@ footer {
     }
 
     .titulo-inicio-2 h3 {
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         color: var(--color1);
         margin-bottom: 1rem;
     }
 
     .titulo-inicio-2 p {
         font-size: clamp(0.9rem, 1vw, 1rem);
-        font-family: 'Corra-Montserra-Light', sans-serif;
+        font-family: "Corra-Montserra-Light", sans-serif;
         line-height: 1.6;
     }
 
@@ -2666,7 +2708,7 @@ footer {
 /* Inician estilos de Marco Jur+idico */
 /* Estilos de Programas Estatales inician */
 .contenedor-imagen-marco {
-    background-image: url('../img/fondos-seccion/marco-ju.webp');
+    background-image: url("../img/fondos-seccion/marco-ju.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2683,7 +2725,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     font-size: clamp(2rem, 7vw, 6rem);
@@ -2694,7 +2736,6 @@ footer {
 }
 
 .documentos-marco {
-
     .tarjeta-marco {
         display: flex;
         flex-direction: column;
@@ -2704,19 +2745,25 @@ footer {
     }
 
     .tarjeta-marco .imagen {
-        box-shadow: 0px 10px 30px rgba(50, 50, 93, 0.15), 0px 5px 15px rgba(0, 0, 0, 0.1);
+        box-shadow:
+            0px 10px 30px rgba(50, 50, 93, 0.15),
+            0px 5px 15px rgba(0, 0, 0, 0.1);
         border-radius: 20px;
         overflow: hidden;
         width: 100%;
         max-width: 280px;
         max-height: 300px;
         height: 300px;
-        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        transition:
+            transform 0.3s ease-out,
+            box-shadow 0.3s ease-out;
     }
 
     .tarjeta-marco .imagen:hover {
         transform: translateY(-5px) scale(1.02);
-        box-shadow: 0px 15px 35px rgba(50, 50, 93, 0.2), 0px 8px 20px rgba(0, 0, 0, 0.15);
+        box-shadow:
+            0px 15px 35px rgba(50, 50, 93, 0.2),
+            0px 8px 20px rgba(0, 0, 0, 0.15);
     }
 
     .tarjeta-marco .imagen img {
@@ -2738,7 +2785,7 @@ footer {
         justify-content: center;
         padding: 8px 20px;
         border-radius: 10px;
-        background-color: #00579B;
+        background-color: #00579b;
         color: white;
         text-decoration: none;
         font-size: 1rem;
@@ -2748,7 +2795,9 @@ footer {
         box-sizing: border-box;
         border: none;
         cursor: pointer;
-        transition: background-color 0.25s ease-in-out, transform 0.15s ease-in-out;
+        transition:
+            background-color 0.25s ease-in-out,
+            transform 0.15s ease-in-out;
     }
 
     .btn-descargar:hover,
@@ -2759,7 +2808,7 @@ footer {
     }
 
     .btn-descargar:active {
-        background-color: #00355E;
+        background-color: #00355e;
         transform: translateY(0px);
     }
 
@@ -2778,9 +2827,8 @@ footer {
         align-items: center;
     }
 
-
     .subtitulo_sitios {
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         color: var(--color1);
         font-size: 2rem;
         text-align: center;
@@ -2790,7 +2838,7 @@ footer {
 /* Terminan estilos de Marco Jurídico */
 /* Inician estilos de Contacto */
 .contenedor-imagen-contacto {
-    background-image: url('../img/fondos-seccion/contacto.webp');
+    background-image: url("../img/fondos-seccion/contacto.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2807,7 +2855,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--colorBlanco);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
     line-height: 1.2;
@@ -2830,7 +2878,7 @@ footer {
 /* Terminan estilos de contacto */
 /* Estilos de Regionalizacion inicia */
 .contenedor-imagen-regionalizacion {
-    background-image: url('../img/fondos-seccion/1regionalizacion.webp');
+    background-image: url("../img/fondos-seccion/1regionalizacion.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2847,7 +2895,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
@@ -2924,7 +2972,15 @@ footer {
     .leaderboard header {
         --start: 15%;
         height: 70px;
-        background-image: repeating-radial-gradient(circle at var(--start), transparent 0%, transparent 10%, #ffffff54 10%, #ffffff54 17%), linear-gradient(to right, var(--color1), var(--color1));
+        background-image:
+            repeating-radial-gradient(
+                circle at var(--start),
+                transparent 0%,
+                transparent 10%,
+                #ffffff54 10%,
+                #ffffff54 17%
+            ),
+            linear-gradient(to right, var(--color1), var(--color1));
         color: #fff;
         position: sticky;
         top: 0;
@@ -2988,9 +3044,11 @@ footer {
         border-radius: 10px;
         box-shadow: 0 5px 7px -1px rgba(51, 51, 51, 0.23);
         cursor: pointer;
-        transition: transform 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98), box-shadow 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98);
+        transition:
+            transform 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98),
+            box-shadow 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98);
         background-color: var(--bg-content);
-        margin-bottom: .3rem;
+        margin-bottom: 0.3rem;
     }
 
     .leaderboard__profile:hover {
@@ -3009,7 +3067,9 @@ footer {
         max-width: 100%;
         width: 30px;
         border-radius: 50%;
-        box-shadow: 0 0 0 10px var(--bg-content), 0 0 0 22px var(--bg-content);
+        box-shadow:
+            0 0 0 10px var(--bg-content),
+            0 0 0 22px var(--bg-content);
     }
 
     .leaderboard__name {
@@ -3027,7 +3087,7 @@ footer {
         text-align: right;
     }
 
-    .leaderboard__value>span {
+    .leaderboard__value > span {
         opacity: 0.8;
         font-weight: 600;
         font-size: 0.8125rem;
@@ -3072,7 +3132,7 @@ footer {
 }
 
 #mapa .container {
-    font-family: 'Corra-Montserra-SemiBold';
+    font-family: "Corra-Montserra-SemiBold";
     position: absolute;
     top: 10px;
     left: 10px;
@@ -3101,7 +3161,7 @@ footer {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    font-family: 'Corra-Montserra-Light', sans-serif;
+    font-family: "Corra-Montserra-Light", sans-serif;
     overflow: hidden;
 }
 
@@ -3170,7 +3230,7 @@ footer {
 }
 
 .custom-popup-container::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -10px;
     left: 50%;
@@ -3191,14 +3251,14 @@ footer {
     flex-direction: row;
 
     .titulo {
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
         text-align: center;
         color: var(--color1);
     }
 
     .descripcion {
         text-align: center;
-        font-family: 'Corra-Montserra-Light', sans-serif;
+        font-family: "Corra-Montserra-Light", sans-serif;
     }
 }
 
@@ -3211,7 +3271,7 @@ footer {
 /* Estilos de regionalizacion terminan */
 /* Inician estilos de Planes Municipales */
 .contenedor-imagen-planesmun {
-    background-image: url('../img/fondos-seccion/planes-municipales.webp');
+    background-image: url("../img/fondos-seccion/planes-municipales.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3228,7 +3288,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
@@ -3272,7 +3332,15 @@ footer {
     .leaderboard header {
         --start: 15%;
         height: 70px;
-        background-image: repeating-radial-gradient(circle at var(--start), transparent 0%, transparent 10%, #ffffff54 10%, #ffffff54 17%), linear-gradient(to right, var(--color1), var(--color1));
+        background-image:
+            repeating-radial-gradient(
+                circle at var(--start),
+                transparent 0%,
+                transparent 10%,
+                #ffffff54 10%,
+                #ffffff54 17%
+            ),
+            linear-gradient(to right, var(--color1), var(--color1));
         color: #fff;
         position: relative;
         border-radius: 12px 12px 0 0;
@@ -3334,9 +3402,11 @@ footer {
         border-radius: 10px;
         box-shadow: 0 5px 7px -1px rgba(51, 51, 51, 0.23);
         cursor: pointer;
-        transition: transform 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98), box-shadow 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98);
+        transition:
+            transform 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98),
+            box-shadow 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98);
         background-color: var(--bg-content);
-        margin-bottom: .3rem;
+        margin-bottom: 0.3rem;
     }
 
     .leaderboard__profile:hover {
@@ -3355,7 +3425,9 @@ footer {
         max-width: 100%;
         width: 30px;
         border-radius: 50%;
-        box-shadow: 0 0 0 10px var(--bg-content), 0 0 0 22px var(--bg-content);
+        box-shadow:
+            0 0 0 10px var(--bg-content),
+            0 0 0 22px var(--bg-content);
     }
 
     .leaderboard__name {
@@ -3373,7 +3445,7 @@ footer {
         text-align: right;
     }
 
-    .leaderboard__value>span {
+    .leaderboard__value > span {
         opacity: 0.8;
         font-weight: 600;
         font-size: 0.8125rem;
@@ -3405,7 +3477,7 @@ footer {
     }
 
     #mapa .container {
-        font-family: 'Corra-Montserra-Light';
+        font-family: "Corra-Montserra-Light";
         position: absolute;
         top: 10px;
         left: 10px;
@@ -3457,8 +3529,6 @@ footer {
             letter-spacing: 0.5px;
         }
 
-
-
         .card-body .card-title {
             margin-top: 0;
         }
@@ -3494,7 +3564,7 @@ footer {
 
         .titulo-planesmun {
             font-size: 1.2em;
-            font-family: 'Gilroy-Regular', sans-serif;
+            font-family: "Gilroy-Regular", sans-serif;
         }
     }
 
@@ -3517,7 +3587,6 @@ footer {
     }
 
     @media (max-width: 768px) {
-
         .pmd-list-section {
             padding: 1rem;
         }
@@ -3537,7 +3606,7 @@ footer {
 /* Termina estilos de Planes Municipales de Desarrollo */
 /* Inician estilos de coplademun */
 .contenedor-imagen-coplademun {
-    background-image: url('../img/fondos-seccion/coplademun.webp');
+    background-image: url("../img/fondos-seccion/coplademun.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3554,7 +3623,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
@@ -3585,7 +3654,7 @@ footer {
         display: flex;
         justify-content: center;
         align-items: center;
-        font-family: 'Gilroy-Black', sans-serif;
+        font-family: "Gilroy-Black", sans-serif;
         font-size: 3.5vh;
         color: var(--color1);
         margin-top: 1rem;
@@ -3626,14 +3695,12 @@ footer {
     .boton-tarjetadocs:hover {
         background-color: #e0e0e0;
     }
-
-
 }
 
 /* Acaban estilos de COPLADEMUN */
 /* Inician estilos de capacitaciones municipales */
 .contenedor-imagen-capacitaciones {
-    background-image: url('../img/fondos-seccion/capacitacion-municipal.webp');
+    background-image: url("../img/fondos-seccion/capacitacion-municipal.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3650,7 +3717,7 @@ footer {
     -webkit-background-clip: text;
     background-clip: text;
     color: var(--arena);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
     line-height: 1.2;
@@ -3660,7 +3727,6 @@ footer {
 }
 
 .capacitaciones {
-
     /* 1. Contenedor de la lista */
     .document-list {
         list-style: none;
@@ -3718,7 +3784,6 @@ footer {
         color: var(--color2);
     }
 
-
     .document-badge {
         margin-left: 0.75rem;
         padding: 0.2rem 0.6rem;
@@ -3730,11 +3795,11 @@ footer {
     }
 
     .document-badge.badge-pdf {
-        background-color: #E53E3E;
+        background-color: #e53e3e;
     }
 
     .document-badge.badge-docx {
-        background-color: #4285F4;
+        background-color: #4285f4;
     }
 
     /* =============================================== */
@@ -3766,7 +3831,7 @@ footer {
 /* Terminan estilos de capacitaciones */
 /* Inician estilos de documentos metodologicos */
 .contenedor-imagen-docsmetodologicos {
-    background-image: url('../img/fondos-seccion/documentos-met.webp');
+    background-image: url("../img/fondos-seccion/documentos-met.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3784,7 +3849,7 @@ footer {
     background-clip: text;
     color: var(--arena);
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     font-size: clamp(2rem, 7vw, 6rem);
@@ -3793,7 +3858,6 @@ footer {
 }
 
 .documentos-metodologicos {
-
     .contenedor-tarjetadocs {
         width: 100%;
         max-width: 320px;
@@ -3839,7 +3903,6 @@ footer {
     .boton-tarjetadocs:hover {
         background-color: #e0e0e0;
     }
-
 }
 
 /* Estilos de Página 404 inician */
@@ -4032,7 +4095,7 @@ footer {
 /* Terminan estilos de página 404 */
 /* Inician estilos de Herramientas de planeación */
 .contenedor-imagen-herramientas-plan {
-    background-image: url('../img/fondos-seccion/herramientas-plan.webp');
+    background-image: url("../img/fondos-seccion/herramientas-plan.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -4050,7 +4113,7 @@ footer {
     background-clip: text;
     color: var(--arena);
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     font-size: clamp(2rem, 7vw, 6rem);
@@ -4059,7 +4122,6 @@ footer {
 }
 
 .herramientas-planeacion {
-
     .contenedor-tarjetadocs {
         width: 100%;
         max-width: 320px;
@@ -4306,7 +4368,9 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s, transform 0.1s;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
 }
 
 .botonera-vertical button:hover {
@@ -4342,7 +4406,7 @@ footer {
 
 /* Estilos de primera sesion de copladep */
 .contenedor-imagen-primera-sesion {
-    background-image: url('../img/fondos-seccion/primera-sesion.webp');
+    background-image: url("../img/fondos-seccion/primera-sesion.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -4360,7 +4424,7 @@ footer {
     background-clip: text;
     color: var(--arena);
     text-shadow: 2px 2px rgba(0, 0, 0, 1);
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-weight: 900;
     line-height: 1.2;
     font-size: clamp(2rem, 7vw, 6rem);
@@ -4394,7 +4458,8 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    -webkit-box-reflect: below 1px linear-gradient(transparent, transparent, #0006);
+    -webkit-box-reflect: below 1px
+        linear-gradient(transparent, transparent, #0006);
 }
 
 .swiper-slide a {
@@ -4418,7 +4483,6 @@ footer {
     z-index: 10;
 }
 
-
 /* Personalización de la paginación y navegación */
 .swiper-pagination-bullet-active {
     background-color: #007aff !important;
@@ -4440,7 +4504,7 @@ footer {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    font-family: 'Corra-Montserra-Light', sans-serif;
+    font-family: "Corra-Montserra-Light", sans-serif;
     overflow: hidden;
 }
 
@@ -4503,7 +4567,7 @@ footer {
 }
 
 .custom-popup-container::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -10px;
     left: 50%;
@@ -4528,7 +4592,10 @@ footer {
     font-size: 0.85rem;
     font-weight: 600;
     border-radius: 6px;
-    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    transition:
+        background-color 0.2s,
+        transform 0.1s,
+        box-shadow 0.2s;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -4667,7 +4734,7 @@ footer {
     font-weight: 600;
 }
 
-.ped-breadcrumb__item+.ped-breadcrumb__item::before {
+.ped-breadcrumb__item + .ped-breadcrumb__item::before {
     content: "/";
     margin: 0 8px;
     color: rgba(255, 255, 255, 0.7);
@@ -4798,7 +4865,7 @@ footer {
         font-size: 0.9rem;
     }
 
-    .ped-breadcrumb__item+.ped-breadcrumb__item::before {
+    .ped-breadcrumb__item + .ped-breadcrumb__item::before {
         margin: 0 3px;
     }
 }
@@ -4839,7 +4906,7 @@ footer {
     .contenedor-titulo {
         font-size: 2vw;
         font-weight: 500;
-        font-family: 'Gilroy-Bold', sans-serif;
+        font-family: "Gilroy-Bold", sans-serif;
     }
 }
 
@@ -4873,7 +4940,9 @@ footer {
 }
 
 .tarjeta-marco--trigger .btn-descargar svg {
-    transition: transform 0.3s ease, fill 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        fill 0.3s ease;
 }
 
 /* Accordion Block for Marco Jurídico */
@@ -4899,7 +4968,7 @@ footer {
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
 }
 
-.accordion-marco .accordion-button:not(.collapsed):closest('.accordion-item') {
+.accordion-marco .accordion-button:not(.collapsed):closest(".accordion-item") {
     border-left: 3px solid var(--color-primario-acordeon);
 }
 
@@ -4938,9 +5007,13 @@ footer {
     color: #fff;
     background-color: var(--color1);
     border-color: var(--color1);
-    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    font-family: "Corra-Montserra-SemiBold", sans-serif;
     font-weight: 600;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .agenda-btn-primary:hover,
@@ -4981,8 +5054,10 @@ footer {
     color: var(--color1);
     border: 0;
     border-bottom: 3px solid transparent;
-    font-family: 'Corra-Montserra-SemiBold', sans-serif;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    font-family: "Corra-Montserra-SemiBold", sans-serif;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .agenda-google-legacy .nav-tabs .nav-link:hover,
@@ -5045,7 +5120,7 @@ footer {
     display: block;
     margin-bottom: 0.35rem;
     color: var(--agenda-ink);
-    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    font-family: "Corra-Montserra-SemiBold", sans-serif;
     font-size: 0.86rem;
 }
 
@@ -5073,7 +5148,7 @@ footer {
     padding: 1.35rem 1.5rem;
     color: #fff;
     background-color: var(--color6);
-    background-image: url('../img/fondo-pajaro.png');
+    background-image: url("../img/fondo-pajaro.png");
     background-position: right center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -5082,13 +5157,13 @@ footer {
 .agenda-public-detail__header h2 {
     margin: 0.25rem 0 0;
     color: #fff;
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
     font-size: 1.35rem;
 }
 
 .agenda-public-detail__eyebrow {
     color: #fff;
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -5098,35 +5173,110 @@ footer {
     padding: 0.4rem 0.85rem;
     border-radius: 999px;
     color: #fff;
-    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    font-family: "Corra-Montserra-SemiBold", sans-serif;
     font-size: 0.82rem;
 }
 
-.agenda-public-detail__status--confirmado { background: #198754; }
-.agenda-public-detail__status--pendiente { color: #212529; background: #ffc107; }
+.agenda-public-detail__status--confirmado {
+    background: #198754;
+}
+.agenda-public-detail__status--pendiente {
+    color: #212529;
+    background: #ffc107;
+}
 .agenda-public-detail__status--rechazado,
-.agenda-public-detail__status--cancelado { background: #6c757d; }
+.agenda-public-detail__status--cancelado {
+    background: #6c757d;
+}
 
-.agenda-public-detail__section { margin-bottom: 1.5rem; }
-.agenda-public-detail__section-title { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--agenda-border); color: var(--color1); font-family: 'Gilroy-Black', sans-serif; font-size: 1rem; }
-.agenda-public-detail__section-title i { font-size: 0.95rem; }
-.agenda-public-detail__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
-.agenda-public-detail__fields--single { grid-template-columns: 1fr; }
-.agenda-public-detail__field { min-width: 0; padding: 0.75rem 0.85rem; border: 1px solid #e7e3e5; border-radius: 0.45rem; background: #fff; font-family: 'Corra-Montserra-Regular', sans-serif; }
-.agenda-public-detail__field--wide { grid-column: 1 / -1; }
-.agenda-public-detail__field span { display: block; margin-bottom: 0.25rem; color: #77727a; font-family: 'Corra-Montserra-SemiBold', sans-serif; font-size: 0.73rem; text-transform: uppercase; }
-.agenda-public-detail__field strong { display: block; color: #28252a; font-weight: 600; overflow-wrap: anywhere; }
-.agenda-public-detail__break { white-space: pre-line; }
-.agenda-public-detail__copy { padding: 0.9rem; border: 1px solid #e7e3e5; border-radius: 0.45rem; color: #4f4b51; font-family: 'Corra-Montserra-Regular', sans-serif; white-space: pre-line; }
-.agenda-consulta-empty { max-width: 760px; margin: 0 auto; }
+.agenda-public-detail__section {
+    margin-bottom: 1.5rem;
+}
+.agenda-public-detail__section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--agenda-border);
+    color: var(--color1);
+    font-family: "Gilroy-Black", sans-serif;
+    font-size: 1rem;
+}
+.agenda-public-detail__section-title i {
+    font-size: 0.95rem;
+}
+.agenda-public-detail__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+}
+.agenda-public-detail__fields--single {
+    grid-template-columns: 1fr;
+}
+.agenda-public-detail__field {
+    min-width: 0;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid #e7e3e5;
+    border-radius: 0.45rem;
+    background: #fff;
+    font-family: "Corra-Montserra-Regular", sans-serif;
+}
+.agenda-public-detail__field--wide {
+    grid-column: 1 / -1;
+}
+.agenda-public-detail__field span {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #77727a;
+    font-family: "Corra-Montserra-SemiBold", sans-serif;
+    font-size: 0.73rem;
+    text-transform: uppercase;
+}
+.agenda-public-detail__field strong {
+    display: block;
+    color: #28252a;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.agenda-public-detail__break {
+    white-space: pre-line;
+}
+.agenda-public-detail__copy {
+    padding: 0.9rem;
+    border: 1px solid #e7e3e5;
+    border-radius: 0.45rem;
+    color: #4f4b51;
+    font-family: "Corra-Montserra-Regular", sans-serif;
+    white-space: pre-line;
+}
+.agenda-consulta-empty {
+    max-width: 760px;
+    margin: 0 auto;
+}
 
 @media (max-width: 575.98px) {
-    .agenda-consulta-form { align-items: stretch; flex-direction: column; }
-    .agenda-consulta-form .btn { width: 100%; }
-    .agenda-public-detail__header { align-items: flex-start; flex-direction: column; padding: 1.1rem; }
-    .agenda-public-detail .row { padding: 1.1rem !important; }
-    .agenda-public-detail__fields { grid-template-columns: 1fr; }
-    .agenda-public-detail__field--wide { grid-column: auto; }
+    .agenda-consulta-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .agenda-consulta-form .btn {
+        width: 100%;
+    }
+    .agenda-public-detail__header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 1.1rem;
+    }
+    .agenda-public-detail .row {
+        padding: 1.1rem !important;
+    }
+    .agenda-public-detail__fields {
+        grid-template-columns: 1fr;
+    }
+    .agenda-public-detail__field--wide {
+        grid-column: auto;
+    }
 }
 
 .agenda-consulta-button {
@@ -5140,10 +5290,13 @@ footer {
     border-radius: 0.45rem;
     background: var(--color1);
     box-shadow: 0 4px 10px rgba(95, 27, 45, 0.16);
-    font-family: 'Corra-Montserra-SemiBold', sans-serif;
+    font-family: "Corra-Montserra-SemiBold", sans-serif;
     font-size: 0.86rem;
     white-space: nowrap;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .agenda-calendar-footer {
@@ -5159,7 +5312,7 @@ footer {
 
 .agenda-calendar-footer__hint {
     color: var(--agenda-muted);
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
     font-size: 0.85rem;
 }
 
@@ -5188,12 +5341,12 @@ footer {
 
 .agenda-modal__eyebrow {
     color: #fff;
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
 }
 
 .agenda-modal .modal-title,
 .agenda-publica__heading h2 {
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
 }
 
 .agenda-modal .modal-body,
@@ -5206,7 +5359,7 @@ footer {
 .agenda-modal .form-control,
 .agenda-modal .form-select,
 .agenda-modal .btn {
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
 }
 
 .agenda-publica__legend {
@@ -5285,7 +5438,8 @@ footer {
     background: #fff;
 }
 
-.agenda-publica .subcomite-calendar__day:not(.subcomite-calendar__day--empty):hover {
+.agenda-publica
+    .subcomite-calendar__day:not(.subcomite-calendar__day--empty):hover {
     transform: translateY(-3px);
     border-color: rgba(95, 27, 45, 0.3);
     box-shadow: 0 8px 18px rgba(95, 27, 45, 0.11);
@@ -5302,7 +5456,7 @@ footer {
     height: 1.85rem;
     border-radius: 0.4rem;
     color: var(--agenda-ink);
-    font-size: 0.70rem;
+    font-size: 0.7rem;
 }
 
 .agenda-publica .agenda-day-available .subcomite-calendar__day-number {
@@ -5311,7 +5465,7 @@ footer {
 }
 
 .agenda-publica .agenda-day-available::after {
-    content: 'Disponible';
+    content: "Disponible";
     display: block;
     margin-top: 0.55rem;
     color: #a06e3e;
@@ -5367,10 +5521,10 @@ footer {
 .agenda-modal .modal-header {
     padding: 1.35rem 1.5rem;
     color: #fff;
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
     border: 0;
     background-color: var(--color6);
-    background-image: url('../img/fondo-pajaro.png');
+    background-image: url("../img/fondo-pajaro.png");
     background-position: right center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -5436,7 +5590,7 @@ footer {
     position: relative;
 }
 
-.agenda-input-icon>i {
+.agenda-input-icon > i {
     position: absolute;
     top: 50%;
     left: 0.85rem;
@@ -5473,7 +5627,7 @@ footer {
     margin-bottom: 1.2rem;
 }
 
-.agenda-detail-grid>div {
+.agenda-detail-grid > div {
     padding: 1rem;
     border: 1px solid var(--agenda-border);
     border-radius: 0.75rem;
@@ -5657,7 +5811,7 @@ footer {
     font-size: 1.7rem;
     font-weight: 800;
     color: var(--color1);
-    font-family: 'Gilroy-Nold', sans-serif;
+    font-family: "Gilroy-Nold", sans-serif;
     text-align: center;
 }
 
@@ -5673,7 +5827,7 @@ footer {
     padding-bottom: 0.5rem;
     color: #666;
     font-size: 1.1rem;
-    font-family: 'Gilroy-Black', sans-serif;
+    font-family: "Gilroy-Black", sans-serif;
 }
 
 .subcomite-calendar__day {
@@ -5745,7 +5899,7 @@ footer {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-grow: 1;
-    font-family: 'Corra-Montserra-Regular', sans-serif;
+    font-family: "Corra-Montserra-Regular", sans-serif;
 }
 
 .subcomite-calendar__event-title--list {

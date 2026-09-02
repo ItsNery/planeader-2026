@@ -1,29 +1,34 @@
 @extends('layouts.plantilla')
 
-@section('title', $subcomite->nombre)
+@section('title', ($soloCalendario ?? false) ? 'Mesas Técnicas de Trabajo de Programas Especiales' : $subcomite->nombre)
 
-@section('meta-description', $subcomite->objetivo ?: 'Lee más sobre el ' . $subcomite->nombre)
+@section('meta-description', ($soloCalendario ?? false) ? 'Calendario de Mesas Técnicas de Trabajo de Programas Especiales' : ($subcomite->objetivo ?: 'Lee más sobre el ' . $subcomite->nombre))
 @section('canonical-url', url()->current())
 @section(
     'keywords',
-    $subcomite->nombre .
+    (($soloCalendario ?? false) ? 'Mesas Técnicas de Trabajo de Programas Especiales' : $subcomite->nombre) .
     ' Subcomité, Subcomités, Planeación Democrática, Plan Estatal de Desarrollo, Puebla, PLANEADER,
     Gobierno, Estado de Puebla, Planeación Democrática, Sistema Estatal, Desarrollo Estatal, Planeación del Desarrollo,
     Gobierno de Puebla, Plan Estatal de Desarrollo, Sistema de Planeación, Planeación en Puebla, Desarrollo en Puebla,
     Política Pública, Gestión Pública, Administración Estatal, Planeación Estratégica, Participación Ciudadana,
     Transparencia, Rendición de Cuentas'
 )
-@section('og-title', $subcomite->nombre . ' - Sistema Estatal de Planeación Democrática')
-@section('og-description', $subcomite->objetivo ?: 'Lee más sobre el ' . $subcomite->nombre)
+@section('og-title', (($soloCalendario ?? false) ? 'Mesas Técnicas de Trabajo de Programas Especiales' : $subcomite->nombre) . ' - Sistema Estatal de Planeación Democrática')
+@section('og-description', ($soloCalendario ?? false) ? 'Calendario de Mesas Técnicas de Trabajo de Programas Especiales' : ($subcomite->objetivo ?: 'Lee más sobre el ' . $subcomite->nombre))
 @section('og:url', url()->current())
-@section('og:image', asset('icono_subcomites/' . $subcomite->icono))
-@section('twitter-title', $subcomite->nombre . ' - Sistema Estatal de Planeación Democrática')
-@section('twitter-description', $subcomite->objetivo ?: 'Lee más sobre el ' . $subcomite->nombre)
-@section('twitter:image', asset('icono_subcomites/' . $subcomite->icono))
+@unless ($soloCalendario ?? false)
+    @section('og:image', asset('icono_subcomites/' . $subcomite->icono))
+@endunless
+@section('twitter-title', (($soloCalendario ?? false) ? 'Mesas Técnicas de Trabajo de Programas Especiales' : $subcomite->nombre) . ' - Sistema Estatal de Planeación Democrática')
+@section('twitter-description', ($soloCalendario ?? false) ? 'Calendario de Mesas Técnicas de Trabajo de Programas Especiales' : ($subcomite->objetivo ?: 'Lee más sobre el ' . $subcomite->nombre))
+@unless ($soloCalendario ?? false)
+    @section('twitter:image', asset('icono_subcomites/' . $subcomite->icono))
+@endunless
 @section('css')
     {!! NoCaptcha::renderJs() !!}
 @endsection
 @section('content')
+    @unless ($soloCalendario ?? false)
     <section class="subcomite_individual">
         <div class="container pt-5">
             <div class="text-center mb-3 pb-3">
@@ -173,14 +178,19 @@
             </div>
         </section>
     @endif
+    @endunless
 
-    @if ($subcomite->planestatal->nombre === 'Plan Estatal de Desarrollo 2024-2030')
+    @if (($soloCalendario ?? false) || $subcomite->planestatal->nombre === 'Plan Estatal de Desarrollo 2024-2030')
         <section class="coplademun-agendar py-3">
             <section id="fechas-bloqueadas" class="subcomite-calendar agenda-publica">
                 <div class="container">
                     <div class="agenda-publica__heading">
                         <h2 class="titulo-tematica text-center mb-2">
-                            Bloquea una fecha en el Calendario de Subcomités y Mesas Técnicas de Trabajo
+                            @if ($soloCalendario ?? false)
+                                Bloquea una fecha en el Calendario de Mesas Técnicas de Trabajo de Programas Especiales
+                            @else
+                                Bloquea una fecha en el Calendario de Subcomités y Mesas Técnicas de Trabajo
+                            @endif
                         </h2>
                         <p class="text-secondary text-center mb-3">Selecciona una fecha disponible para iniciar la
                             solicitud.
@@ -313,6 +323,7 @@
                     </footer>
                 </div>
 
+                @unless ($soloCalendario ?? false)
                 <div class="container agenda-google-legacy mt-4">
                     <div class="agenda-google-legacy__heading text-center mb-3">
                         <h3 class="titulo-tematica mb-2">O usa también nuestro calendario de Google</h3>
@@ -346,6 +357,7 @@
                         </div>
                     </div>
                 </div>
+                @endunless
 
                 <div class="modal fade agenda-modal" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel"
                     aria-hidden="true">
@@ -481,18 +493,24 @@
                                     responsable.</span>
                             </div>
                             <div class="row g-3">
-                                <div class="col-md-6"><label class="form-label fw-bold">Tipo de actividad *</label><select
-                                        name="tipo_evento" class="form-select" id="agenda-type" required>
-                                        <option value="sesion" @selected(old('tipo_evento', 'sesion') === 'sesion')>Sesión de
-                                            subcomité</option>
-                                        <option value="mesa_tecnica" @selected(old('tipo_evento') === 'mesa_tecnica')>Mesa técnica
-                                            de trabajo</option>
-                                    </select></div>
+                                <div class="col-md-6"><label class="form-label fw-bold">Tipo de actividad *</label>
+                                    @if ($soloCalendario ?? false)
+                                        <input type="hidden" name="tipo_evento" id="agenda-type" value="mesa_tecnica">
+                                        <input type="text" class="form-control" value="Mesa técnica de trabajo" disabled>
+                                    @else
+                                        <select name="tipo_evento" class="form-select" id="agenda-type" required>
+                                            <option value="sesion" @selected(old('tipo_evento', 'sesion') === 'sesion')>Sesión de
+                                                subcomité</option>
+                                            <option value="mesa_tecnica" @selected(old('tipo_evento') === 'mesa_tecnica')>Mesa técnica
+                                                de trabajo</option>
+                                        </select>
+                                    @endif
+                                </div>
                                 <div class="col-md-6"><label class="form-label fw-bold">Subcomité *</label><select
                                         name="subcomite_id" class="form-select" id="agenda-subcomite" required>
                                         <option value="">Selecciona un subcomité</option>
                                         @foreach ($subcomitesAgenda as $subcomiteAgenda)
-                                            <option value="{{ $subcomiteAgenda->id }}" @selected(old('subcomite_id', $subcomite->id) == $subcomiteAgenda->id)>
+                                            <option value="{{ $subcomiteAgenda->id }}" @selected(old('subcomite_id', $subcomite?->id) == $subcomiteAgenda->id)>
                                                 {{ $subcomiteAgenda->nombre }}
                                             </option>
                                         @endforeach
@@ -572,6 +590,7 @@
         </div>
     @endif
 
+    @unless ($soloCalendario ?? false)
     <!-- Modal de Imagen de Integración (Lightbox) -->
     <div class="modal fade" id="imagenIntegracionModal" tabindex="-1" aria-labelledby="imagenIntegracionModalLabel"
         aria-hidden="true">
@@ -590,6 +609,7 @@
             </div>
         </div>
     </div>
+    @endunless
 
 @endsection
 @section('scripts')

@@ -79,6 +79,8 @@ Route::get('/copladep', [DocumentoCopladepController::class, 'mostrarDocumentosC
 
 Route::get('/subcomites', [SubcomiteController::class, 'mostrarSubcomites']);
 
+Route::get('/subcomites/mesas-tecnicas-programas-especiales', [SubcomiteController::class, 'mesasTecnicasProgramasEspeciales'])
+    ->name('subcomites.mesas-tecnicas-programas-especiales');
 Route::get('/subcomites/{slug}', [SubcomiteController::class, 'showPublic'])->name('subcomites.showPublic');
 Route::post('/agenda-eventos', [AgendaEventoController::class, 'store'])->name('agenda-eventos.store');
 Route::get('/agenda-eventos/consulta', [AgendaEventoController::class, 'consulta'])->name('agenda-eventos.consulta');

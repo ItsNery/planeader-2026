@@ -20,12 +20,12 @@
         <h1>Subcomités</h1>
     </section>
     <section class="subcomites-actual">
-        <div class="container py-5">
-            <div class="text-center mb-3 pb-3">
-                <p class="text-black">
-                    Órganos auxiliares del COPLADEP definidos de acuerdo a las prioridades del Gobierno del Estado.
-                </p>
-            </div>
+        <div class="container pt-5 pb-4 text-center">
+            <div class="subtitulo-tematica mb-2">Integración vigente</div>
+            <h2 class="titulo-tematica mt-0">Subcomités actuales</h2>
+            <p class="text-black mb-0">
+                Órganos auxiliares del COPLADEP definidos de acuerdo a las prioridades del Gobierno del Estado.
+            </p>
         </div>
         <div class="container">
             @if ($subcomites_actual->isNotEmpty())
@@ -57,10 +57,11 @@
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
                                             @foreach ($subcomites_del_tipo as $subcomite)
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    {{ $subcomite->nombre }}
+                                                <li
+                                                    class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                                                    <span>{{ $subcomite->nombre }}</span>
                                                     <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}"
-                                                        class="btn btn-sm btn-outline-color-1" rel="noopener"
+                                                        class="btn btn-sm btn-outline-color-1 flex-shrink-0" rel="noopener"
                                                         title="Ver detalle de {{ $subcomite->nombre }}">
                                                         Ver detalle
                                                     </a>
@@ -87,6 +88,26 @@
             @else
                 <p>No hay información disponible.</p>
             @endif
+        </div>
+    </section>
+    <section class="container py-5 mesas-tecnicas" aria-labelledby="mesas-tecnicas-title">
+        <div class="border rounded-3 overflow-hidden shadow-sm">
+            <div class="d-flex align-items-center px-3 px-md-4 py-3 text-white"
+                style="background-color: var(--color2);">
+                <span class="d-block small text-uppercase fw-bold">Calendario</span>
+            </div>
+            <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-3 p-md-4 bg-white">
+                <div>
+                    <h2 id="mesas-tecnicas-title" class="h5 mb-1">Mesas Técnicas de Trabajo de Programas Especiales</h2>
+                    <p class="mb-0 small text-muted">Consulta las fechas y detalles de las próximas mesas de trabajo.</p>
+                </div>
+                <a href="{{ route('subcomites.mesas-tecnicas-programas-especiales') }}"
+                    class="btn btn-sm btn-outline-color-1 flex-shrink-0 align-self-start align-self-md-center"
+                    rel="noopener" title="Ver detalle de Mesas Técnicas de Trabajo de Programas Especiales">
+                    Consultar calendario
+                </a>
+            </div>
         </div>
     </section>
     <section class="historicos-subcomites">

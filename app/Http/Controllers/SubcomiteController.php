@@ -447,6 +447,66 @@ class SubcomiteController extends Controller
         ));
     }
 
+    public function mesasTecnicasProgramasEspeciales()
+    {
+        Carbon::setLocale('es');
+        $mesSolicitado = request('mes', Carbon::now()->format('Y-m'));
+        $fechaBase = Carbon::createFromFormat('Y-m', $mesSolicitado)->startOfMonth();
+
+        $eventosDelMes = Evento::whereYear('fecha_evento', $fechaBase->year)
+            ->whereMonth('fecha_evento', $fechaBase->month)
+            ->orderBy('fecha_evento', 'asc')
+            ->get();
+
+        $agendaEventosDelMes = AgendaEvento::with('subcomite')
+            ->where('publicado', true)
+            ->whereIn('estado', ['pendiente', 'confirmado'])
+            ->whereYear('fecha_evento', $fechaBase->year)
+            ->whereMonth('fecha_evento', $fechaBase->month)
+            ->orderBy('fecha_evento')
+            ->get();
+
+        $diasEnMes = $fechaBase->daysInMonth;
+        $diaDeLaSemanaInicio = $fechaBase->dayOfWeek;
+        $fechasNoLaborables = collect(range(1, $diasEnMes))
+            ->map(fn ($dia) => $fechaBase->copy()->day($dia)->format('Y-m-d'))
+            ->filter(fn ($fecha) => AgendaEvento::fechaEsNoLaborable($fecha))
+            ->values();
+        $subcomitesAgenda = Subcomite::where('publicado', true)
+            ->whereHas('planestatal', function ($query) {
+                $query->where('nombre', 'Plan Estatal de Desarrollo 2024-2030');
+            })
+            ->orderBy('orden')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
+        $eventosPorDia = $eventosDelMes->groupBy(fn ($evento) => Carbon::parse($evento->fecha_evento)->day);
+        $agendaEventosPorDia = $agendaEventosDelMes->groupBy(fn ($evento) => Carbon::parse($evento->fecha_evento)->day);
+        $fechasAgendaOcupadas = AgendaEvento::activos()
+            ->whereDate('fecha_evento', '>=', Carbon::today())
+            ->pluck('fecha_evento')
+            ->map(fn ($fecha) => Carbon::parse($fecha)->format('Y-m-d'))
+            ->values();
+        $mesAnterior = $fechaBase->copy()->subMonth()->format('Y-m');
+        $mesSiguiente = $fechaBase->copy()->addMonth()->format('Y-m');
+        $subcomite = null;
+        $soloCalendario = true;
+
+        return view('panel-subcomites.showPublic', compact(
+            'subcomite',
+            'soloCalendario',
+            'fechaBase',
+            'diasEnMes',
+            'diaDeLaSemanaInicio',
+            'eventosPorDia',
+            'agendaEventosPorDia',
+            'fechasAgendaOcupadas',
+            'fechasNoLaborables',
+            'subcomitesAgenda',
+            'mesAnterior',
+            'mesSiguiente'
+        ));
+    }
+
 
     /**
      * Genera un slug único para el nombre de un subcomité.
