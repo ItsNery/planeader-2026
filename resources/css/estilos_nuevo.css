@@ -93,6 +93,8 @@
 :root {
     --fontFamily: "Gilroy-Regular", sans-serif;
     --fontFamilyBold: "Gilroy-Bold", sans-serif;
+    --fontFamily-textos: "Corra-Montserra-Regular", sans-serif;
+    --fontFamilyBold-textos: "Corra-Montserra-Bold", sans-serif;
     --colorBlanco: #ffffff;
     --blackColor: #1f2428;
     --colorGris: #999999;
@@ -129,6 +131,14 @@ body {
     scroll-behavior: smooth;
     overflow-x: hidden;
     font-family: var(--fontFamily) !important;
+}
+
+p {
+    font-size: 17px !important;
+}
+
+:is(p, li, a, b, strong):not(.site-header *) {
+    font-family: var(--fontFamily-textos) !important;
 }
 
 /* Estilos del loader */

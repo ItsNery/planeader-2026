@@ -3,18 +3,14 @@
 @section('meta-description', 'Subcomités que conforman el Comite de Planeación para el Desarrollo del Estado de Puebla')
 @section('canonical-url', url()->current())
 @section('og-title', 'Subcomités - Sistema Estatal de Planeación Democrática')
-@section(
-    'og-description',
+@section('og-description',
     'Bienvenido a la página de visión general de los subcomités del COPLADEP, parte del Sistema
-    Estatal de Planeación Democrática del Estado de Puebla.'
-)
+    Estatal de Planeación Democrática del Estado de Puebla.')
 @section('og:url', url()->current())
 @section('twitter-title', 'Subcomités - Sistema Estatal de Planeación Democrática')
-@section(
-    'twitter-description',
+@section('twitter-description',
     'Bienvenido a la página de visión general de los subcomités del COPLADEP, parte del
-    Sistema Estatal de Planeación Democrática del Estado de Puebla.'
-)
+    Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('content')
     <section class="contenedor-imagen-subcomites">
         <h1>Subcomités</h1>
@@ -38,12 +34,13 @@
                         @if ($subcomites_del_tipo->isNotEmpty())
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading-actual-{{ $loop->index }}">
-                                    <button class="accordion-button {{ $primerGrupoActual ? '' : 'collapsed' }}" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#collapse-actual-{{ $loop->index }}"
+                                    <button class="accordion-button {{ $primerGrupoActual ? '' : 'collapsed' }}"
+                                        type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse-actual-{{ $loop->index }}"
                                         aria-expanded="{{ $primerGrupoActual ? 'true' : 'false' }}"
                                         aria-controls="collapse-actual-{{ $loop->index }}">
                                         <strong>
-                                            @if($tipo_subcomite === 'Sectoriales')
+                                            @if ($tipo_subcomite === 'Sectoriales')
                                                 Subcomités Sectoriales para el Desarrollo Regional y Riqueza Comunitaria
                                             @else
                                                 {{ $tipo_subcomite }}
@@ -82,7 +79,8 @@
                 @php
                     $ultimaActualizacion = $subcomites_actual->max('updated_at');
                 @endphp
-                <p class="text-black" style="font-size: 10px; margin-bottom:inherit; margin-top: 1rem;">Última actualización:
+                <p class="text-black" style="font-size: 10px; margin-bottom:inherit; margin-top: 1rem;">Última
+                    actualización:
                     {{ $ultimaActualizacion->format('d/m/Y H:i:s') }}
                 </p>
             @else
@@ -92,14 +90,13 @@
     </section>
     <section class="container py-5 mesas-tecnicas" aria-labelledby="mesas-tecnicas-title">
         <div class="border rounded-3 overflow-hidden shadow-sm">
-            <div class="d-flex align-items-center px-3 px-md-4 py-3 text-white"
-                style="background-color: var(--color2);">
-                <span class="d-block small text-uppercase fw-bold">Calendario</span>
+            <div class="d-flex align-items-center px-3 px-md-4 py-3 text-white" style="background-color: var(--color2);">
+                <p class="d-block fw-bold py-0 my-0">Calendario</p>
             </div>
             <div
                 class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-3 p-md-4 bg-white">
                 <div>
-                    <h2 id="mesas-tecnicas-title" class="h5 mb-1">Mesas Técnicas de Trabajo de Programas Especiales</h2>
+                    <h2 id="mesas-tecnicas-title" class="h6 mb-1">Mesas Técnicas de Trabajo de Programas Especiales</h2>
                     <p class="mb-0 small text-muted">Consulta las fechas y detalles de las próximas mesas de trabajo.</p>
                 </div>
                 <a href="{{ route('subcomites.mesas-tecnicas-programas-especiales') }}"
@@ -149,7 +146,8 @@
                                         <div class="accordion-body">
                                             <ul class="list-group list-group-flush">
                                                 @foreach ($subcomites_del_plan as $subcomite)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center">
                                                         {{ $subcomite->nombre }}
                                                         <a href="{{ route('subcomites.showPublic', ['slug' => $subcomite->slug]) }}"
                                                             class="btn btn-sm btn-outline-color-1" rel="noopener"

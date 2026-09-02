@@ -137,11 +137,7 @@ p {
     font-size: 17px !important;
 }
 
-p,
-li,
-a,
-b,
-strong {
+:is(p, li, a, b, strong):not(.site-header *) {
     font-family: var(--fontFamily-textos) !important;
 }
 /* Estilos del loader */
