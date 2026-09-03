@@ -324,7 +324,7 @@
                 </div>
 
                 @unless ($soloCalendario ?? false)
-                <div class="container agenda-google-legacy mt-4">
+                {{-- <div class="container agenda-google-legacy mt-4">
                     <div class="agenda-google-legacy__heading text-center mb-3">
                         <h3 class="titulo-tematica mb-2">O usa también nuestro calendario de Google</h3>
                     </div>
@@ -356,7 +356,7 @@
                                 loading="lazy" frameborder="0"></iframe>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 @endunless
 
                 <div class="modal fade agenda-modal" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel"

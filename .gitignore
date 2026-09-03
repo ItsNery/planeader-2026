@@ -49,3 +49,4 @@ yarn-error.log
 /public/integracioncoplademun.png
 /public/planeader.sql
 *.zip
+/public/geojson/*
