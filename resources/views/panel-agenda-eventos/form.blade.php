@@ -48,14 +48,15 @@
                                     @error('tipo_evento')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="subcomite_id" class="fw-bold mb-1">Subcomité: *</label>
-                                    <select id="subcomite_id" name="subcomite_id" class="form-select @error('subcomite_id') is-invalid @enderror" required>
-                                        <option value="">Selecciona un subcomité</option>
+                                    <label for="subcomite_id" class="fw-bold mb-1">Subcomité:</label>
+                                    <select id="subcomite_id" name="subcomite_id" class="form-select @error('subcomite_id') is-invalid @enderror">
+                                        <option value="" disabled>Selecciona un subcomité</option>
+                                        <option value="" @selected(old('subcomite_id') === '' || (is_null(old('subcomite_id')) && is_null($evento->subcomite_id)))>Programa Especial</option>
                                         @foreach ($subcomites as $subcomite)
                                             <option value="{{ $subcomite->id }}" @selected(old('subcomite_id', $evento->subcomite_id) == $subcomite->id)>{{ $subcomite->nombre }}</option>
                                         @endforeach
                                     </select>
-                                    <div class="form-text">Requerido para sesiones y mesas técnicas.</div>
+                                    <div class="form-text">Selecciona "Programa Especial" para mesas técnicas de programas especiales.</div>
                                     @error('subcomite_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-12">
@@ -230,7 +231,7 @@
 
                 const refreshSubcomite = () => {
                     subcomite.disabled = false;
-                    subcomite.required = true;
+                    subcomite.required = false;
                 };
 
                 type.addEventListener('change', refreshSubcomite);

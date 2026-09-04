@@ -17,7 +17,7 @@ class AgendaEventoController extends Controller
     {
         $data = $request->validate([
             'tipo_evento' => 'required|in:sesion,mesa_tecnica',
-            'subcomite_id' => 'required|exists:subcomites,id',
+            'subcomite_id' => 'nullable|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date|after:today',
@@ -33,7 +33,7 @@ class AgendaEventoController extends Controller
             'comentarios' => 'nullable|string|max:3000',
             'g-recaptcha-response' => 'required|captcha',
         ], [
-            'subcomite_id.required' => 'Selecciona el subcomité de la actividad.',
+            'subcomite_id.exists' => 'El subcomité seleccionado no es válido.',
             'fecha_evento.after' => 'La fecha debe ser posterior al día actual.',
             'hora_fin.after' => 'La hora de término debe ser posterior a la hora de inicio.',
             'ubicacion.required_if' => 'La ubicación es obligatoria para eventos presenciales.',

@@ -91,18 +91,19 @@
     <section class="container py-5 mesas-tecnicas" aria-labelledby="mesas-tecnicas-title">
         <div class="border rounded-3 overflow-hidden shadow-sm">
             <div class="d-flex align-items-center px-3 px-md-4 py-3 text-white" style="background-color: var(--color2);">
-                <p class="d-block fw-bold py-0 my-0">Calendario</p>
+                <p class="d-block fw-bold py-0 my-0">Mesas Técnicas de Trabajo de Programas Especiales</p>
             </div>
             <div
                 class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-3 p-md-4 bg-white">
                 <div>
-                    <h2 id="mesas-tecnicas-title" class="h6 mb-1">Mesas Técnicas de Trabajo de Programas Especiales</h2>
-                    <p class="mb-0 small text-muted">Consulta las fechas y detalles de las próximas mesas de trabajo.</p>
+                    <h2 id="mesas-tecnicas-title" class="h6 mb-1">
+                         Consulta las fechas y detalles de las próximas Mesas de Técnicas de Trabajo.
+                    </h2>
                 </div>
                 <a href="{{ route('subcomites.mesas-tecnicas-programas-especiales') }}"
                     class="btn btn-sm btn-outline-color-1 flex-shrink-0 align-self-start align-self-md-center"
                     rel="noopener" title="Ver detalle de Mesas Técnicas de Trabajo de Programas Especiales">
-                    Consultar calendario
+                    Consultar
                 </a>
             </div>
         </div>

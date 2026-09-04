@@ -199,7 +199,7 @@ class PanelAgendaEventoController extends Controller
 
         return $request->validate([
             'tipo_evento' => 'required|in:sesion,mesa_tecnica',
-            'subcomite_id' => 'required|exists:subcomites,id',
+            'subcomite_id' => 'nullable|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date|after:today',

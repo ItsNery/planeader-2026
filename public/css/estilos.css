@@ -423,7 +423,7 @@ p {
     }
 
     .header-logos img {
-        max-height: 100px;
+        max-height: 80px;
     }
 
     /* Ocultamos la hamburguesa */
