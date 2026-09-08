@@ -105,7 +105,7 @@
                                         <div class="alert alert-warning shadow-sm" role="alert">
                                             <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso
                                             </h4>
-                                            <p>DCon el
+                                            <p>Con el
                                                 propósito de mantener la congruencia entre los instrumentos del Sistema
                                                 Estatal
                                                 de Planeación Democrática, la Dirección de Planeación y Desarrollo realizó
