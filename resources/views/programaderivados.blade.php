@@ -54,7 +54,8 @@
                             <span class="input-group-text bg-white border-end-0">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
-                            <input type="text" id="buscador-programas" class="form-control border-start-0 ps-0" placeholder="Buscar programa por nombre...">
+                            <input type="text" id="buscador-programas" class="form-control border-start-0 ps-0"
+                                placeholder="Buscar programa por nombre...">
                         </div>
                     </div>
                 </div>
@@ -81,14 +82,46 @@
 
                             <div class="content-container py-4">
 
-                                @if (Str::contains(strtolower($tipo), ['institucional', 'regional']))
+                                @if (Str::contains(strtolower($tipo), ['regional']))
                                     <div class="container mb-4">
                                         <div class="alert alert-warning shadow-sm" role="alert">
-                                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso</h4>
-                                            <p>Derivado del proceso de actualización de la regionalización del estado y con la finalidad de mantener la consistencia entre los instrumentos del Sistema Estatal de Planeación Democrática, se realizaron ajustes en los identificadores numéricos de los Programas Regionales.</p>
-                                            <p>En consecuencia, los identificadores numéricos de los Programas Regionales modificados, generaron también cambios en los Programas Institucionales, por lo que es importante tener en cuenta estos cambios.</p>
+                                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso
+                                            </h4>
+                                            <p>Derivado del proceso de actualización de la regionalización del estado y con
+                                                la finalidad de mantener la consistencia entre los instrumentos del Sistema
+                                                Estatal de Planeación Democrática, se realizaron ajustes en los
+                                                identificadores numéricos de los Programas Regionales.</p>
+                                            <p>En consecuencia, los identificadores numéricos de los Programas Regionales
+                                                modificados, generaron también cambios en los Programas Institucionales, por
+                                                lo que es importante tener en cuenta estos cambios.</p>
                                             <hr>
-                                            <p class="mb-0">Es importante señalar que estas modificaciones tienen efectos exclusivamente para fines de vinculación entre los Instrumentos de Planeación y no cambios en el contenido de los componentes estratégicos.</p>
+                                            <p class="mb-0">Es importante señalar que estas modificaciones tienen efectos
+                                                exclusivamente para fines de vinculación entre los Instrumentos de
+                                                Planeación y no cambios en el contenido de los componentes estratégicos.</p>
+                                        </div>
+                                    </div>
+                                @elseif (Str::contains(strtolower($tipo), ['institucional']))
+                                    <div class="container mb-4">
+                                        <div class="alert alert-warning shadow-sm" role="alert">
+                                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Aviso
+                                            </h4>
+                                            <p>DCon el
+                                                propósito de mantener la congruencia entre los instrumentos del Sistema
+                                                Estatal
+                                                de Planeación Democrática, la Dirección de Planeación y Desarrollo realizó
+                                                las
+                                                adecuaciones técnicas necesarias en los Programas Institucionales derivados
+                                                del
+                                                Plan Estatal de Desarrollo.
+                                            </p>
+                                            <p>Como resultado, los documentos publicados en esta
+                                                plataforma ya fueron actualizados y homologados para fortalecer la
+                                                consistencia
+                                                entre los instrumentos de planeación. Estas modificaciones son
+                                                exclusivamente
+                                                de carácter técnico y administrativo, por lo que <strong>no afectan el contenido
+                                                ni los componentes estratégicos de los Programas Institucionales</strong>.
+                                            </p>
                                         </div>
                                     </div>
                                 @endif
@@ -106,7 +139,8 @@
                                                 </div>
 
                                                 <a class="tarjeta_histder-button no_s js-ver-documento" rel="noopener"
-                                                    href="{{ asset('progderi/' . $programa->ruta_documento) }}" target="_blank"
+                                                    href="{{ asset('progderi/' . $programa->ruta_documento) }}"
+                                                    target="_blank"
                                                     data-src="{{ asset('progderi/' . $programa->ruta_documento) }}"
                                                     data-title="{{ $programa->nombre }}">
                                                     Consultar
@@ -203,7 +237,8 @@
                                                         <ul class="list-group list-group-flush">
                                                             {{-- Ahora iteramos sobre los programas de este plan en específico --}}
                                                             @foreach ($programasPorTipo as $programa)
-                                                                <li class="document-item programa-card" data-nombre="{{ strtolower($programa->nombre) }}">
+                                                                <li class="document-item programa-card"
+                                                                    data-nombre="{{ strtolower($programa->nombre) }}">
                                                                     <div class="document-item__main-content">
                                                                         <p class="document-item__name">
                                                                             {{ $programa->nombre }}
@@ -220,12 +255,14 @@
                                                                             data-src="{{ asset('progderi/' . $programa->ruta_documento) }}"
                                                                             data-title="{{ $programa->nombre }}"
                                                                             title="Ver aquí">
-                                                                            <i class="fas fa-eye"></i> <span>Ver aquí</span>
+                                                                            <i class="fas fa-eye"></i> <span>Ver
+                                                                                aquí</span>
                                                                         </a>
                                                                         <a href="{{ asset('progderi/' . $programa->ruta_documento) }}"
-                                                                            target="_blank" rel="noopener noreferrer" 
+                                                                            target="_blank" rel="noopener noreferrer"
                                                                             title="Abrir en nueva pestaña">
-                                                                            <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                            <i class="fas fa-external-link-alt"></i>
+                                                                            <span>Abrir</span>
                                                                         </a>
                                                                         <a href="{{ asset('progderi/' . $programa->ruta_documento) }}"
                                                                             download rel="noopener"
@@ -267,24 +304,24 @@
     </section>
 @endsection
 @section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const buscador = document.getElementById('buscador-programas');
-        if (buscador) {
-            buscador.addEventListener('input', function() {
-                const term = this.value.toLowerCase().trim();
-                const cards = document.querySelectorAll('.programa-card');
-                
-                cards.forEach(card => {
-                    const nombre = card.getAttribute('data-nombre');
-                    if (nombre.includes(term)) {
-                        card.style.display = ''; // Restaurar el display por defecto
-                    } else {
-                        card.style.display = 'none'; // Ocultar
-                    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buscador = document.getElementById('buscador-programas');
+            if (buscador) {
+                buscador.addEventListener('input', function() {
+                    const term = this.value.toLowerCase().trim();
+                    const cards = document.querySelectorAll('.programa-card');
+
+                    cards.forEach(card => {
+                        const nombre = card.getAttribute('data-nombre');
+                        if (nombre.includes(term)) {
+                            card.style.display = ''; // Restaurar el display por defecto
+                        } else {
+                            card.style.display = 'none'; // Ocultar
+                        }
+                    });
                 });
-            });
-        }
-    });
-</script>
+            }
+        });
+    </script>
 @endsection
