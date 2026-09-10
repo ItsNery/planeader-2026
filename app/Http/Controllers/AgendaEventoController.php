@@ -20,7 +20,7 @@ class AgendaEventoController extends Controller
             'subcomite_id' => 'nullable|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
-            'fecha_evento' => 'required|date|after:today',
+            'fecha_evento' => 'required|date',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'nullable|date_format:H:i|after:hora_inicio',
             'modalidad' => 'required|in:virtual,presencial',
@@ -34,7 +34,6 @@ class AgendaEventoController extends Controller
             'g-recaptcha-response' => 'required|captcha',
         ], [
             'subcomite_id.exists' => 'El subcomité seleccionado no es válido.',
-            'fecha_evento.after' => 'La fecha debe ser posterior al día actual.',
             'hora_fin.after' => 'La hora de término debe ser posterior a la hora de inicio.',
             'ubicacion.required_if' => 'La ubicación es obligatoria para eventos presenciales.',
             'g-recaptcha-response.required' => 'Por favor, completa el captcha.',
