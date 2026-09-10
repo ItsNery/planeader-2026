@@ -675,7 +675,10 @@
                 };
                 eventType.addEventListener('change', refreshSubcomite);
                 document.querySelectorAll('[data-agenda-date]').forEach((day) => {
-                    const openRequest = () => {
+                    const openRequest = (event) => {
+                        if (event && event.target && event.target.closest('.subcomite-calendar__event, .agenda-event, .subcomite-calendar__more-events')) {
+                            return;
+                        }
                         dateInput.value = day.dataset.agendaDate;
                         refreshDate();
                         agendaModal?.show();
@@ -684,7 +687,7 @@
                     day.addEventListener('keydown', (event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                             event.preventDefault();
-                            openRequest();
+                            openRequest(event);
                         }
                     });
                 });

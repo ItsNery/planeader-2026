@@ -5850,7 +5850,8 @@ footer {
     pointer-events: none;
 }
 
-.agenda-input-icon .form-control {
+.agenda-input-icon .form-control,
+.agenda-input-icon .form-select {
     padding-left: 2.35rem;
 }
 
