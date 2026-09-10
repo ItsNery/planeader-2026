@@ -89,7 +89,7 @@
                             </div>
                             <div class="agenda-admin-note mb-3">
                                 <i class="fa-solid fa-circle-info"></i>
-                                <span>La agenda permite una actividad por día, a partir del día siguiente, únicamente en días laborales y de 10:00 a 18:00 horas.</span>
+                                <span>La agenda permite máximo dos actividades por día (10:00 a 11:00 hrs y 13:00 a 14:00 hrs), a partir del día siguiente, únicamente en días laborales.</span>
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -98,17 +98,13 @@
                                         value="{{ old('fecha_evento', optional($evento->fecha_evento)->format('Y-m-d')) }}" required>
                                     @error('fecha_evento')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="col-md-3">
-                                    <label for="hora_inicio" class="fw-bold mb-1">Hora inicio: *</label>
-                                    <input id="hora_inicio" name="hora_inicio" type="time" min="10:00" max="18:00" class="form-control @error('hora_inicio') is-invalid @enderror"
-                                        value="{{ old('hora_inicio', $evento->hora_inicio ? substr((string) $evento->hora_inicio, 0, 5) : '') }}" required>
+                                <div class="col-md-6">
+                                    <label for="hora_inicio" class="fw-bold mb-1">Horario: *</label>
+                                    <select id="hora_inicio" name="hora_inicio" class="form-select @error('hora_inicio') is-invalid @enderror" required>
+                                        <option value="10:00" @selected(old('hora_inicio', $evento->hora_inicio ? substr((string) $evento->hora_inicio, 0, 5) : '10:00') === '10:00')>10:00 - 11:00 AM</option>
+                                        <option value="13:00" @selected(old('hora_inicio', $evento->hora_inicio ? substr((string) $evento->hora_inicio, 0, 5) : '') === '13:00')>01:00 - 02:00 PM</option>
+                                    </select>
                                     @error('hora_inicio')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="hora_fin" class="fw-bold mb-1">Hora fin:</label>
-                                    <input id="hora_fin" name="hora_fin" type="time" min="10:00" max="18:00" class="form-control @error('hora_fin') is-invalid @enderror"
-                                        value="{{ old('hora_fin', $evento->hora_fin ? substr((string) $evento->hora_fin, 0, 5) : '') }}">
-                                    @error('hora_fin')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                         </section>

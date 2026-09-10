@@ -128,10 +128,12 @@ class PanelAgendaEventoController extends Controller
         $data['estado'] = $data['estado'] ?? 'confirmado';
         $data['confirmado_at'] = $data['estado'] === 'confirmado' ? now() : null;
 
-        $this->ensureDateAvailable($data['fecha_evento']);
-        $existente = AgendaEvento::whereDate('fecha_evento', $data['fecha_evento'])->first();
-        if ($existente) {
-            $existente->update($data);
+        $this->ensureDateAvailable($data['fecha_evento'], $data['hora_inicio']);
+        $existenteInactivo = AgendaEvento::whereDate('fecha_evento', $data['fecha_evento'])
+            ->whereTime('hora_inicio', $data['hora_inicio'])
+            ->first();
+        if ($existenteInactivo) {
+            $existenteInactivo->update($data);
         } else {
             AgendaEvento::create($data);
         }
@@ -153,13 +155,7 @@ class PanelAgendaEventoController extends Controller
         $this->validateAgendaDateAndHours($data);
         $data['publicado'] = $request->boolean('publicado');
 
-        $this->ensureDateAvailable($data['fecha_evento'], $agendaEvento);
-        $otroEvento = AgendaEvento::whereDate('fecha_evento', $data['fecha_evento'])
-            ->whereKeyNot($agendaEvento->id)
-            ->first();
-        if ($otroEvento && !$otroEvento->estaActivo()) {
-            $otroEvento->delete();
-        }
+        $this->ensureDateAvailable($data['fecha_evento'], $data['hora_inicio'], $agendaEvento);
         $data['confirmado_at'] = ($data['estado'] ?? $agendaEvento->estado) === 'confirmado'
             ? ($agendaEvento->confirmado_at ?: now())
             : null;
@@ -203,8 +199,8 @@ class PanelAgendaEventoController extends Controller
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date|after:today',
-            'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'nullable|date_format:H:i|after:hora_inicio',
+            'hora_inicio' => 'required|in:10:00,13:00',
+            'hora_fin' => 'nullable|string',
             'modalidad' => 'required|in:virtual,presencial',
             'liga_videoconferencia' => 'nullable|url|max:2000',
             'ubicacion' => 'required_if:modalidad,presencial|nullable|string|max:1000',
@@ -220,20 +216,37 @@ class PanelAgendaEventoController extends Controller
         ]);
     }
 
-    private function ensureDateAvailable(string $date, ?AgendaEvento $evento = null): void
+    private function ensureDateAvailable(string $date, string $horaInicio, ?AgendaEvento $evento = null): void
     {
-        $query = AgendaEvento::activos()->whereDate('fecha_evento', $date);
+        $queryActivos = AgendaEvento::activos()->whereDate('fecha_evento', $date);
 
         if ($evento) {
-            $query->where('id', '<>', $evento->id);
+            $queryActivos->where('id', '<>', $evento->id);
         }
 
-        if ($query->exists()) {
-            abort(422, 'La fecha seleccionada ya está ocupada por otra solicitud activa.');
+        if ($queryActivos->count() >= 2) {
+            throw ValidationException::withMessages([
+                'fecha_evento' => 'La fecha seleccionada ya tiene el límite máximo de 2 eventos activos alcanzado.',
+            ]);
+        }
+
+        $queryMismoHorario = AgendaEvento::activos()
+            ->whereDate('fecha_evento', $date)
+            ->whereTime('hora_inicio', $horaInicio);
+
+        if ($evento) {
+            $queryMismoHorario->where('id', '<>', $evento->id);
+        }
+
+        if ($queryMismoHorario->exists()) {
+            $horarioTexto = $horaInicio === '10:00' ? '10:00 - 11:00 AM' : '01:00 - 02:00 PM';
+            throw ValidationException::withMessages([
+                'hora_inicio' => "El horario {$horarioTexto} ya está ocupado por otra solicitud activa en esta fecha.",
+            ]);
         }
     }
 
-    private function validateAgendaDateAndHours(array $data): void
+    private function validateAgendaDateAndHours(array &$data): void
     {
         if (AgendaEvento::fechaEsNoLaborable($data['fecha_evento'])) {
             throw ValidationException::withMessages([
@@ -241,16 +254,16 @@ class PanelAgendaEventoController extends Controller
             ]);
         }
 
-        $start = SupportCarbon::createFromFormat('H:i', $data['hora_inicio']);
-        $end = !empty($data['hora_fin']) ? SupportCarbon::createFromFormat('H:i', $data['hora_fin']) : null;
-        $opening = SupportCarbon::createFromFormat('H:i', '10:00');
-        $closing = SupportCarbon::createFromFormat('H:i', '18:00');
+        $horaInicio = substr((string) $data['hora_inicio'], 0, 5);
 
-        if ($start->lt($opening) || $start->gt($closing) || ($end && ($end->lt($opening) || $end->gt($closing)))) {
+        if (!in_array($horaInicio, ['10:00', '13:00'], true)) {
             throw ValidationException::withMessages([
-                'hora_inicio' => 'El horario permitido es de 10:00 a 18:00 horas.',
+                'hora_inicio' => 'Los únicos horarios permitidos son 10:00 - 11:00 AM y 01:00 - 02:00 PM.',
             ]);
         }
+
+        $data['hora_inicio'] = $horaInicio;
+        $data['hora_fin'] = $horaInicio === '10:00' ? '11:00' : '14:00';
     }
 
     private function normalizarHora(?string $hora): ?string

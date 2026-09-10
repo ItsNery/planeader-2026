@@ -481,10 +481,9 @@
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
-                            </div>
-                        @endif
-                        <form action="{{ route('agenda-eventos.store') }}" method="POST" id="agenda-request-form"
+                           <form action="{{ route('agenda-eventos.store') }}" method="POST" id="agenda-request-form"
                             data-blocked-dates='@json($fechasAgendaOcupadas)'
+                            data-occupied-schedules='@json($horariosOcupadosPorFecha ?? [])'
                             data-non-working-dates='@json($fechasNoLaborables)'>
                             @csrf
                             <div class="agenda-form__intro"><i class="fa-solid fa-circle-info"></i><span>La fecha se
@@ -521,20 +520,15 @@
                                             name="fecha_evento" class="form-control" id="agenda-date"
                                             min="{{ now()->addDay()->format('Y-m-d') }}" value="{{ old('fecha_evento') }}" readonly
                                             required></div>
-                                    <div id="agenda-date-warning" class="text-danger small mt-1 d-none">Esta fecha ya está
-                                        reservada.</div>
+                                    <div id="agenda-date-warning" class="text-danger small mt-1 d-none">Esta fecha ya no tiene horarios disponibles.</div>
                                 </div>
-                                <div class="col-md-3"><label class="form-label fw-bold" for="agenda-start">Hora inicio
-                                        *</label>
-                                    <div class="agenda-input-icon"><i class="fa-regular fa-clock"></i><input type="time"
-                                            name="hora_inicio" id="agenda-start" class="form-control" min="10:00" max="18:00"
-                                            value="{{ old('hora_inicio', '10:00') }}" required>
+                                <div class="col-md-6"><label class="form-label fw-bold" for="agenda-start">Horario *</label>
+                                    <div class="agenda-input-icon"><i class="fa-regular fa-clock"></i>
+                                        <select name="hora_inicio" id="agenda-start" class="form-select" required>
+                                            <option value="10:00" @selected(old('hora_inicio', '10:00') === '10:00')>10:00 - 11:00 AM</option>
+                                            <option value="13:00" @selected(old('hora_inicio') === '13:00')>01:00 - 02:00 PM</option>
+                                        </select>
                                     </div>
-                                </div>
-                                <div class="col-md-3"><label class="form-label fw-bold" for="agenda-end">Hora fin</label>
-                                    <div class="agenda-input-icon"><i class="fa-regular fa-clock"></i><input type="time"
-                                            name="hora_fin" id="agenda-end" class="form-control" min="10:00" max="18:00"
-                                            value="{{ old('hora_fin') }}"></div>
                                 </div>
                                 <div class="col-md-6"><label class="form-label fw-bold">Modalidad *</label><select
                                         name="modalidad" class="form-select" id="agenda-modality" required>
@@ -619,6 +613,7 @@
             const agendaForm = document.getElementById('agenda-request-form');
             if (agendaForm) {
                 const blockedDates = JSON.parse(agendaForm.dataset.blockedDates || '[]');
+                const occupiedSchedules = JSON.parse(agendaForm.dataset.occupiedSchedules || '{}');
                 const nonWorkingDates = JSON.parse(agendaForm.dataset.nonWorkingDates || '[]');
                 const dateInput = document.getElementById('agenda-date');
                 const warning = document.getElementById('agenda-date-warning');
@@ -628,26 +623,42 @@
                 const locationInput = locationField.querySelector('input');
                 const eventType = document.getElementById('agenda-type');
                 const subcomiteInput = document.getElementById('agenda-subcomite');
-                 const agendaModalElement = document.getElementById('agendaRequestModal');
-                 const agendaModal = agendaModalElement ? bootstrap.Modal.getOrCreateInstance(agendaModalElement) :
-                     null;
-                 const startTimeInput = document.getElementById('agenda-start');
-                 const endTimeInput = document.getElementById('agenda-end');
-                 const normalizeAgendaHours = () => {
-                     if (!startTimeInput.value || startTimeInput.value < '10:00') {
-                         startTimeInput.value = '10:00';
-                     }
-                     if (endTimeInput.value && endTimeInput.value < '10:00') {
-                         endTimeInput.value = '';
-                     }
-                 };
+                const agendaModalElement = document.getElementById('agendaRequestModal');
+                const agendaModal = agendaModalElement ? bootstrap.Modal.getOrCreateInstance(agendaModalElement) : null;
+                const startTimeSelect = document.getElementById('agenda-start');
+
                 const refreshDate = () => {
                     const blocked = blockedDates.includes(dateInput.value);
                     const nonWorking = nonWorkingDates.includes(dateInput.value);
-                    warning.textContent = nonWorking ? 'Esta fecha no es laborable.' :
-                        'Esta fecha ya está reservada.';
-                    warning.classList.toggle('d-none', !blocked && !nonWorking);
-                    submit.disabled = blocked || nonWorking;
+                    const occupiedForDate = occupiedSchedules[dateInput.value] || [];
+
+                    const is10Occupied = occupiedForDate.includes('10:00');
+                    const is13Occupied = occupiedForDate.includes('13:00');
+
+                    const opt10 = startTimeSelect.querySelector('option[value="10:00"]');
+                    const opt13 = startTimeSelect.querySelector('option[value="13:00"]');
+
+                    if (opt10) opt10.disabled = is10Occupied;
+                    if (opt13) opt13.disabled = is13Occupied;
+
+                    if (startTimeSelect.value === '10:00' && is10Occupied && !is13Occupied) {
+                        startTimeSelect.value = '13:00';
+                    } else if (startTimeSelect.value === '13:00' && is13Occupied && !is10Occupied) {
+                        startTimeSelect.value = '10:00';
+                    }
+
+                    const allOccupied = is10Occupied && is13Occupied;
+
+                    if (nonWorking) {
+                        warning.textContent = 'Esta fecha no es laborable.';
+                    } else if (blocked || allOccupied) {
+                        warning.textContent = 'Esta fecha ya no tiene horarios disponibles.';
+                    } else {
+                        warning.textContent = '';
+                    }
+
+                    warning.classList.toggle('d-none', !blocked && !nonWorking && !allOccupied);
+                    submit.disabled = blocked || nonWorking || allOccupied;
                 };
                 const refreshModality = () => {
                     const presencial = modality.value === 'presencial';
@@ -656,17 +667,16 @@
                 };
                 dateInput.addEventListener('change', refreshDate);
                 modality.addEventListener('change', refreshModality);
-                 const refreshSubcomite = () => {
-                     subcomiteInput.disabled = false;
-                     subcomiteInput.required = false;
-                 };
+                const refreshSubcomite = () => {
+                    subcomiteInput.disabled = false;
+                    subcomiteInput.required = false;
+                };
                 eventType.addEventListener('change', refreshSubcomite);
                 document.querySelectorAll('[data-agenda-date]').forEach((day) => {
-                     const openRequest = () => {
-                         dateInput.value = day.dataset.agendaDate;
-                         normalizeAgendaHours();
-                         refreshDate();
-                         agendaModal?.show();
+                    const openRequest = () => {
+                        dateInput.value = day.dataset.agendaDate;
+                        refreshDate();
+                        agendaModal?.show();
                     };
                     day.addEventListener('click', openRequest);
                     day.addEventListener('keydown', (event) => {
@@ -676,14 +686,11 @@
                         }
                     });
                 });
-                 refreshModality();
-                 refreshSubcomite();
-                 normalizeAgendaHours();
-                 refreshDate();
+                refreshModality();
                 @if ($errors->any())
                     agendaModal?.show();
                 @endif
-                }
+            }
 
             @if (session('agenda_success'))
                 const agendaCalendar = document.getElementById('fechas-bloqueadas');

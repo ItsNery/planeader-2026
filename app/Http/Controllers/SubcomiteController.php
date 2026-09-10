@@ -413,6 +413,7 @@ class SubcomiteController extends Controller
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
 
+
          $eventosPorDia = $eventosDelMes->groupBy(function ($evento) {
              return Carbon::parse($evento->fecha_evento)->day;
          });
@@ -421,10 +422,18 @@ class SubcomiteController extends Controller
             return Carbon::parse($evento->fecha_evento)->day;
         });
 
-        $fechasAgendaOcupadas = \App\Models\AgendaEvento::activos()
+        $activosFuturos = AgendaEvento::activos()
             ->whereDate('fecha_evento', '>=', Carbon::today())
-            ->pluck('fecha_evento')
-            ->map(fn ($fecha) => Carbon::parse($fecha)->format('Y-m-d'))
+            ->get(['fecha_evento', 'hora_inicio']);
+
+        $horariosOcupadosPorFecha = $activosFuturos
+            ->groupBy(fn ($e) => Carbon::parse($e->fecha_evento)->format('Y-m-d'))
+            ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->unique()->values()->all())
+            ->toArray();
+
+        $fechasAgendaOcupadas = collect($horariosOcupadosPorFecha)
+            ->filter(fn ($horarios) => count($horarios) >= 2)
+            ->keys()
             ->values();
 
         $mesAnterior = $fechaBase->copy()->subMonth()->format('Y-m');
@@ -440,6 +449,7 @@ class SubcomiteController extends Controller
             'eventosPorDia',
             'agendaEventosPorDia',
             'fechasAgendaOcupadas',
+            'horariosOcupadosPorFecha',
             'fechasNoLaborables',
             'subcomitesAgenda',
             'mesAnterior',
@@ -481,11 +491,21 @@ class SubcomiteController extends Controller
             ->get(['id', 'nombre']);
         $eventosPorDia = $eventosDelMes->groupBy(fn ($evento) => Carbon::parse($evento->fecha_evento)->day);
         $agendaEventosPorDia = $agendaEventosDelMes->groupBy(fn ($evento) => Carbon::parse($evento->fecha_evento)->day);
-        $fechasAgendaOcupadas = AgendaEvento::activos()
+        
+        $activosFuturos = AgendaEvento::activos()
             ->whereDate('fecha_evento', '>=', Carbon::today())
-            ->pluck('fecha_evento')
-            ->map(fn ($fecha) => Carbon::parse($fecha)->format('Y-m-d'))
+            ->get(['fecha_evento', 'hora_inicio']);
+
+        $horariosOcupadosPorFecha = $activosFuturos
+            ->groupBy(fn ($e) => Carbon::parse($e->fecha_evento)->format('Y-m-d'))
+            ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->unique()->values()->all())
+            ->toArray();
+
+        $fechasAgendaOcupadas = collect($horariosOcupadosPorFecha)
+            ->filter(fn ($horarios) => count($horarios) >= 2)
+            ->keys()
             ->values();
+
         $mesAnterior = $fechaBase->copy()->subMonth()->format('Y-m');
         $mesSiguiente = $fechaBase->copy()->addMonth()->format('Y-m');
         $subcomite = null;
@@ -500,14 +520,13 @@ class SubcomiteController extends Controller
             'eventosPorDia',
             'agendaEventosPorDia',
             'fechasAgendaOcupadas',
+            'horariosOcupadosPorFecha',
             'fechasNoLaborables',
             'subcomitesAgenda',
             'mesAnterior',
             'mesSiguiente'
         ));
     }
-
-
     /**
      * Genera un slug único para el nombre de un subcomité.
      *
