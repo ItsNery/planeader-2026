@@ -481,7 +481,9 @@
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
-                           <form action="{{ route('agenda-eventos.store') }}" method="POST" id="agenda-request-form"
+                            </div>
+                        @endif
+                        <form action="{{ route('agenda-eventos.store') }}" method="POST" id="agenda-request-form"
                             data-blocked-dates='@json($fechasAgendaOcupadas)'
                             data-occupied-schedules='@json($horariosOcupadosPorFecha ?? [])'
                             data-non-working-dates='@json($fechasNoLaborables)'>
