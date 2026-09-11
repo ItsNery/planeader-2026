@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-// local
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;

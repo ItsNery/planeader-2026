@@ -198,8 +198,6 @@ p {
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-
-    /* Oculto por defecto, con transición suave */
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
@@ -209,7 +207,6 @@ p {
         transform 0.3s;
 }
 
-/* Clase para mostrar el botón con animación */
 #scrollTopBtn.show {
     opacity: 1;
     visibility: visible;
@@ -287,18 +284,15 @@ p {
 
 .header-logos img {
     max-height: 35px;
-    /* Logos pequeños en móvil */
     width: auto;
 }
 
-/* En móvil, solo mostramos el primer logo para no saturar */
 .header-logos a:not(:first-child) {
     display: none;
 }
 
 .hamburger-menu {
     display: flex;
-    /* Visible en móvil */
     flex-direction: column;
     justify-content: space-around;
     width: 28px;
@@ -316,25 +310,21 @@ p {
     border-radius: 10px;
 }
 
-/* Ocultamos la navegación principal en móvil por defecto */
 .main-nav {
     display: none;
     background-color: white;
     padding-bottom: 10px;
 }
 
-/* Clase que JS añade para mostrar el menú */
 .main-nav.is-active {
     display: block;
 }
 
-/* Ocultamos los elementos de escritorio en móvil */
 .header-branding-bar,
 .nav-brand-line {
     display: none;
 }
 
-/* Estilos del menú desplegado en móvil */
 .nav-links {
     list-style: none;
     margin: 0;
@@ -392,15 +382,8 @@ p {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/*
- * Clase "placeholder" para el body.
- * Evita que el contenido de la página "salte" bruscamente hacia arriba
- * cuando el menú se convierte en 'position: fixed'.
-*/
 .body-nav-sticky-placeholder {
-    /* El padding-top se ajustará con JavaScript a la altura exacta del nav */
     padding-top: 100px;
-    /* Un valor por defecto, JS lo corregirá */
 }
 
 /* ================================================ */
@@ -417,7 +400,6 @@ p {
         height: auto;
     }
 
-    /* Mostramos todos los logos y los hacemos más grandes */
     .header-logos a:not(:first-child) {
         display: block;
     }
@@ -426,12 +408,10 @@ p {
         max-height: 80px;
     }
 
-    /* Ocultamos la hamburguesa */
     .hamburger-menu {
         display: none;
     }
 
-    /* Mostramos y estilizamos la navegación principal */
     .main-nav {
         display: block;
     }
@@ -456,7 +436,6 @@ p {
         height: 3px;
         background-color: var(--colorGris);
         flex-grow: 1;
-        /* Ocupa el espacio disponible */
         max-width: 600px;
         margin-right: 2rem;
     }
@@ -888,7 +867,6 @@ p {
 
         .owl-nav {
             position: static;
-            /* Los botones se posicionarán absolutamente respecto a .carousel-container */
         }
 
         .owl-nav button.owl-prev,
@@ -1689,12 +1667,10 @@ footer {
         border-color: var(--color1);
     }
 
-    /* Opcional: Cambiar el color del texto de los tabs inactivos */
     #programasActualesTab .nav-link {
         color: var(--color1);
     }
 
-    /* Opcional: Cambiar color al pasar el mouse sobre tabs inactivos */
     #programasActualesTab .nav-link:hover {
         border-color: #7d2c43;
     }
@@ -1729,7 +1705,6 @@ footer {
     #accordionPrincipalPlanes .accordion-item {
         border-color: rgba(0, 0, 0, 0.05);
         border-left: 3px solid transparent;
-        /* Borde izquierdo sutil */
         transition: border-left 0.3s ease;
     }
 
@@ -1847,13 +1822,11 @@ footer {
     --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(134, 30, 52, 0.25);
 }
 
-/* 2. Cada Item del Acordeón (cada año) */
 .accordion-item {
     border: none;
     border-bottom: 1px solid #e0e0e0;
 }
 
-/* Quitamos el último borde para que no se duplique con el del contenedor */
 .accordion-item:last-child {
     border-bottom: none;
 }
@@ -1863,7 +1836,6 @@ footer {
     border-radius: 0;
 }
 
-/* 3. Botón del Acordeón (El Título del Año) */
 .accordion-button {
     font-weight: 500;
     color: #333;
@@ -1916,7 +1888,6 @@ footer {
     padding-left: 0;
 }
 
-/* 5. Estilos para la lista de documentos (CON ETIQUETAS DE FORMATO) */
 .document-item {
     display: flex;
     justify-content: space-between;
@@ -1958,7 +1929,6 @@ footer {
     transform: scale(1.2);
 }
 
-/* 4. Contenedor de acciones (Botones de Ver y Descargar) */
 .document-item__actions {
     display: flex;
     align-items: center;
@@ -2017,7 +1987,6 @@ footer {
     }
 }
 
-/* 6. Estilos para las ETIQUETAS DE FORMATO */
 .document-badge {
     padding: 0.2rem 0.6rem;
     border-radius: 12px;
@@ -2523,7 +2492,6 @@ footer {
     #accordionHistorico .accordion-item {
         border-color: rgba(0, 0, 0, 0.05);
         border-left: 3px solid transparent;
-        /* Borde izquierdo sutil */
         transition: border-left 0.3s ease;
     }
 
@@ -2922,12 +2890,10 @@ footer {
         border-color: var(--color1);
     }
 
-    /* Opcional: Cambiar el color del texto de los tabs inactivos */
     #regionalizacionTab .nav-link {
         color: var(--color1);
     }
 
-    /* Opcional: Cambiar color al pasar el mouse sobre tabs inactivos */
     #regionalizacionTab .nav-link:hover {
         border-color: #7d2c43;
     }
@@ -3207,7 +3173,6 @@ footer {
     border-bottom: none;
 }
 
-/* Scrollbar para la lista popup */
 .custom-popup-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -3858,19 +3823,8 @@ footer {
         width: 100%;
         max-width: 320px;
         border-radius: 8px;
-
-        /* La propiedad clave: box-shadow */
-        /* Explicación de los valores:
-       0px    -> Desplazamiento horizontal de la sombra
-       10px   -> Desplazamiento vertical de la sombra
-       25px   -> Desenfoque (blur) de la sombra
-       -10px  -> Expansión (spread) de la sombra (un valor negativo la encoge)
-       rgba(0, 0, 0, 0.2) -> Color de la sombra (negro con 20% de opacidad)
-    */
         box-shadow: 0px 10px 25px -10px rgba(0, 0, 0, 0.2);
-
         transition: all 0.3s ease;
-
         overflow: hidden;
     }
 
@@ -4595,13 +4549,11 @@ footer {
     color: #007bff;
 }
 
-/* Contenedor de la botonera vertical */
 .botonera-vertical {
     display: flex;
     flex-direction: column;
     gap: 8px;
     pointer-events: auto;
-    /* para que los botones sean clickeables */
 }
 
 /* Estilo base de los botones */
@@ -4733,7 +4685,6 @@ footer {
     z-index: 10;
 }
 
-/* Personalización de la paginación y navegación */
 .swiper-pagination-bullet-active {
     background-color: #007aff !important;
 }
@@ -4802,7 +4753,6 @@ footer {
     border-bottom: none;
 }
 
-/* Scrollbar para la lista popup */
 .custom-popup-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -4883,18 +4833,15 @@ footer {
 .accion-programa {
     display: flex;
     justify-content: center;
-    /* Centra el botón si así lo deseas */
     align-items: center;
 }
 
-/* --- Elemento: Botón --- */
 .accion-programa__boton {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 12px 28px;
     border-radius: 50px;
-    /* Bordes redondeados para un look moderno */
     font-size: 1.1rem;
     font-weight: 600;
     text-decoration: none;
@@ -4907,18 +4854,15 @@ footer {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* --- Elemento: Texto --- */
 .accion-programa__texto {
     letter-spacing: 0.5px;
 }
 
-/* --- Elemento: Ícono --- */
 .accion-programa__icono {
     margin-left: 10px;
     transition: transform 0.3s ease;
 }
 
-/* Efecto para que la flechita se mueva al hacer hover en el botón */
 .accion-programa__boton:hover .accion-programa__icono {
     transform: translateX(5px);
 }
@@ -5160,9 +5104,8 @@ footer {
     }
 }
 
-/* --- Marco Jurídico BEM Styles --- */
+/* --- Marco Jurídico --- */
 
-/* Modifier for tarjeta-marco when acting as a collapse trigger */
 .tarjeta-marco--trigger {
     transition: all 0.3s ease;
     cursor: pointer;
@@ -5173,7 +5116,6 @@ footer {
     /* box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); */
 }
 
-/* Expanded state of the trigger card */
 .tarjeta-marco--trigger[aria-expanded="true"] {
     border-color: var(--color1) !important;
     box-shadow: 0 8px 24px rgba(95, 27, 45, 0.15) !important;

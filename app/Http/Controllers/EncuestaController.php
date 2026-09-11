@@ -1,9 +1,8 @@
 <?php
-// local
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Encuesta; // Asegúrate de importar el modelo correspondiente
+use App\Models\Encuesta;
 class EncuestaController extends Controller
 {
     /**

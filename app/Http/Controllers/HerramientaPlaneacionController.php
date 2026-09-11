@@ -1,5 +1,4 @@
 <?php
-// local
 namespace App\Http\Controllers;
 
 use App\Models\HerramientaPlaneacion;
@@ -154,7 +153,7 @@ class HerramientaPlaneacionController extends Controller
 
         // Handle Deletions
         if ($request->has('deleted_anexos')) {
-            // ponytail: optimize N+1 query by loading all annexes to delete at once
+            // Optimización: Cargar anexos a eliminar en una sola consulta
             $anexosAEliminar = HerramientaAnexo::whereIn('id', $request->deleted_anexos)->get();
             foreach ($anexosAEliminar as $anexo) {
                 $this->deleteFile('documentos/herramientas/anexos/' . $anexo->archivo);
@@ -164,7 +163,7 @@ class HerramientaPlaneacionController extends Controller
 
         // Handle Annexes (Updates & New)
         if ($request->has('anexos')) {
-            // ponytail: optimize N+1 query by batch loading existing annexes
+            // Optimización: Cargar anexos existentes en lote
             $ids = collect($request->anexos)->pluck('id')->filter()->toArray();
             $anexosExistentes = HerramientaAnexo::whereIn('id', $ids)->get()->keyBy('id');
 

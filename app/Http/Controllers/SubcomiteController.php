@@ -1,5 +1,4 @@
 <?php
-// local
 namespace App\Http\Controllers;
 
 use App\Models\Subcomite;
@@ -56,7 +55,7 @@ class SubcomiteController extends Controller
             'Institucional'
         ];
 
-        // ponytail: optimize N+1 query by retrieving and grouping all subcomites at once
+        // Optimización: Recuperar y agrupar subcomités en una sola consulta
         $subcomitesPorPlan = Subcomite::whereNotNull('orden')
             ->get(['planestatal_id', 'orden'])
             ->groupBy('planestatal_id');
@@ -175,7 +174,7 @@ class SubcomiteController extends Controller
             'Regional',
         ];
 
-        // ponytail: optimize N+1 query by retrieving and grouping all subcomites at once
+        // Optimización: Recuperar y agrupar subcomités en una sola consulta
         $subcomitesPorPlan = Subcomite::whereNotNull('orden')
             ->get(['planestatal_id', 'orden'])
             ->groupBy('planestatal_id');
@@ -368,7 +367,7 @@ class SubcomiteController extends Controller
         $subcomite = Subcomite::where('slug', $slug)->firstOrFail();
         $id = $subcomite->id; // Obtener el id del subcomité
 
-        // ponytail: optimize by only loading published documents and sorting them directly
+        // Optimización: Cargar solo documentos publicados y ordenarlos directamente
         $documentosAgrupados = DocumentoSubcomite::where('subcomite_id', $id)
             ->where('publicado', 1)
             ->get()

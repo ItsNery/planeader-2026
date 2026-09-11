@@ -129,14 +129,57 @@ php artisan storage:link
 ```
 Esto habilita la descarga de documentos desde `public/storage`.
 
-## 9. Instalación
+## 9. Guía de Inicio Rápido (Developer Onboarding)
 
-1. `composer install`
-2. `npm install`
-3. `cp .env.example .env` (y configurar DB)
-4. `php artisan migrate --seed`
-5. `php artisan storage:link`
-6. `npm run dev`
+### Prerrequisitos
+- PHP `>= 8.2`
+- MySQL / MariaDB `>= 8.0`
+- Composer `>= 2.x`
+- Node.js `>= 18.x` & NPM
+
+### Pasos para desplegar en entorno local
+
+1. **Clonar repositorio e instalar dependencias de PHP:**
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd planeader
+   composer install
+   ```
+
+2. **Instalar dependencias frontend:**
+   ```bash
+   npm install
+   ```
+
+3. **Configurar archivo de entorno `.env`:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   *Asegúrate de ajustar los parámetros de conexión a tu base de datos local en el archivo `.env` (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).*
+
+4. **Ejecutar migraciones y datos iniciales (seeders):**
+   ```bash
+   php artisan migrate --seed
+   ```
+
+5. **Enlazar almacenamiento público:**
+   ```bash
+   php artisan storage:link
+   ```
+
+6. **Compilar recursos estáticos o iniciar servidor de desarrollo:**
+   ```bash
+   # Compilación frontend
+   npm run dev
+
+   # En otra consola, iniciar servidor Laravel
+   php artisan serve
+   ```
+
+### Comandos útiles de mantenimiento
+- **Limpiar caché del sistema:** `php artisan optimize:clear`
+- **Revisar mapa de rutas:** `php artisan route:list`
 
 ---
 *Este portal es una herramienta clave para el seguimiento de la planeación democrática en el Estado de Puebla.*

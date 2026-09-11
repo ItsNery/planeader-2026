@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CatMunicipio;
-use App\Models\RegistroCapacitacion; // Asegúrate de importar el modelo correcto
+use App\Models\RegistroCapacitacion;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;

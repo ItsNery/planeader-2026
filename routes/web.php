@@ -1,5 +1,4 @@
 <?php
-// local
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BannerController;

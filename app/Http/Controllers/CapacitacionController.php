@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-// local
 use App\Models\Capacitacion;
 use App\Models\Documento;
 use App\Models\DocumentoCapacitacion;
@@ -169,7 +168,7 @@ class CapacitacionController extends Controller
 
         // Manejar eliminaciones
         if ($request->has('deleted_documentos')) {
-            // ponytail: optimize N+1 query by loading all documents to delete at once
+            // Optimización: Cargar todos los documentos a eliminar en una sola consulta para evitar N+1
             $documentosAEliminar = DocumentoCapacitacion::whereIn('id', $request->deleted_documentos)->get();
             foreach ($documentosAEliminar as $documento) {
                 Storage::disk('capacitaciones_public')->delete($documento->ruta_archivo);
@@ -179,7 +178,7 @@ class CapacitacionController extends Controller
 
         // Manejar documentos (Actualizaciones y Nuevos)
         if ($request->has('documentos')) {
-            // ponytail: optimize N+1 query by batch loading existing documents
+            // Optimización: Cargar documentos existentes en lote para evitar N+1
             $ids = collect($request->documentos)->pluck('id')->filter()->toArray();
             $documentosExistentes = DocumentoCapacitacion::whereIn('id', $ids)->get()->keyBy('id');
 

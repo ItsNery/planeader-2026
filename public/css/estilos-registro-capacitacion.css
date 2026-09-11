@@ -30,9 +30,9 @@
 
 :root {
     --fontFamily: "Corra-Montserra-Regular", sans-serif;
-    --maincolor: #68132D;
+    --maincolor: #68132d;
     /* --mainColor: grey; */
-    --gobierno: #920B32;
+    --gobierno: #920b32;
     /* --gobierno: #b9cadc; */
     --secondColor: #c2ba98;
     --whiteColor: #ffffff;
@@ -221,14 +221,13 @@ body {
     color: #212529;
 }
 
-.btn-check:checked+.btn-outline-primary {
+.btn-check:checked + .btn-outline-primary {
     background-color: var(--color1);
     border-color: var(--color5);
     color: #ffffff;
     box-shadow: none;
 }
 
-.btn-check:focus+.btn-outline-primary {
+.btn-check:focus + .btn-outline-primary {
     box-shadow: 0 0 0 0.25rem rgba(105, 28, 50, 0.25);
 }
-
