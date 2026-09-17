@@ -94,7 +94,7 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="fecha_evento" class="fw-bold mb-1">Fecha del evento: *</label>
-                                    <input id="fecha_evento" name="fecha_evento" type="date" min="{{ now()->addDay()->format('Y-m-d') }}" class="form-control @error('fecha_evento') is-invalid @enderror"
+                                    <input id="fecha_evento" name="fecha_evento" type="date" class="form-control @error('fecha_evento') is-invalid @enderror"
                                         value="{{ old('fecha_evento', optional($evento->fecha_evento)->format('Y-m-d')) }}" required>
                                     @error('fecha_evento')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>

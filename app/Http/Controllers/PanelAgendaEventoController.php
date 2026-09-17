@@ -198,7 +198,7 @@ class PanelAgendaEventoController extends Controller
             'subcomite_id' => 'nullable|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
-            'fecha_evento' => 'required|date|after:today',
+            'fecha_evento' => 'required|date',
             'hora_inicio' => 'required|in:10:00,13:00',
             'hora_fin' => 'nullable|string',
             'modalidad' => 'required|in:virtual,presencial',
