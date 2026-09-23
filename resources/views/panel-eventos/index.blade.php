@@ -22,15 +22,22 @@
             </p>
         </div>
 
-        @if (Auth::user()->validador)
-            <div class="container d-flex justify-content-end">
+        <div class="container d-flex justify-content-end gap-2 flex-wrap">
+            @canany(['editar-evento', 'editar-agenda-evento'])
+                <a href="{{ route('panel-eventos.capacidades-agenda.index') }}" class="text-decoration-none">
+                    <button class="btn btn-outline-secondary mt-3 mb-3">
+                        <i class="fa-solid fa-sliders me-1"></i> Capacidad de agenda
+                    </button>
+                </a>
+            @endcanany
+            @if (Auth::user()->validador)
                 <a href="{{ route('panel-eventos.create') }}" class="text-decoration-none">
                     <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                         Crear evento
                     </button>
                 </a>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <div class="container table-responsive">
             <table id="myTable" class="table w-100 table-hover align-middle">

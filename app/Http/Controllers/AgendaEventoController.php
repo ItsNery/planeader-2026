@@ -21,7 +21,7 @@ class AgendaEventoController extends Controller
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date',
-            'hora_inicio' => 'required|in:10:00,13:00',
+            'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'nullable|string',
             'modalidad' => 'required|in:virtual,presencial',
             'ubicacion' => 'required_if:modalidad,presencial|nullable|string|max:1000',
@@ -34,7 +34,7 @@ class AgendaEventoController extends Controller
             'g-recaptcha-response' => 'required|captcha',
         ], [
             'subcomite_id.exists' => 'El subcomité seleccionado no es válido.',
-            'hora_inicio.in' => 'Los únicos horarios permitidos son 10:00 - 11:00 AM y 01:00 - 02:00 PM.',
+            'hora_inicio.date_format' => 'El horario debe tener el formato HH:MM.',
             'ubicacion.required_if' => 'La ubicación es obligatoria para eventos presenciales.',
             'g-recaptcha-response.required' => 'Por favor, completa el captcha.',
             'g-recaptcha-response.captcha' => 'La validación del captcha falló. Intenta nuevamente.',
@@ -49,14 +49,17 @@ class AgendaEventoController extends Controller
 
         try {
             $agendaEvento = DB::transaction(function () use (&$data) {
+                $disponibilidad = AgendaEvento::disponibilidadParaFecha($data['fecha_evento'], true);
                 $activosEnFecha = AgendaEvento::activos()
                     ->whereDate('fecha_evento', $data['fecha_evento'])
                     ->lockForUpdate()
                     ->get();
 
-                if ($activosEnFecha->count() >= 2) {
+                $this->validarHorarioPermitido($data['hora_inicio'], $disponibilidad['horarios']);
+
+                if ($activosEnFecha->count() >= $disponibilidad['max_eventos']) {
                     throw ValidationException::withMessages([
-                        'fecha_evento' => 'La fecha seleccionada ya no tiene horarios disponibles (máximo 2 eventos por día).',
+                        'fecha_evento' => "La fecha seleccionada ya no tiene horarios disponibles (máximo {$disponibilidad['max_eventos']} eventos por día).",
                     ]);
                 }
 
@@ -65,9 +68,8 @@ class AgendaEventoController extends Controller
                 });
 
                 if ($mismoHorarioActivo) {
-                    $horarioTexto = $data['hora_inicio'] === '10:00' ? '10:00 - 11:00 AM' : '01:00 - 02:00 PM';
                     throw ValidationException::withMessages([
-                        'hora_inicio' => "El horario {$horarioTexto} ya está ocupado para esta fecha.",
+                        'hora_inicio' => "El horario {$data['hora_inicio']} ya está ocupado para esta fecha.",
                     ]);
                 }
 
@@ -259,13 +261,20 @@ class AgendaEventoController extends Controller
 
         $horaInicio = substr((string) $data['hora_inicio'], 0, 5);
 
-        if (!in_array($horaInicio, ['10:00', '13:00'], true)) {
-            throw ValidationException::withMessages([
-                'hora_inicio' => 'Los únicos horarios permitidos son 10:00 - 11:00 AM y 01:00 - 02:00 PM.',
-            ]);
+        $disponibilidad = AgendaEvento::disponibilidadParaFecha($data['fecha_evento']);
+        $this->validarHorarioPermitido($horaInicio, $disponibilidad['horarios']);
+        $data['hora_inicio'] = $horaInicio;
+        $data['hora_fin'] = AgendaEvento::horaFinParaInicio($horaInicio);
+    }
+
+    private function validarHorarioPermitido(string $horaInicio, array $horarios): void
+    {
+        if (in_array($horaInicio, $horarios, true)) {
+            return;
         }
 
-        $data['hora_inicio'] = $horaInicio;
-        $data['hora_fin'] = $horaInicio === '10:00' ? '11:00' : '14:00';
+        throw ValidationException::withMessages([
+            'hora_inicio' => 'El horario seleccionado no está disponible para esta fecha. Horarios permitidos: ' . implode(', ', $horarios) . '.',
+        ]);
     }
 }

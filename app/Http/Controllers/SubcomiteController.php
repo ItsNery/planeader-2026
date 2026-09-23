@@ -10,6 +10,7 @@ use App\Traits\UpdatesPublicado;
 
 use App\Models\Evento;
 use App\Models\AgendaEvento;
+use App\Models\AgendaCapacidad;
 use Carbon\Carbon;
 
 class SubcomiteController extends Controller
@@ -425,13 +426,27 @@ class SubcomiteController extends Controller
             ->whereDate('fecha_evento', '>=', Carbon::today())
             ->get(['fecha_evento', 'hora_inicio']);
 
+        $configuracionesAgenda = AgendaCapacidad::whereDate('fecha_evento', '>=', Carbon::today())
+            ->orderBy('fecha_evento')
+            ->get();
+        $capacidadesAgendaPorFecha = $configuracionesAgenda
+            ->mapWithKeys(fn (AgendaCapacidad $capacidad) => [
+                $capacidad->fecha_evento->format('Y-m-d') => (int) $capacidad->max_eventos,
+            ])
+            ->all();
+        $horariosDisponiblesPorFecha = $configuracionesAgenda
+            ->mapWithKeys(fn (AgendaCapacidad $capacidad) => [
+                $capacidad->fecha_evento->format('Y-m-d') => $capacidad->horarios,
+            ])
+            ->all();
+
         $horariosOcupadosPorFecha = $activosFuturos
             ->groupBy(fn ($e) => Carbon::parse($e->fecha_evento)->format('Y-m-d'))
             ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->unique()->values()->all())
             ->toArray();
 
         $fechasAgendaOcupadas = collect($horariosOcupadosPorFecha)
-            ->filter(fn ($horarios) => count($horarios) >= 2)
+            ->filter(fn ($horarios, $fecha) => count($horarios) >= ($capacidadesAgendaPorFecha[$fecha] ?? AgendaEvento::CAPACIDAD_PREDETERMINADA))
             ->keys()
             ->values();
 
@@ -449,6 +464,8 @@ class SubcomiteController extends Controller
             'agendaEventosPorDia',
             'fechasAgendaOcupadas',
             'horariosOcupadosPorFecha',
+            'capacidadesAgendaPorFecha',
+            'horariosDisponiblesPorFecha',
             'fechasNoLaborables',
             'subcomitesAgenda',
             'mesAnterior',
@@ -495,13 +512,27 @@ class SubcomiteController extends Controller
             ->whereDate('fecha_evento', '>=', Carbon::today())
             ->get(['fecha_evento', 'hora_inicio']);
 
+        $configuracionesAgenda = AgendaCapacidad::whereDate('fecha_evento', '>=', Carbon::today())
+            ->orderBy('fecha_evento')
+            ->get();
+        $capacidadesAgendaPorFecha = $configuracionesAgenda
+            ->mapWithKeys(fn (AgendaCapacidad $capacidad) => [
+                $capacidad->fecha_evento->format('Y-m-d') => (int) $capacidad->max_eventos,
+            ])
+            ->all();
+        $horariosDisponiblesPorFecha = $configuracionesAgenda
+            ->mapWithKeys(fn (AgendaCapacidad $capacidad) => [
+                $capacidad->fecha_evento->format('Y-m-d') => $capacidad->horarios,
+            ])
+            ->all();
+
         $horariosOcupadosPorFecha = $activosFuturos
             ->groupBy(fn ($e) => Carbon::parse($e->fecha_evento)->format('Y-m-d'))
             ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->unique()->values()->all())
             ->toArray();
 
         $fechasAgendaOcupadas = collect($horariosOcupadosPorFecha)
-            ->filter(fn ($horarios) => count($horarios) >= 2)
+            ->filter(fn ($horarios, $fecha) => count($horarios) >= ($capacidadesAgendaPorFecha[$fecha] ?? AgendaEvento::CAPACIDAD_PREDETERMINADA))
             ->keys()
             ->values();
 
@@ -520,6 +551,8 @@ class SubcomiteController extends Controller
             'agendaEventosPorDia',
             'fechasAgendaOcupadas',
             'horariosOcupadosPorFecha',
+            'capacidadesAgendaPorFecha',
+            'horariosDisponiblesPorFecha',
             'fechasNoLaborables',
             'subcomitesAgenda',
             'mesAnterior',

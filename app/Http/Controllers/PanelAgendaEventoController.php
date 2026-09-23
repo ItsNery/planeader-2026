@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AgendaEvento;
+use App\Models\AgendaCapacidad;
 use App\Models\Subcomite;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -109,7 +110,11 @@ class PanelAgendaEventoController extends Controller
         $evento = new AgendaEvento();
         $subcomites = Subcomite::where('publicado', true)->orderBy('nombre')->get();
 
-        return view('panel-agenda-eventos.form', compact('evento', 'subcomites'));
+        return view('panel-agenda-eventos.form', [
+            'evento' => $evento,
+            'subcomites' => $subcomites,
+            'horariosDisponiblesPorFecha' => $this->horariosDisponiblesPorFecha(),
+        ]);
     }
 
     public function show(AgendaEvento $agendaEvento)
@@ -146,7 +151,11 @@ class PanelAgendaEventoController extends Controller
         $evento = $agendaEvento;
         $subcomites = Subcomite::where('publicado', true)->orderBy('nombre')->get();
 
-        return view('panel-agenda-eventos.form', compact('evento', 'subcomites'));
+        return view('panel-agenda-eventos.form', [
+            'evento' => $evento,
+            'subcomites' => $subcomites,
+            'horariosDisponiblesPorFecha' => $this->horariosDisponiblesPorFecha(),
+        ]);
     }
 
     public function update(Request $request, AgendaEvento $agendaEvento)
@@ -171,6 +180,15 @@ class PanelAgendaEventoController extends Controller
             'observaciones_admin' => 'nullable|string|max:2000',
             'liga_videoconferencia' => 'nullable|url|max:2000',
         ]);
+
+        $nuevoEstadoEsActivo = in_array($data['estado'], ['pendiente', 'confirmado'], true);
+        if ($nuevoEstadoEsActivo && !$agendaEvento->estaActivo()) {
+            $fecha = $agendaEvento->fecha_evento->format('Y-m-d');
+            $horaInicio = substr((string) $agendaEvento->hora_inicio, 0, 5);
+            $disponibilidad = AgendaEvento::disponibilidadParaFecha($fecha);
+            $this->validarHorarioPermitido($horaInicio, $disponibilidad['horarios']);
+            $this->ensureDateAvailable($fecha, $horaInicio, $agendaEvento);
+        }
 
         $agendaEvento->fill($data);
         $agendaEvento->confirmado_at = $data['estado'] === 'confirmado' ? now() : null;
@@ -199,7 +217,7 @@ class PanelAgendaEventoController extends Controller
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date',
-            'hora_inicio' => 'required|in:10:00,13:00',
+            'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'nullable|string',
             'modalidad' => 'required|in:virtual,presencial',
             'liga_videoconferencia' => 'nullable|url|max:2000',
@@ -218,15 +236,16 @@ class PanelAgendaEventoController extends Controller
 
     private function ensureDateAvailable(string $date, string $horaInicio, ?AgendaEvento $evento = null): void
     {
+        $disponibilidad = AgendaEvento::disponibilidadParaFecha($date);
         $queryActivos = AgendaEvento::activos()->whereDate('fecha_evento', $date);
 
         if ($evento) {
             $queryActivos->where('id', '<>', $evento->id);
         }
 
-        if ($queryActivos->count() >= 2) {
+        if ($queryActivos->count() >= $disponibilidad['max_eventos']) {
             throw ValidationException::withMessages([
-                'fecha_evento' => 'La fecha seleccionada ya tiene el límite máximo de 2 eventos activos alcanzado.',
+                'fecha_evento' => "La fecha seleccionada ya tiene el límite máximo de {$disponibilidad['max_eventos']} eventos activos alcanzado.",
             ]);
         }
 
@@ -239,9 +258,8 @@ class PanelAgendaEventoController extends Controller
         }
 
         if ($queryMismoHorario->exists()) {
-            $horarioTexto = $horaInicio === '10:00' ? '10:00 - 11:00 AM' : '01:00 - 02:00 PM';
             throw ValidationException::withMessages([
-                'hora_inicio' => "El horario {$horarioTexto} ya está ocupado por otra solicitud activa en esta fecha.",
+                'hora_inicio' => "El horario {$horaInicio} ya está ocupado por otra solicitud activa en esta fecha.",
             ]);
         }
     }
@@ -256,18 +274,35 @@ class PanelAgendaEventoController extends Controller
 
         $horaInicio = substr((string) $data['hora_inicio'], 0, 5);
 
-        if (!in_array($horaInicio, ['10:00', '13:00'], true)) {
-            throw ValidationException::withMessages([
-                'hora_inicio' => 'Los únicos horarios permitidos son 10:00 - 11:00 AM y 01:00 - 02:00 PM.',
-            ]);
-        }
-
+        $disponibilidad = AgendaEvento::disponibilidadParaFecha($data['fecha_evento']);
+        $this->validarHorarioPermitido($horaInicio, $disponibilidad['horarios']);
         $data['hora_inicio'] = $horaInicio;
-        $data['hora_fin'] = $horaInicio === '10:00' ? '11:00' : '14:00';
+        $data['hora_fin'] = AgendaEvento::horaFinParaInicio($horaInicio);
     }
 
     private function normalizarHora(?string $hora): ?string
     {
         return $hora ? substr($hora, 0, 5) : $hora;
+    }
+
+    private function validarHorarioPermitido(string $horaInicio, array $horarios): void
+    {
+        if (in_array($horaInicio, $horarios, true)) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'hora_inicio' => 'El horario seleccionado no está disponible para esta fecha. Horarios permitidos: ' . implode(', ', $horarios) . '.',
+        ]);
+    }
+
+    private function horariosDisponiblesPorFecha(): array
+    {
+        return AgendaCapacidad::orderBy('fecha_evento')
+            ->get()
+            ->mapWithKeys(fn (AgendaCapacidad $capacidad) => [
+                $capacidad->fecha_evento->format('Y-m-d') => $capacidad->horarios,
+            ])
+            ->all();
     }
 }

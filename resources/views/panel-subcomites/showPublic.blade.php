@@ -486,6 +486,10 @@
                         <form action="{{ route('agenda-eventos.store') }}" method="POST" id="agenda-request-form"
                             data-blocked-dates='@json($fechasAgendaOcupadas)'
                             data-occupied-schedules='@json($horariosOcupadosPorFecha ?? [])'
+                            data-daily-capacities='@json($capacidadesAgendaPorFecha ?? [])'
+                            data-available-schedules='@json($horariosDisponiblesPorFecha ?? [])'
+                            data-default-capacity="{{ \App\Models\AgendaEvento::CAPACIDAD_PREDETERMINADA }}"
+                            data-default-schedules='@json(\App\Models\AgendaEvento::HORARIOS_PREDETERMINADOS)'
                             data-non-working-dates='@json($fechasNoLaborables)'>
                             @csrf
                             <div class="agenda-form__intro"><i class="fa-solid fa-circle-info"></i><span>La fecha se
@@ -526,9 +530,13 @@
                                 </div>
                                 <div class="col-md-6"><label class="form-label fw-bold" for="agenda-start">Horario *</label>
                                     <div class="agenda-input-icon"><i class="fa-regular fa-clock"></i>
-                                        <select name="hora_inicio" id="agenda-start" class="form-select" required>
-                                            <option value="10:00" @selected(old('hora_inicio', '10:00') === '10:00')>10:00 - 11:00 AM</option>
-                                            <option value="13:00" @selected(old('hora_inicio') === '13:00')>01:00 - 02:00 PM</option>
+                                        <select name="hora_inicio" id="agenda-start" class="form-select"
+                                            data-selected-schedule="{{ old('hora_inicio', '10:00') }}" required>
+                                            @foreach (\App\Models\AgendaEvento::HORARIOS_PREDETERMINADOS as $horario)
+                                                <option value="{{ $horario }}" @selected(old('hora_inicio', '10:00') === $horario)>
+                                                    {{ $horario }} - {{ \App\Models\AgendaEvento::horaFinParaInicio($horario) }} hrs
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -616,6 +624,10 @@
             if (agendaForm) {
                 const blockedDates = JSON.parse(agendaForm.dataset.blockedDates || '[]');
                 const occupiedSchedules = JSON.parse(agendaForm.dataset.occupiedSchedules || '{}');
+                const dailyCapacities = JSON.parse(agendaForm.dataset.dailyCapacities || '{}');
+                const availableSchedules = JSON.parse(agendaForm.dataset.availableSchedules || '{}');
+                const defaultCapacity = Number(agendaForm.dataset.defaultCapacity || 2);
+                const defaultSchedules = JSON.parse(agendaForm.dataset.defaultSchedules || '[]');
                 const nonWorkingDates = JSON.parse(agendaForm.dataset.nonWorkingDates || '[]');
                 const dateInput = document.getElementById('agenda-date');
                 const warning = document.getElementById('agenda-date-warning');
@@ -629,27 +641,39 @@
                 const agendaModal = agendaModalElement ? bootstrap.Modal.getOrCreateInstance(agendaModalElement) : null;
                 const startTimeSelect = document.getElementById('agenda-start');
 
+                const formatSchedule = (start) => {
+                    const [hour, minute] = start.split(':').map(Number);
+                    const endHour = String((hour + 1) % 24).padStart(2, '0');
+                    return `${start} - ${endHour}:${String(minute).padStart(2, '0')} hrs`;
+                };
+
+                const refreshSchedules = (schedules, occupiedForDate) => {
+                    const previousValue = startTimeSelect.dataset.selectedSchedule || startTimeSelect.value;
+                    startTimeSelect.replaceChildren();
+
+                    schedules.forEach((schedule) => {
+                        const option = document.createElement('option');
+                        option.value = schedule;
+                        option.textContent = formatSchedule(schedule);
+                        option.disabled = occupiedForDate.includes(schedule);
+                        startTimeSelect.append(option);
+                    });
+
+                    const selectedOption = [...startTimeSelect.options].find((option) => option.value === previousValue && !option.disabled);
+                    const firstAvailableOption = [...startTimeSelect.options].find((option) => !option.disabled);
+                    startTimeSelect.value = (selectedOption || firstAvailableOption || {}).value || '';
+                    delete startTimeSelect.dataset.selectedSchedule;
+                };
+
                 const refreshDate = () => {
                     const blocked = blockedDates.includes(dateInput.value);
                     const nonWorking = nonWorkingDates.includes(dateInput.value);
                     const occupiedForDate = occupiedSchedules[dateInput.value] || [];
+                    const capacity = Number(dailyCapacities[dateInput.value] || defaultCapacity);
+                    const schedules = availableSchedules[dateInput.value] || defaultSchedules;
+                    const allOccupied = occupiedForDate.length >= capacity;
 
-                    const is10Occupied = occupiedForDate.includes('10:00');
-                    const is13Occupied = occupiedForDate.includes('13:00');
-
-                    const opt10 = startTimeSelect.querySelector('option[value="10:00"]');
-                    const opt13 = startTimeSelect.querySelector('option[value="13:00"]');
-
-                    if (opt10) opt10.disabled = is10Occupied;
-                    if (opt13) opt13.disabled = is13Occupied;
-
-                    if (startTimeSelect.value === '10:00' && is10Occupied && !is13Occupied) {
-                        startTimeSelect.value = '13:00';
-                    } else if (startTimeSelect.value === '13:00' && is13Occupied && !is10Occupied) {
-                        startTimeSelect.value = '10:00';
-                    }
-
-                    const allOccupied = is10Occupied && is13Occupied;
+                    refreshSchedules(schedules, occupiedForDate);
 
                     if (nonWorking) {
                         warning.textContent = 'Esta fecha no es laborable.';
@@ -692,6 +716,9 @@
                     });
                 });
                 refreshModality();
+                if (dateInput.value) {
+                    refreshDate();
+                }
                 @if ($errors->any())
                     agendaModal?.show();
                 @endif

@@ -10,6 +10,10 @@ class AgendaEvento extends Model
 {
     use HasFactory;
 
+    public const CAPACIDAD_PREDETERMINADA = 2;
+
+    public const HORARIOS_PREDETERMINADOS = ['10:00', '13:00'];
+
     protected $table = 'agenda_eventos';
 
     protected $fillable = [
@@ -55,6 +59,28 @@ class AgendaEvento extends Model
     public function estaActivo(): bool
     {
         return in_array($this->estado, ['pendiente', 'confirmado'], true);
+    }
+
+    public static function disponibilidadParaFecha(string $fecha, bool $bloquear = false): array
+    {
+        $query = AgendaCapacidad::query()
+            ->whereDate('fecha_evento', Carbon::parse($fecha)->format('Y-m-d'));
+
+        if ($bloquear) {
+            $query->lockForUpdate();
+        }
+
+        $capacidad = $query->first();
+
+        return [
+            'max_eventos' => (int) ($capacidad?->max_eventos ?? self::CAPACIDAD_PREDETERMINADA),
+            'horarios' => $capacidad?->horarios ?? self::HORARIOS_PREDETERMINADOS,
+        ];
+    }
+
+    public static function horaFinParaInicio(string $horaInicio): string
+    {
+        return Carbon::createFromFormat('H:i', $horaInicio)->addHour()->format('H:i');
     }
 
     public static function fechaEsNoLaborable(string $fecha): bool

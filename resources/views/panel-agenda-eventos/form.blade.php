@@ -23,6 +23,14 @@
                 </div>
             @endif
 
+            @php
+                $fechaInicial = old('fecha_evento', optional($evento->fecha_evento)->format('Y-m-d'));
+                $horariosIniciales = $fechaInicial
+                    ? ($horariosDisponiblesPorFecha[$fechaInicial] ?? \App\Models\AgendaEvento::HORARIOS_PREDETERMINADOS)
+                    : \App\Models\AgendaEvento::HORARIOS_PREDETERMINADOS;
+                $horaInicioSeleccionada = old('hora_inicio', $evento->hora_inicio ? substr((string) $evento->hora_inicio, 0, 5) : $horariosIniciales[0]);
+            @endphp
+
             <form action="{{ $evento->exists ? route('panel-agenda-eventos.update', $evento) : route('panel-agenda-eventos.store') }}"
                 method="POST" novalidate>
                 @csrf
@@ -89,7 +97,7 @@
                             </div>
                             <div class="agenda-admin-note mb-3">
                                 <i class="fa-solid fa-circle-info"></i>
-                                <span>La agenda permite máximo dos actividades por día (10:00 a 11:00 hrs y 13:00 a 14:00 hrs), a partir del día siguiente, únicamente en días laborales.</span>
+                                <span>Por defecto la agenda permite dos actividades por día (10:00 a 11:00 hrs y 13:00 a 14:00 hrs). Las fechas con capacidad especial usan los horarios configurados.</span>
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -101,8 +109,11 @@
                                 <div class="col-md-6">
                                     <label for="hora_inicio" class="fw-bold mb-1">Horario: *</label>
                                     <select id="hora_inicio" name="hora_inicio" class="form-select @error('hora_inicio') is-invalid @enderror" required>
-                                        <option value="10:00" @selected(old('hora_inicio', $evento->hora_inicio ? substr((string) $evento->hora_inicio, 0, 5) : '10:00') === '10:00')>10:00 - 11:00 AM</option>
-                                        <option value="13:00" @selected(old('hora_inicio', $evento->hora_inicio ? substr((string) $evento->hora_inicio, 0, 5) : '') === '13:00')>01:00 - 02:00 PM</option>
+                                        @foreach ($horariosIniciales as $horario)
+                                            <option value="{{ $horario }}" @selected($horaInicioSeleccionada === $horario)>
+                                                {{ $horario }} - {{ \App\Models\AgendaEvento::horaFinParaInicio($horario) }} hrs
+                                            </option>
+                                        @endforeach
                                     </select>
                                     @error('hora_inicio')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
@@ -222,6 +233,10 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const type = document.getElementById('tipo_evento');
                 const subcomite = document.getElementById('subcomite_id');
+                const dateInput = document.getElementById('fecha_evento');
+                const startTimeSelect = document.getElementById('hora_inicio');
+                const schedulesByDate = @json($horariosDisponiblesPorFecha);
+                const defaultSchedules = @json(\App\Models\AgendaEvento::HORARIOS_PREDETERMINADOS);
 
                 if (!type || !subcomite) return;
 
@@ -230,8 +245,31 @@
                     subcomite.required = false;
                 };
 
+                const formatSchedule = (start) => {
+                    const [hour, minute] = start.split(':').map(Number);
+                    const endHour = String((hour + 1) % 24).padStart(2, '0');
+                    return `${start} - ${endHour}:${String(minute).padStart(2, '0')} hrs`;
+                };
+
+                const refreshSchedules = () => {
+                    const selectedValue = startTimeSelect.value;
+                    const schedules = schedulesByDate[dateInput.value] || defaultSchedules;
+                    startTimeSelect.replaceChildren();
+
+                    schedules.forEach((schedule) => {
+                        const option = document.createElement('option');
+                        option.value = schedule;
+                        option.textContent = formatSchedule(schedule);
+                        startTimeSelect.append(option);
+                    });
+
+                    startTimeSelect.value = schedules.includes(selectedValue) ? selectedValue : schedules[0];
+                };
+
                 type.addEventListener('change', refreshSubcomite);
+                dateInput.addEventListener('change', refreshSchedules);
                 refreshSubcomite();
+                refreshSchedules();
             });
         </script>
     @endpush

@@ -26,6 +26,7 @@ use App\Http\Controllers\InvitadoCopladepController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\AgendaEventoController;
+use App\Http\Controllers\AgendaCapacidadController;
 use App\Http\Controllers\PanelAgendaEventoController;
 use App\Http\Controllers\RegistroCopladepController;
 
@@ -228,6 +229,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'update'])->name('panel-planes-estatales-anexos.update');
     Route::delete('panel-planes-estatales/{planId}/anexos/{id}', [PlanEstatalAnexoController::class, 'destroy'])->name('panel-planes-estatales-anexos.destroy');
     Route::patch('/plan-estatal-anexo/{id}/publicado', [PlanEstatalAnexoController::class, 'updatePublicado'])->name('update-publicado-plan-estatal-anexo');
+    Route::get('panel-eventos/capacidades-agenda', [AgendaCapacidadController::class, 'index'])
+        ->name('panel-eventos.capacidades-agenda.index');
+    Route::post('panel-eventos/capacidades-agenda', [AgendaCapacidadController::class, 'store'])
+        ->name('panel-eventos.capacidades-agenda.store');
+    Route::delete('panel-eventos/capacidades-agenda/{agendaCapacidad}', [AgendaCapacidadController::class, 'destroy'])
+        ->name('panel-eventos.capacidades-agenda.destroy');
     Route::resource('panel-eventos', EventoController::class);
     Route::get('/panel-agenda-eventos-exportar', [PanelAgendaEventoController::class, 'export'])
         ->name('panel-agenda-eventos.export')
