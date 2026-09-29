@@ -92,6 +92,11 @@ class AgendaEvento extends Model
             || in_array($date->format('Y-m-d'), self::diasFestivos($date->year), true);
     }
 
+    public static function fechaEstaBloqueada(string $fecha): bool
+    {
+        return AgendaFechaBloqueada::whereDate('fecha_evento', Carbon::parse($fecha)->format('Y-m-d'))->exists();
+    }
+
     public static function diasFestivos(int $year): array
     {
         $primerLunesFebrero = Carbon::create($year, 2, 1);

@@ -27,6 +27,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\AgendaEventoController;
 use App\Http\Controllers\AgendaCapacidadController;
+use App\Http\Controllers\AgendaFechaBloqueadaController;
 use App\Http\Controllers\PanelAgendaEventoController;
 use App\Http\Controllers\RegistroCopladepController;
 
@@ -235,6 +236,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('panel-eventos.capacidades-agenda.store');
     Route::delete('panel-eventos/capacidades-agenda/{agendaCapacidad}', [AgendaCapacidadController::class, 'destroy'])
         ->name('panel-eventos.capacidades-agenda.destroy');
+    Route::get('panel-eventos/fechas-bloqueadas-agenda', [AgendaFechaBloqueadaController::class, 'index'])
+        ->name('panel-eventos.fechas-bloqueadas-agenda.index');
+    Route::post('panel-eventos/fechas-bloqueadas-agenda', [AgendaFechaBloqueadaController::class, 'store'])
+        ->name('panel-eventos.fechas-bloqueadas-agenda.store');
+    Route::delete('panel-eventos/fechas-bloqueadas-agenda/{agendaFechaBloqueada}', [AgendaFechaBloqueadaController::class, 'destroy'])
+        ->name('panel-eventos.fechas-bloqueadas-agenda.destroy');
     Route::resource('panel-eventos', EventoController::class);
     Route::get('/panel-agenda-eventos-exportar', [PanelAgendaEventoController::class, 'export'])
         ->name('panel-agenda-eventos.export')

@@ -105,7 +105,10 @@
                     <h3 class="h4 mb-1">Fechas configuradas</h3>
                     <p class="text-muted mb-0">Eliminar una configuración restablece la capacidad predeterminada de 2 eventos.</p>
                 </div>
-                <a href="{{ route('panel-eventos.index') }}" class="btn btn-outline-secondary">Volver a eventos</a>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('panel-eventos.fechas-bloqueadas-agenda.index') }}" class="btn btn-outline-secondary">Fechas no disponibles</a>
+                    <a href="{{ route('panel-agenda-eventos.index') }}" class="btn btn-outline-secondary">Volver a agenda</a>
+                </div>
             </div>
 
             <div class="table-responsive">

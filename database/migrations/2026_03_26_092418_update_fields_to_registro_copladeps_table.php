@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('registro_copladeps', function (Blueprint $table) {
-            $table->string('tipo_asistente')->default('titular');
-            $table->foreignId('invitado_id')->constrained('invitado_copladeps');
-        });
+        if (!Schema::hasColumn('registro_copladeps', 'tipo_asistente')) {
+            Schema::table('registro_copladeps', function (Blueprint $table) {
+                $table->string('tipo_asistente')->default('titular');
+            });
+        }
+
+        if (!Schema::hasColumn('registro_copladeps', 'invitado_id')) {
+            Schema::table('registro_copladeps', function (Blueprint $table) {
+                $table->foreignId('invitado_id')->constrained('invitado_copladeps');
+            });
+        }
     }
 
     /**
@@ -22,10 +29,17 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('registro_copladeps', function (Blueprint $table) {
-            $table->dropColumn('tipo_asistente');
-            $table->dropForeign(['invitado_id']);
-            $table->dropColumn('invitado_id');
-        });
+        if (Schema::hasColumn('registro_copladeps', 'invitado_id')) {
+            Schema::table('registro_copladeps', function (Blueprint $table) {
+                $table->dropForeign(['invitado_id']);
+                $table->dropColumn('invitado_id');
+            });
+        }
+
+        if (Schema::hasColumn('registro_copladeps', 'tipo_asistente')) {
+            Schema::table('registro_copladeps', function (Blueprint $table) {
+                $table->dropColumn('tipo_asistente');
+            });
+        }
     }
 };

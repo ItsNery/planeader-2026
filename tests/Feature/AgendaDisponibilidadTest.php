@@ -6,6 +6,7 @@ use App\Http\Controllers\PanelAgendaEventoController;
 use App\Http\Controllers\AgendaCapacidadController;
 use App\Models\AgendaCapacidad;
 use App\Models\AgendaEvento;
+use App\Models\AgendaFechaBloqueada;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,7 @@ class AgendaDisponibilidadTest extends TestCase
         parent::setUp();
 
         Schema::dropIfExists('agenda_capacidades');
+        Schema::dropIfExists('agenda_fechas_bloqueadas');
         Schema::dropIfExists('agenda_eventos');
         Schema::create('agenda_capacidades', function (Blueprint $table) {
             $table->id();
@@ -52,11 +54,18 @@ class AgendaDisponibilidadTest extends TestCase
             $table->timestamp('confirmado_at')->nullable();
             $table->timestamps();
         });
+        Schema::create('agenda_fechas_bloqueadas', function (Blueprint $table) {
+            $table->id();
+            $table->date('fecha_evento')->unique();
+            $table->string('motivo', 500)->nullable();
+            $table->timestamps();
+        });
     }
 
     protected function tearDown(): void
     {
         Schema::dropIfExists('agenda_eventos');
+        Schema::dropIfExists('agenda_fechas_bloqueadas');
         Schema::dropIfExists('agenda_capacidades');
 
         parent::tearDown();
@@ -82,6 +91,17 @@ class AgendaDisponibilidadTest extends TestCase
 
         $this->assertSame(3, $disponibilidad['max_eventos']);
         $this->assertSame(['09:00', '12:00', '15:00'], $disponibilidad['horarios']);
+    }
+
+    public function test_identifies_a_date_blocked_for_public_requests(): void
+    {
+        AgendaFechaBloqueada::create([
+            'fecha_evento' => '2030-01-15',
+            'motivo' => 'Evento institucional',
+        ]);
+
+        $this->assertTrue(AgendaEvento::fechaEstaBloqueada('2030-01-15'));
+        $this->assertFalse(AgendaEvento::fechaEstaBloqueada('2030-01-16'));
     }
 
     public function test_panel_can_create_an_event_in_a_third_configured_slot(): void

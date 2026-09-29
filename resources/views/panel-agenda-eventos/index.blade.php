@@ -8,7 +8,11 @@
             <h2>Agenda de sesiones y mesas técnicas</h2>
             <p class="text-white mb-0">Administra solicitudes, disponibilidad, datos operativos y ligas virtuales.</p>
         </div>
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-end mb-3 flex-wrap gap-2">
+            @can('editar-agenda-evento')
+                <a href="{{ route('panel-eventos.capacidades-agenda.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-sliders me-1"></i>Capacidad de agenda</a>
+                <a href="{{ route('panel-eventos.fechas-bloqueadas-agenda.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-ban me-1"></i>Fechas no disponibles</a>
+            @endcan
             <a href="{{ route('panel-agenda-eventos.export') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-csv me-1"></i>Exportar contactos</a>
             <a href="{{ route('panel-agenda-eventos.export-sesiones') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-arrow-down me-1"></i>Sesiones</a>
             <a href="{{ route('panel-agenda-eventos.export-mesas-tecnicas') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-arrow-down me-1"></i>Mesas técnicas</a>

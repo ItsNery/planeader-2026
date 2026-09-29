@@ -253,6 +253,12 @@ class AgendaEventoController extends Controller
 
     private function validateAgendaDateAndHours(array &$data): void
     {
+        if (AgendaEvento::fechaEstaBloqueada($data['fecha_evento'])) {
+            throw ValidationException::withMessages([
+                'fecha_evento' => 'La fecha seleccionada no está disponible para solicitudes públicas.',
+            ]);
+        }
+
         if (AgendaEvento::fechaEsNoLaborable($data['fecha_evento'])) {
             throw ValidationException::withMessages([
                 'fecha_evento' => 'Solo se pueden solicitar fechas laborales que no sean festivas.',

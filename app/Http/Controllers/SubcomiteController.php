@@ -11,6 +11,7 @@ use App\Traits\UpdatesPublicado;
 use App\Models\Evento;
 use App\Models\AgendaEvento;
 use App\Models\AgendaCapacidad;
+use App\Models\AgendaFechaBloqueada;
 use Carbon\Carbon;
 
 class SubcomiteController extends Controller
@@ -403,6 +404,11 @@ class SubcomiteController extends Controller
         $fechasNoLaborables = collect(range(1, $diasEnMes))
             ->map(fn ($dia) => $fechaBase->copy()->day($dia)->format('Y-m-d'))
             ->filter(fn ($fecha) => AgendaEvento::fechaEsNoLaborable($fecha))
+            ->merge(AgendaFechaBloqueada::whereYear('fecha_evento', $fechaBase->year)
+                ->whereMonth('fecha_evento', $fechaBase->month)
+                ->pluck('fecha_evento')
+                ->map(fn ($fecha) => Carbon::parse($fecha)->format('Y-m-d')))
+            ->unique()
             ->values();
 
         $subcomitesAgenda = Subcomite::where('publicado', true)
@@ -497,6 +503,11 @@ class SubcomiteController extends Controller
         $fechasNoLaborables = collect(range(1, $diasEnMes))
             ->map(fn ($dia) => $fechaBase->copy()->day($dia)->format('Y-m-d'))
             ->filter(fn ($fecha) => AgendaEvento::fechaEsNoLaborable($fecha))
+            ->merge(AgendaFechaBloqueada::whereYear('fecha_evento', $fechaBase->year)
+                ->whereMonth('fecha_evento', $fechaBase->month)
+                ->pluck('fecha_evento')
+                ->map(fn ($fecha) => Carbon::parse($fecha)->format('Y-m-d')))
+            ->unique()
             ->values();
         $subcomitesAgenda = Subcomite::where('publicado', true)
             ->whereHas('planestatal', function ($query) {
