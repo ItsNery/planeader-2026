@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\HerramientaPlaneacion;
 use App\Models\HerramientaAnexo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Traits\UpdatesPublicado;
 
@@ -15,7 +16,7 @@ class HerramientaPlaneacionController extends Controller
     {
         $this->middleware('permission:ver-herramienta|crear-herramienta|editar-herramienta|borrar-herramienta', ['only' => ['index']]);
         $this->middleware('permission:crear-herramienta', ['only' => ['create', 'store']]);
-        $this->middleware('permission:editar-herramienta', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:editar-herramienta', ['only' => ['edit', 'update', 'orden', 'actualizarOrden']]);
         $this->middleware('permission:borrar-herramienta', ['only' => ['destroy', 'destroyAnexo']]);
     }
 
@@ -28,6 +29,40 @@ class HerramientaPlaneacionController extends Controller
     {
         $herramientas = HerramientaPlaneacion::withCount('anexos')->orderBy('orden', 'asc')->paginate(100);
         return view('panel-herramientas.index', compact('herramientas'));
+    }
+
+    public function orden()
+    {
+        $herramientas = HerramientaPlaneacion::orderBy('orden')->orderBy('id')->get();
+
+        return view('panel-herramientas.orden', compact('herramientas'));
+    }
+
+    public function actualizarOrden(Request $request)
+    {
+        $data = $request->validate([
+            'herramientas' => ['required', 'array', 'min:1'],
+            'herramientas.*' => ['required', 'integer', 'distinct', 'exists:herramientas_planeacion,id'],
+        ]);
+
+        $ids = array_map('intval', $data['herramientas']);
+        $idsEsperados = HerramientaPlaneacion::orderBy('id')->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $idsRecibidos = $ids;
+        sort($idsRecibidos);
+
+        if ($idsRecibidos !== $idsEsperados) {
+            return back()->withErrors([
+                'herramientas' => 'La lista debe incluir todas las herramientas una sola vez. Recarga la página e intenta nuevamente.',
+            ]);
+        }
+
+        DB::transaction(function () use ($ids) {
+            foreach ($ids as $indice => $id) {
+                HerramientaPlaneacion::whereKey($id)->update(['orden' => $indice + 1]);
+            }
+        });
+
+        return redirect()->route('panel-herramientas.index')->with('success', 'El orden de las herramientas fue actualizado.');
     }
 
     /**

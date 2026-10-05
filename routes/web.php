@@ -213,6 +213,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/documentosmarcojuridico', [MarcoJuridicoController::class, 'index'])->name('documentosmarcojuridico.index');
     Route::patch('/documentos-apoyo-coplademun/{id}/publicado', [DocumentoApoyoCoplademunController::class, 'updatePublicado'])->name('update-publicado-documentos-apoyo-coplademun');
     Route::patch('/documentos-metodologicos/{id}/publicado', [DocumentoMetodologicoController::class, 'updatePublicado'])->name('update-publicado-documentos-metodologicos');
+    Route::get('panel-herramientas/orden', [HerramientaPlaneacionController::class, 'orden'])
+        ->name('panel-herramientas.orden');
+    Route::put('panel-herramientas/orden', [HerramientaPlaneacionController::class, 'actualizarOrden'])
+        ->name('panel-herramientas.actualizar-orden');
     Route::resource('panel-herramientas', HerramientaPlaneacionController::class);
     Route::delete('panel-herramientas-anexo/{id}', [HerramientaPlaneacionController::class, 'destroyAnexo'])->name('panel-herramientas.destroyAnexo');
     Route::patch('/herramienta-planeacion/{id}/publicado', [HerramientaPlaneacionController::class, 'updatePublicado'])->name('update-publicado-herramienta-planeacion');

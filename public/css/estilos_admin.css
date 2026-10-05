@@ -701,6 +701,81 @@ a {
     margin-left: auto;
 }
 
+.herramientas-order-list {
+    display: grid;
+    gap: .65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.herramientas-order-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem;
+    border: 1px solid #e7e3e5;
+    border-radius: .5rem;
+    background: #fff;
+    cursor: grab;
+}
+
+.herramientas-order-item.is-dragging {
+    opacity: .45;
+}
+
+.herramientas-order-item__position {
+    display: grid;
+    flex: 0 0 2rem;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    color: var(--color1);
+    border-radius: 50%;
+    background: #f4eff1;
+    font-family: var(--fontFamilyBold);
+}
+
+.herramientas-order-item__handle {
+    padding: .35rem;
+    color: #77727a;
+    border: 0;
+    background: transparent;
+    cursor: grab;
+}
+
+.herramientas-order-item__image {
+    flex: 0 0 3.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: cover;
+    border-radius: .3rem;
+}
+
+.herramientas-order-item__content {
+    display: grid;
+    gap: .15rem;
+    min-width: 0;
+}
+
+.herramientas-order-item__content strong {
+    overflow: hidden;
+    color: #28252a;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.herramientas-order-item__content span {
+    color: #77727a;
+    font-size: .8rem;
+}
+
+.herramientas-order-item__controls {
+    display: flex;
+    gap: .35rem;
+    margin-left: auto;
+}
+
 .agenda-admin-calendar {
     padding: 1.25rem;
     border: 1px solid #e7e3e5;
@@ -818,6 +893,9 @@ a {
     }
     .agenda-admin-toolbar__create { margin-left: 0; }
     .agenda-admin-toolbar .btn { justify-content: center; }
+    .herramientas-order-item { gap: .45rem; padding: .55rem; }
+    .herramientas-order-item__image { display: none; }
+    .herramientas-order-item__position { flex-basis: 1.8rem; width: 1.8rem; height: 1.8rem; }
     .agenda-admin-calendar { padding: .7rem; }
     .agenda-admin-calendar__heading { align-items: flex-start; flex-direction: column; }
     .agenda-admin-calendar__grid { gap: .25rem; }

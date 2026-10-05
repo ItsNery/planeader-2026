@@ -24,13 +24,17 @@
                 </strong>
             </p>
         </div>
-        <div class="container d-flex justify-content-end">
-            <a href="{{ route('panel-herramientas.create') }}" class="text-decoration-none">
-                <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
-                    Subir
-                    herramienta
-                </button>
-            </a>
+        <div class="container d-flex justify-content-end flex-wrap gap-2">
+            @can('editar-herramienta')
+                <a href="{{ route('panel-herramientas.orden') }}" class="btn btn-outline-secondary mt-3 mb-3">
+                    <i class="fa-solid fa-arrow-down-up-across-line me-1"></i>Reordenar herramientas
+                </a>
+            @endcan
+            @can('crear-herramienta')
+                <a href="{{ route('panel-herramientas.create') }}" class="btn btn-custom-primary mt-3 mb-3">
+                    <i class="fa-solid fa-upload me-1"></i>Subir herramienta
+                </a>
+            @endcan
         </div>
         <div class="container table-responsive">
             <table id="myTable" class="table w-100 table-hover align-middle">
