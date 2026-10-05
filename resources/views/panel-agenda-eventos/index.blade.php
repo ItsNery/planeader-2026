@@ -9,6 +9,13 @@
             <p class="text-white mb-0">Administra solicitudes, disponibilidad, datos operativos y ligas virtuales.</p>
         </div>
         <div class="d-flex justify-content-end mb-3 flex-wrap gap-2">
+            @canany(['ver-agenda-evento', 'editar-agenda-evento'])
+                <button type="button" id="enable-web-push" class="btn btn-outline-primary"
+                    data-vapid-key="{{ config('services.web_push.public_key') }}"
+                    data-subscription-url="{{ route('panel-agenda-eventos.push-subscriptions.store') }}">
+                    <i class="fa-regular fa-bell me-1"></i> Activar notificaciones
+                </button>
+            @endcanany
             @can('editar-agenda-evento')
                 <a href="{{ route('panel-eventos.capacidades-agenda.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-sliders me-1"></i>Capacidad de agenda</a>
                 <a href="{{ route('panel-eventos.fechas-bloqueadas-agenda.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-ban me-1"></i>Fechas no disponibles</a>
@@ -62,7 +69,7 @@
                             <div class="agenda-admin-modal-status agenda-status-badge--{{ $eventoModal->estado }}">{{ ucfirst($eventoModal->estado) }}</div>
                             <div class="agenda-detail-fields mt-3">
                                 <div class="agenda-detail-field"><span>Fecha</span><strong>{{ $eventoModal->fecha_evento->translatedFormat('l d \\d\\e F \\d\\e Y') }}</strong></div>
-                                <div class="agenda-detail-field"><span>Horario</span><strong>{{ $eventoModal->horaInicioFormateada() }}{{ $eventoModal->hora_fin ? ' a ' . substr($eventoModal->hora_fin, 0, 5) : '' }} hrs.</strong></div>
+                                <div class="agenda-detail-field"><span>Hora de inicio</span><strong>{{ $eventoModal->horaInicioFormateada() }} hrs.</strong></div>
                                 <div class="agenda-detail-field"><span>Tipo</span><strong>{{ $eventoModal->descripcionTipo() }}</strong></div>
                                 <div class="agenda-detail-field"><span>Modalidad</span><strong>{{ ucfirst($eventoModal->modalidad) }}</strong></div>
                                 <div class="agenda-detail-field agenda-detail-field--wide"><span>Subcomité</span><strong>{{ $eventoModal->subcomite?->nombre ?: 'No aplica' }}</strong></div>
@@ -124,4 +131,54 @@
             </table>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const button = document.getElementById('enable-web-push');
+                if (!button || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+                const vapidKey = button.dataset.vapidKey;
+                if (!vapidKey) {
+                    button.disabled = true;
+                    button.title = 'Falta configurar las claves VAPID.';
+                    return;
+                }
+
+                const urlBase64ToUint8Array = (value) => {
+                    const padding = '='.repeat((4 - value.length % 4) % 4);
+                    const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+                    return Uint8Array.from(atob(base64), character => character.charCodeAt(0));
+                };
+
+                button.addEventListener('click', async function() {
+                    try {
+                        const permission = await Notification.requestPermission();
+                        if (permission !== 'granted') throw new Error('Debes permitir las notificaciones en el navegador.');
+
+                        const registration = await navigator.serviceWorker.register('/service-worker.js');
+                        const subscription = await registration.pushManager.getSubscription() || await registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: urlBase64ToUint8Array(vapidKey),
+                        });
+                        const response = await fetch(button.dataset.subscriptionUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify(subscription.toJSON()),
+                        });
+                        if (!response.ok) throw new Error('No fue posible guardar la suscripción.');
+
+                        button.disabled = true;
+                        button.innerHTML = '<i class="fa-solid fa-bell me-1"></i> Notificaciones activadas';
+                    } catch (error) {
+                        Swal.fire({ icon: 'warning', title: 'No se activaron las notificaciones', text: error.message });
+                    }
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>

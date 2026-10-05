@@ -24,7 +24,6 @@ class AgendaEvento extends Model
         'institucion_organizadora',
         'fecha_evento',
         'hora_inicio',
-        'hora_fin',
         'modalidad',
         'liga_videoconferencia',
         'ubicacion',
@@ -78,11 +77,6 @@ class AgendaEvento extends Model
         ];
     }
 
-    public static function horaFinParaInicio(string $horaInicio): string
-    {
-        return Carbon::createFromFormat('H:i', $horaInicio)->addHour()->format('H:i');
-    }
-
     public static function fechaEsNoLaborable(string $fecha): bool
     {
         $date = Carbon::parse($fecha);
@@ -128,16 +122,22 @@ class AgendaEvento extends Model
 
     public function tituloPublico(): string
     {
-        if ($this->tipo_evento === 'sesion') {
-            return 'Sesión de ' . ($this->subcomite?->nombre ?? 'Subcomité');
-        }
-
-        return 'Mesa Técnica de Trabajo';
+        return match ($this->tipo_evento) {
+            'sesion' => 'Sesión de ' . ($this->subcomite?->nombre ?? 'Subcomité'),
+            'sesion_copladep_ordinaria' => 'Sesión Ordinaria del COPLADEP',
+            'sesion_copladep_extraordinaria' => 'Sesión Extraordinaria del COPLADEP',
+            default => 'Mesa Técnica de Trabajo',
+        };
     }
 
     public function descripcionTipo(): string
     {
-        return $this->tipo_evento === 'sesion' ? 'Sesión de subcomité' : 'Mesa técnica de trabajo';
+        return match ($this->tipo_evento) {
+            'sesion' => 'Sesión de subcomité',
+            'sesion_copladep_ordinaria' => 'Sesión Ordinaria del COPLADEP',
+            'sesion_copladep_extraordinaria' => 'Sesión Extraordinaria del COPLADEP',
+            default => 'Mesa técnica de trabajo',
+        };
     }
 
     public function horaInicioFormateada(): string

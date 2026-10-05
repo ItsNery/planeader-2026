@@ -465,7 +465,7 @@
                                             </div>
                                             <div><span class="agenda-detail__label"><i
                                                         class="fa-regular fa-clock me-1"></i>Hora de
-                                                    inicio</span><strong>{{ $agendaEvento->horaInicioFormateada() }}{{ $agendaEvento->hora_fin ? ' a ' . substr($agendaEvento->hora_fin, 0, 5) : '' }}
+                                                    inicio</span><strong>{{ $agendaEvento->horaInicioFormateada() }}
                                                     hrs.</strong></div>
                                         </div>
                                         <div class="agenda-detail__body">
@@ -682,18 +682,15 @@
                         const previousValue = startTimeSelect.dataset.selectedSchedule || startTimeSelect.value;
                         startTimeSelect.replaceChildren();
 
-                        schedules.forEach((schedule) => {
+                        [...new Set(schedules)].forEach((schedule) => {
                             const option = document.createElement('option');
                             option.value = schedule;
                             option.textContent = formatSchedule(schedule);
-                            option.disabled = occupiedForDate.includes(schedule);
                             startTimeSelect.append(option);
                         });
 
-                        const selectedOption = [...startTimeSelect.options].find((option) => option.value ===
-                            previousValue && !option.disabled);
-                        const firstAvailableOption = [...startTimeSelect.options].find((option) => !option
-                            .disabled);
+                        const selectedOption = [...startTimeSelect.options].find((option) => option.value === previousValue);
+                        const firstAvailableOption = startTimeSelect.options[0];
                         startTimeSelect.value = (selectedOption || firstAvailableOption || {}).value || '';
                         delete startTimeSelect.dataset.selectedSchedule;
                     };

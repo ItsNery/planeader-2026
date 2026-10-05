@@ -8,7 +8,7 @@
                     {{ $evento->exists ? 'Editar solicitud de agenda' : 'Crear evento de agenda' }}
                 </h2>
                 <p class="text-white mb-0 small opacity-75">
-                    {{ $evento->exists ? 'Actualiza la información y valida los cambios del evento.' : 'Registra una sesión o mesa técnica en la agenda institucional.' }}
+                    {{ $evento->exists ? 'Actualiza la información y valida los cambios del evento.' : 'Registra una sesión, mesa técnica o sesión del COPLADEP en la agenda institucional.' }}
                 </p>
             </div>
 
@@ -52,6 +52,8 @@
                                     <select id="tipo_evento" name="tipo_evento" class="form-select @error('tipo_evento') is-invalid @enderror" required>
                                         <option value="sesion" @selected(old('tipo_evento', $evento->tipo_evento) === 'sesion')>Sesión de subcomité</option>
                                         <option value="mesa_tecnica" @selected(old('tipo_evento', $evento->tipo_evento) === 'mesa_tecnica')>Mesa técnica de trabajo</option>
+                                        <option value="sesion_copladep_ordinaria" @selected(old('tipo_evento', $evento->tipo_evento) === 'sesion_copladep_ordinaria')>Sesión Ordinaria del COPLADEP</option>
+                                        <option value="sesion_copladep_extraordinaria" @selected(old('tipo_evento', $evento->tipo_evento) === 'sesion_copladep_extraordinaria')>Sesión Extraordinaria del COPLADEP</option>
                                     </select>
                                     @error('tipo_evento')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
@@ -64,7 +66,7 @@
                                             <option value="{{ $subcomite->id }}" @selected(old('subcomite_id', $evento->subcomite_id) == $subcomite->id)>{{ $subcomite->nombre }}</option>
                                         @endforeach
                                     </select>
-                                    <div class="form-text">Selecciona "Programa Especial" para mesas técnicas de programas especiales.</div>
+                                    <div class="form-text">Selecciona "Programa Especial" para mesas técnicas o deja esta opción para sesiones del COPLADEP.</div>
                                     @error('subcomite_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-12">
@@ -97,7 +99,7 @@
                             </div>
                             <div class="agenda-admin-note mb-3">
                                 <i class="fa-solid fa-circle-info"></i>
-                                <span>Por defecto la agenda permite dos actividades por día (10:00 a 11:00 hrs y 13:00 a 14:00 hrs). Las fechas con capacidad especial usan los horarios configurados.</span>
+                                <span>Por defecto la agenda permite dos actividades por día, con inicio a las 10:00 y 13:00 hrs. Las fechas con capacidad especial usan los horarios configurados.</span>
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -111,7 +113,7 @@
                                     <select id="hora_inicio" name="hora_inicio" class="form-select @error('hora_inicio') is-invalid @enderror" required>
                                         @foreach ($horariosIniciales as $horario)
                                             <option value="{{ $horario }}" @selected($horaInicioSeleccionada === $horario)>
-                                                {{ $horario }} - {{ \App\Models\AgendaEvento::horaFinParaInicio($horario) }} hrs
+                                                {{ $horario }} hrs
                                             </option>
                                         @endforeach
                                     </select>
@@ -241,19 +243,26 @@
                 if (!type || !subcomite) return;
 
                 const refreshSubcomite = () => {
-                    subcomite.disabled = false;
+                    const esSesionCopladep = [
+                        'sesion_copladep_ordinaria',
+                        'sesion_copladep_extraordinaria'
+                    ].includes(type.value);
+
+                    subcomite.disabled = esSesionCopladep;
                     subcomite.required = false;
+
+                    if (esSesionCopladep) {
+                        subcomite.value = '';
+                    }
                 };
 
                 const formatSchedule = (start) => {
-                    const [hour, minute] = start.split(':').map(Number);
-                    const endHour = String((hour + 1) % 24).padStart(2, '0');
-                    return `${start} - ${endHour}:${String(minute).padStart(2, '0')} hrs`;
+                    return `${start} hrs`;
                 };
 
                 const refreshSchedules = () => {
                     const selectedValue = startTimeSelect.value;
-                    const schedules = schedulesByDate[dateInput.value] || defaultSchedules;
+                    const schedules = [...new Set(schedulesByDate[dateInput.value] || defaultSchedules)];
                     startTimeSelect.replaceChildren();
 
                     schedules.forEach((schedule) => {

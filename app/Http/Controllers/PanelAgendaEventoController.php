@@ -67,7 +67,7 @@ class PanelAgendaEventoController extends Controller
 
     public function exportSesiones(): StreamedResponse
     {
-        return $this->exportarEventos('sesion', 'agenda-sesiones');
+        return $this->exportarEventos(['sesion', 'sesion_copladep_ordinaria', 'sesion_copladep_extraordinaria'], 'agenda-sesiones');
     }
 
     public function exportMesasTecnicas(): StreamedResponse
@@ -75,10 +75,10 @@ class PanelAgendaEventoController extends Controller
         return $this->exportarEventos('mesa_tecnica', 'agenda-mesas-tecnicas');
     }
 
-    private function exportarEventos(?string $tipo = null, string $nombre = 'agenda-contactos'): StreamedResponse
+    private function exportarEventos(string|array|null $tipo = null, string $nombre = 'agenda-contactos'): StreamedResponse
     {
         $eventos = AgendaEvento::with('subcomite')
-            ->when($tipo, fn ($query) => $query->where('tipo_evento', $tipo))
+            ->when($tipo, fn ($query) => is_array($tipo) ? $query->whereIn('tipo_evento', $tipo) : $query->where('tipo_evento', $tipo))
             ->orderBy('fecha_evento')
             ->get();
 
@@ -127,6 +127,7 @@ class PanelAgendaEventoController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
+        $this->sincronizarSubcomite($data);
         $this->validateAgendaDateAndHours($data);
         $data['folio'] = 'AG-' . now()->format('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
         $data['publicado'] = $request->boolean('publicado', true);
@@ -134,14 +135,7 @@ class PanelAgendaEventoController extends Controller
         $data['confirmado_at'] = $data['estado'] === 'confirmado' ? now() : null;
 
         $this->ensureDateAvailable($data['fecha_evento'], $data['hora_inicio']);
-        $existenteInactivo = AgendaEvento::whereDate('fecha_evento', $data['fecha_evento'])
-            ->whereTime('hora_inicio', $data['hora_inicio'])
-            ->first();
-        if ($existenteInactivo) {
-            $existenteInactivo->update($data);
-        } else {
-            AgendaEvento::create($data);
-        }
+        AgendaEvento::create($data);
 
         return redirect()->route('panel-agenda-eventos.index')->with('success', 'Evento de agenda creado.');
     }
@@ -161,6 +155,7 @@ class PanelAgendaEventoController extends Controller
     public function update(Request $request, AgendaEvento $agendaEvento)
     {
         $data = $this->validated($request, $agendaEvento);
+        $this->sincronizarSubcomite($data);
         $this->validateAgendaDateAndHours($data);
         $data['publicado'] = $request->boolean('publicado');
 
@@ -208,17 +203,15 @@ class PanelAgendaEventoController extends Controller
     {
         $request->merge([
             'hora_inicio' => $this->normalizarHora($request->input('hora_inicio')),
-            'hora_fin' => $this->normalizarHora($request->input('hora_fin')),
         ]);
 
         return $request->validate([
-            'tipo_evento' => 'required|in:sesion,mesa_tecnica',
+            'tipo_evento' => 'required|in:sesion,mesa_tecnica,sesion_copladep_ordinaria,sesion_copladep_extraordinaria',
             'subcomite_id' => 'nullable|exists:subcomites,id',
             'tematica' => 'nullable|string|max:255',
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date',
             'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'nullable|string',
             'modalidad' => 'required|in:virtual,presencial',
             'liga_videoconferencia' => 'nullable|url|max:2000',
             'ubicacion' => 'required_if:modalidad,presencial|nullable|string|max:1000',
@@ -249,19 +242,6 @@ class PanelAgendaEventoController extends Controller
             ]);
         }
 
-        $queryMismoHorario = AgendaEvento::activos()
-            ->whereDate('fecha_evento', $date)
-            ->whereTime('hora_inicio', $horaInicio);
-
-        if ($evento) {
-            $queryMismoHorario->where('id', '<>', $evento->id);
-        }
-
-        if ($queryMismoHorario->exists()) {
-            throw ValidationException::withMessages([
-                'hora_inicio' => "El horario {$horaInicio} ya está ocupado por otra solicitud activa en esta fecha.",
-            ]);
-        }
     }
 
     private function validateAgendaDateAndHours(array &$data): void
@@ -277,12 +257,18 @@ class PanelAgendaEventoController extends Controller
         $disponibilidad = AgendaEvento::disponibilidadParaFecha($data['fecha_evento']);
         $this->validarHorarioPermitido($horaInicio, $disponibilidad['horarios']);
         $data['hora_inicio'] = $horaInicio;
-        $data['hora_fin'] = AgendaEvento::horaFinParaInicio($horaInicio);
     }
 
     private function normalizarHora(?string $hora): ?string
     {
         return $hora ? substr($hora, 0, 5) : $hora;
+    }
+
+    private function sincronizarSubcomite(array &$data): void
+    {
+        if (in_array($data['tipo_evento'], ['sesion_copladep_ordinaria', 'sesion_copladep_extraordinaria'], true)) {
+            $data['subcomite_id'] = null;
+        }
     }
 
     private function validarHorarioPermitido(string $horaInicio, array $horarios): void

@@ -29,10 +29,9 @@ class AgendaCapacidadController extends Controller
             'fecha_evento' => ['required', 'date'],
             'max_eventos' => ['required', 'integer', 'min:1', 'max:23'],
             'horarios' => ['required', 'array', 'min:1', 'max:23'],
-            'horarios.*' => ['required', 'date_format:H:i', 'distinct'],
+            'horarios.*' => ['required', 'date_format:H:i'],
         ], [
             'horarios.*.date_format' => 'Cada horario debe tener el formato HH:MM.',
-            'horarios.*.distinct' => 'No se pueden repetir horarios para una misma fecha.',
         ]);
 
         $horarios = collect($data['horarios'])
@@ -47,7 +46,6 @@ class AgendaCapacidadController extends Controller
             ]);
         }
 
-        $this->validarHorarios($horarios);
         $this->validarEventosExistentes($data['fecha_evento'], $data['max_eventos'], $horarios);
 
         AgendaCapacidad::updateOrCreate(
@@ -76,30 +74,6 @@ class AgendaCapacidadController extends Controller
         return redirect()
             ->route('panel-eventos.capacidades-agenda.index')
             ->with('success', 'La fecha volvió a usar la capacidad predeterminada de 2 eventos.');
-    }
-
-    private function validarHorarios(array $horarios): void
-    {
-        $horaAnterior = null;
-
-        foreach ($horarios as $hora) {
-            [$horas, $minutos] = array_map('intval', explode(':', $hora));
-            $minutosDesdeMedianoche = ($horas * 60) + $minutos;
-
-            if ($minutosDesdeMedianoche >= 1380) {
-                throw ValidationException::withMessages([
-                    'horarios' => 'Cada evento debe iniciar a más tardar a las 22:59 hrs.',
-                ]);
-            }
-
-            if ($horaAnterior !== null && $minutosDesdeMedianoche < $horaAnterior + 60) {
-                throw ValidationException::withMessages([
-                    'horarios' => 'Los horarios deben tener al menos una hora de separación entre sí.',
-                ]);
-            }
-
-            $horaAnterior = $minutosDesdeMedianoche;
-        }
     }
 
     private function validarEventosExistentes(string $fecha, int $maxEventos, array $horarios): void

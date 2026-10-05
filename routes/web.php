@@ -29,6 +29,7 @@ use App\Http\Controllers\AgendaEventoController;
 use App\Http\Controllers\AgendaCapacidadController;
 use App\Http\Controllers\AgendaFechaBloqueadaController;
 use App\Http\Controllers\PanelAgendaEventoController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\RegistroCopladepController;
 
 
@@ -256,4 +257,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->parameters(['panel-agenda-eventos' => 'agendaEvento']);
     Route::patch('/panel-agenda-eventos/{agendaEvento}/estado', [PanelAgendaEventoController::class, 'status'])
         ->name('panel-agenda-eventos.status');
+    Route::post('/panel-agenda-eventos/push-subscriptions', [PushSubscriptionController::class, 'store'])
+        ->name('panel-agenda-eventos.push-subscriptions.store');
+    Route::delete('/panel-agenda-eventos/push-subscriptions/{pushSubscription}', [PushSubscriptionController::class, 'destroy'])
+        ->name('panel-agenda-eventos.push-subscriptions.destroy');
 });

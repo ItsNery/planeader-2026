@@ -45,7 +45,7 @@
 
             <div class="alert alert-light border mb-4">
                 <i class="fa-solid fa-circle-info me-1"></i>
-                Si una fecha no se configura aquí, conserva el límite de 2 eventos con los horarios de 10:00 a 11:00 y 13:00 a 14:00 hrs.
+                Si una fecha no se configura aquí, conserva el límite de 2 eventos con horarios de inicio a las 10:00 y 13:00 hrs.
                 El máximo debe coincidir con el número de horarios definidos.
             </div>
 
@@ -79,7 +79,7 @@
 
                 <div class="mt-4">
                     <label class="form-label fw-bold">Horarios disponibles *</label>
-                    <p class="form-text mt-0">Cada horario representa un cupo y debe dejar al menos una hora libre antes del siguiente.</p>
+                    <p class="form-text mt-0">Cada horario representa un cupo. Puedes repetir una hora para permitir eventos simultáneos.</p>
                     <div id="agenda-capacity-slots" class="row g-3">
                         @foreach ($horariosIniciales as $indice => $horario)
                             <div class="col-sm-6 col-lg-3">

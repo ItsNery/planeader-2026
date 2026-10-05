@@ -448,7 +448,7 @@ class SubcomiteController extends Controller
 
         $horariosOcupadosPorFecha = $activosFuturos
             ->groupBy(fn ($e) => Carbon::parse($e->fecha_evento)->format('Y-m-d'))
-            ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->unique()->values()->all())
+            ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->values()->all())
             ->toArray();
 
         $fechasAgendaOcupadas = collect($horariosOcupadosPorFecha)
@@ -539,7 +539,7 @@ class SubcomiteController extends Controller
 
         $horariosOcupadosPorFecha = $activosFuturos
             ->groupBy(fn ($e) => Carbon::parse($e->fecha_evento)->format('Y-m-d'))
-            ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->unique()->values()->all())
+            ->map(fn ($group) => $group->map(fn ($e) => substr((string) $e->hora_inicio, 0, 5))->values()->all())
             ->toArray();
 
         $fechasAgendaOcupadas = collect($horariosOcupadosPorFecha)

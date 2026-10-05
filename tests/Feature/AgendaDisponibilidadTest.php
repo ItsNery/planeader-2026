@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\PanelAgendaEventoController;
 use App\Http\Controllers\AgendaCapacidadController;
+use App\Http\Controllers\AgendaEventoController;
 use App\Models\AgendaCapacidad;
 use App\Models\AgendaEvento;
 use App\Models\AgendaFechaBloqueada;
@@ -38,7 +39,6 @@ class AgendaDisponibilidadTest extends TestCase
             $table->string('institucion_organizadora');
             $table->date('fecha_evento');
             $table->time('hora_inicio');
-            $table->time('hora_fin')->nullable();
             $table->string('modalidad');
             $table->text('liga_videoconferencia')->nullable();
             $table->text('ubicacion')->nullable();
@@ -116,8 +116,8 @@ class AgendaDisponibilidadTest extends TestCase
         $evento = AgendaEvento::firstOrFail();
 
         $this->assertStringEndsWith('/panel-agenda-eventos', $response->getTargetUrl());
+        $this->assertArrayNotHasKey('hora_fin', $evento->getAttributes());
         $this->assertSame('15:00', substr((string) $evento->hora_inicio, 0, 5));
-        $this->assertSame('16:00', substr((string) $evento->hora_fin, 0, 5));
     }
 
     public function test_panel_rejects_a_time_that_is_not_configured_for_the_date(): void
@@ -145,6 +145,59 @@ class AgendaDisponibilidadTest extends TestCase
         $this->assertStringEndsWith('/panel-eventos/capacidades-agenda', $response->getTargetUrl());
         $this->assertSame(3, $capacidad->max_eventos);
         $this->assertSame(['10:00', '13:00', '15:00'], $capacidad->horarios);
+    }
+
+    public function test_capacity_configuration_allows_simultaneous_event_slots(): void
+    {
+        app(AgendaCapacidadController::class)->store(Request::create('/panel-eventos/capacidades-agenda', 'POST', [
+            'fecha_evento' => '2030-01-15',
+            'max_eventos' => 3,
+            'horarios' => ['10:00', '10:00', '10:00'],
+        ]));
+
+        $capacidad = AgendaCapacidad::firstOrFail();
+
+        $this->assertSame(3, $capacidad->max_eventos);
+        $this->assertSame(['10:00', '10:00', '10:00'], $capacidad->horarios);
+    }
+
+    public function test_panel_can_create_three_events_at_the_same_start_time(): void
+    {
+        AgendaCapacidad::create([
+            'fecha_evento' => '2030-01-15',
+            'max_eventos' => 3,
+            'horarios' => ['10:00', '10:00', '10:00'],
+        ]);
+
+        $controller = app(PanelAgendaEventoController::class);
+        $controller->store($this->solicitudParaHorario('10:00'));
+        $controller->store($this->solicitudParaHorario('10:00'));
+        $controller->store($this->solicitudParaHorario('10:00'));
+
+        $this->assertSame(3, AgendaEvento::activos()->whereDate('fecha_evento', '2030-01-15')->count());
+    }
+
+    public function test_panel_accepts_copladep_session_types(): void
+    {
+        $request = $this->solicitudParaHorario('10:00');
+        $request->merge(['tipo_evento' => 'sesion_copladep_ordinaria']);
+
+        app(PanelAgendaEventoController::class)->store($request);
+
+        $evento = AgendaEvento::firstOrFail();
+        $this->assertSame('Sesión Ordinaria del COPLADEP', $evento->tituloPublico());
+    }
+
+    public function test_public_requests_cannot_create_copladep_sessions(): void
+    {
+        try {
+            app(AgendaEventoController::class)->store(Request::create('/agenda-eventos', 'POST', [
+                'tipo_evento' => 'sesion_copladep_ordinaria',
+            ]));
+            $this->fail('La solicitud pública aceptó una sesión del COPLADEP.');
+        } catch (ValidationException $exception) {
+            $this->assertArrayHasKey('tipo_evento', $exception->errors());
+        }
     }
 
     private function solicitudParaHorario(string $horaInicio): Request

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AgendaEvento;
+use App\Models\User;
+use App\Services\WebPushService;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -22,7 +24,6 @@ class AgendaEventoController extends Controller
             'institucion_organizadora' => 'required|string|max:255',
             'fecha_evento' => 'required|date',
             'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'nullable|string',
             'modalidad' => 'required|in:virtual,presencial',
             'ubicacion' => 'required_if:modalidad,presencial|nullable|string|max:1000',
             'solicitante_nombre' => 'required|string|max:255',
@@ -63,40 +64,21 @@ class AgendaEventoController extends Controller
                     ]);
                 }
 
-                $mismoHorarioActivo = $activosEnFecha->first(function ($item) use ($data) {
-                    return substr((string) $item->hora_inicio, 0, 5) === $data['hora_inicio'];
-                });
-
-                if ($mismoHorarioActivo) {
-                    throw ValidationException::withMessages([
-                        'hora_inicio' => "El horario {$data['hora_inicio']} ya está ocupado para esta fecha.",
-                    ]);
-                }
-
                 $data['folio'] = $this->generarFolio();
-
-                $existenteInactivo = AgendaEvento::whereDate('fecha_evento', $data['fecha_evento'])
-                    ->whereTime('hora_inicio', $data['hora_inicio'])
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($existenteInactivo) {
-                    $existenteInactivo->fill($data);
-                    $existenteInactivo->save();
-                    return $existenteInactivo;
-                }
 
                 return AgendaEvento::create($data);
             });
         } catch (QueryException $exception) {
             if ($this->esConflictoDeFecha($exception)) {
                 throw ValidationException::withMessages([
-                    'fecha_evento' => 'El horario seleccionado acaba de ser ocupado. Elige otro horario o fecha.',
+                    'fecha_evento' => 'La fecha seleccionada acaba de alcanzar su capacidad. Elige otra fecha.',
                 ]);
             }
 
             throw $exception;
         }
+
+        $this->notificarNuevaSolicitud($agendaEvento);
 
         return back()->with('agenda_success', [
             'folio' => $agendaEvento->folio,
@@ -126,9 +108,7 @@ class AgendaEventoController extends Controller
         abort_unless($agendaEvento->estado === 'confirmado', 404);
 
         $start = Carbon::parse($agendaEvento->fecha_evento->format('Y-m-d') . ' ' . $agendaEvento->hora_inicio, 'America/Mexico_City');
-        $end = $agendaEvento->hora_fin
-            ? Carbon::parse($agendaEvento->fecha_evento->format('Y-m-d') . ' ' . $agendaEvento->hora_fin, 'America/Mexico_City')
-            : $start->copy()->addHour();
+        $end = $start->copy()->addHour();
 
         $details = $agendaEvento->tematica ?: $agendaEvento->descripcionTipo();
         if ($agendaEvento->comentarios) {
@@ -158,9 +138,7 @@ class AgendaEventoController extends Controller
         abort_unless($agendaEvento->estado === 'confirmado', 404);
 
         $start = Carbon::parse($agendaEvento->fecha_evento->format('Y-m-d') . ' ' . $agendaEvento->hora_inicio, 'America/Mexico_City');
-        $end = $agendaEvento->hora_fin
-            ? Carbon::parse($agendaEvento->fecha_evento->format('Y-m-d') . ' ' . $agendaEvento->hora_fin, 'America/Mexico_City')
-            : $start->copy()->addHour();
+        $end = $start->copy()->addHour();
         $description = $agendaEvento->tematica ?: $agendaEvento->descripcionTipo();
         if ($agendaEvento->comentarios) {
             $description .= "\nComentarios: " . $agendaEvento->comentarios;
@@ -182,7 +160,7 @@ class AgendaEventoController extends Controller
             'SUMMARY:' . $this->icsEscape($agendaEvento->tituloPublico()),
             'DESCRIPTION:' . $this->icsEscape($description),
             'LOCATION:' . $this->icsEscape($location),
-            ...array_map(fn ($email) => 'ATTENDEE;CN=' . $this->icsEscape($email) . ';ROLE=REQ-PARTICIPANT:mailto:' . $email, array_unique(array_merge([$agendaEvento->solicitante_email], $this->correosInvitadosComoArray($agendaEvento->correos_invitados)))),
+            ...array_map(fn($email) => 'ATTENDEE;CN=' . $this->icsEscape($email) . ';ROLE=REQ-PARTICIPANT:mailto:' . $email, array_unique(array_merge([$agendaEvento->solicitante_email], $this->correosInvitadosComoArray($agendaEvento->correos_invitados)))),
             'END:VEVENT',
             'END:VCALENDAR',
             '',
@@ -217,9 +195,9 @@ class AgendaEventoController extends Controller
     {
         $emails = preg_split('/[\s,;]+/', trim((string) $correos), -1, PREG_SPLIT_NO_EMPTY);
         $validos = collect($emails)
-            ->map(fn ($email) => Str::lower(trim($email)))
-            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
-            ->reject(fn ($email) => $email === $responsable)
+            ->map(fn($email) => Str::lower(trim($email)))
+            ->filter(fn($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->reject(fn($email) => $email === $responsable)
             ->unique()
             ->values();
 
@@ -230,8 +208,8 @@ class AgendaEventoController extends Controller
     {
         $emails = preg_split('/[\s,;]+/', trim((string) $correos), -1, PREG_SPLIT_NO_EMPTY);
         $invalidos = collect($emails)
-            ->map(fn ($email) => trim($email))
-            ->filter(fn ($email) => !filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->map(fn($email) => trim($email))
+            ->filter(fn($email) => !filter_var($email, FILTER_VALIDATE_EMAIL))
             ->values();
 
         if ($invalidos->isNotEmpty()) {
@@ -244,8 +222,8 @@ class AgendaEventoController extends Controller
     private function correosInvitadosComoArray(?string $correos): array
     {
         return collect(preg_split('/[\s,;]+/', trim((string) $correos), -1, PREG_SPLIT_NO_EMPTY))
-            ->map(fn ($email) => Str::lower(trim($email)))
-            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->map(fn($email) => Str::lower(trim($email)))
+            ->filter(fn($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
             ->unique()
             ->values()
             ->all();
@@ -270,7 +248,6 @@ class AgendaEventoController extends Controller
         $disponibilidad = AgendaEvento::disponibilidadParaFecha($data['fecha_evento']);
         $this->validarHorarioPermitido($horaInicio, $disponibilidad['horarios']);
         $data['hora_inicio'] = $horaInicio;
-        $data['hora_fin'] = AgendaEvento::horaFinParaInicio($horaInicio);
     }
 
     private function validarHorarioPermitido(string $horaInicio, array $horarios): void
@@ -282,5 +259,22 @@ class AgendaEventoController extends Controller
         throw ValidationException::withMessages([
             'hora_inicio' => 'El horario seleccionado no está disponible para esta fecha. Horarios permitidos: ' . implode(', ', $horarios) . '.',
         ]);
+    }
+
+    private function notificarNuevaSolicitud(AgendaEvento $agendaEvento): void
+    {
+        $mensaje = [
+            'title' => 'Nueva solicitud de agenda',
+            'body' => 'Se ha recibido una nueva solicitud de agenda: ' . $agendaEvento->tituloPublico() . ' para el ' . $agendaEvento->fecha_evento->format('d/m/Y') . '. Revísala y confirma o deniega la solicitud.',
+            'url' => route('panel-agenda-eventos.show', $agendaEvento),
+        ];
+
+        $servicio = app(WebPushService::class);
+        User::permission(['ver-agenda-evento', 'editar-agenda-evento'])
+            ->with('pushSubscriptions')
+            ->get()
+            ->each(fn(User $usuario) => $usuario->pushSubscriptions->each(
+                fn($suscripcion) => $servicio->enviar($suscripcion, $mensaje)
+            ));
     }
 }

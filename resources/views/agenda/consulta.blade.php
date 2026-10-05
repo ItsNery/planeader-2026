@@ -37,7 +37,7 @@
                                     <div class="agenda-public-detail__field agenda-public-detail__field--wide"><span>Tipo de actividad</span><strong>{{ $evento->descripcionTipo() }}</strong></div>
                                     <div class="agenda-public-detail__field agenda-public-detail__field--wide"><span>Subcomité</span><strong>{{ $evento->subcomite?->nombre ?: 'No aplica' }}</strong></div>
                                     <div class="agenda-public-detail__field"><span>Fecha</span><strong>{{ $evento->fecha_evento->translatedFormat('l d \\d\\e F \\d\\e Y') }}</strong></div>
-                                    <div class="agenda-public-detail__field"><span>Horario</span><strong>{{ $evento->horaInicioFormateada() }}{{ $evento->hora_fin ? ' a ' . substr($evento->hora_fin, 0, 5) : '' }} hrs.</strong></div>
+                                    <div class="agenda-public-detail__field"><span>Hora de inicio</span><strong>{{ $evento->horaInicioFormateada() }} hrs.</strong></div>
                                     <div class="agenda-public-detail__field"><span>Modalidad</span><strong>{{ ucfirst($evento->modalidad) }}</strong></div>
                                     <div class="agenda-public-detail__field"><span>Institución organizadora</span><strong>{{ $evento->institucion_organizadora }}</strong></div>
                                     <div class="agenda-public-detail__field agenda-public-detail__field--wide"><span>Temática</span><strong>{{ $evento->tematica ?: 'No especificada' }}</strong></div>

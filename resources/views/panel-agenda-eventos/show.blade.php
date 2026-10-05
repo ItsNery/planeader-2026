@@ -31,7 +31,7 @@
                                 <span>Fecha</span><strong>{{ $evento->fecha_evento->translatedFormat('l d \\d\\e F \\d\\e Y') }}</strong>
                             </div>
                             <div class="agenda-detail-field">
-                                <span>Horario</span><strong>{{ $evento->horaInicioFormateada() }}{{ $evento->hora_fin ? ' a ' . substr($evento->hora_fin, 0, 5) : '' }} hrs.</strong>
+                                <span>Hora de inicio</span><strong>{{ $evento->horaInicioFormateada() }} hrs.</strong>
                             </div>
                             <div class="agenda-detail-field">
                                 <span>Modalidad</span><strong>{{ ucfirst($evento->modalidad) }}</strong>

@@ -63,4 +63,9 @@ class User extends Authenticatable
     ];
 
     protected $guard_name = 'web';
+
+    public function pushSubscriptions()
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
 }
