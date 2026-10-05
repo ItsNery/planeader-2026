@@ -65,20 +65,9 @@ class PanelAgendaEventoController extends Controller
         return $this->exportarEventos();
     }
 
-    public function exportSesiones(): StreamedResponse
-    {
-        return $this->exportarEventos(['sesion', 'sesion_copladep_ordinaria', 'sesion_copladep_extraordinaria'], 'agenda-sesiones');
-    }
-
-    public function exportMesasTecnicas(): StreamedResponse
-    {
-        return $this->exportarEventos('mesa_tecnica', 'agenda-mesas-tecnicas');
-    }
-
-    private function exportarEventos(string|array|null $tipo = null, string $nombre = 'agenda-contactos'): StreamedResponse
+    private function exportarEventos(): StreamedResponse
     {
         $eventos = AgendaEvento::with('subcomite')
-            ->when($tipo, fn ($query) => is_array($tipo) ? $query->whereIn('tipo_evento', $tipo) : $query->where('tipo_evento', $tipo))
             ->orderBy('fecha_evento')
             ->get();
 
@@ -102,7 +91,7 @@ class PanelAgendaEventoController extends Controller
                 ], ';');
             }
             fclose($output);
-        }, $nombre . '-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+        }, 'agenda-eventos-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     public function create()

@@ -8,22 +8,42 @@
             <h2>Agenda de sesiones y mesas técnicas</h2>
             <p class="text-white mb-0">Administra solicitudes, disponibilidad, datos operativos y ligas virtuales.</p>
         </div>
-        <div class="d-flex justify-content-end mb-3 flex-wrap gap-2">
-            @canany(['ver-agenda-evento', 'editar-agenda-evento'])
-                <button type="button" id="enable-web-push" class="btn btn-outline-primary"
-                    data-vapid-key="{{ config('services.web_push.public_key') }}"
-                    data-subscription-url="{{ route('panel-agenda-eventos.push-subscriptions.store') }}">
-                    <i class="fa-regular fa-bell me-1"></i> Activar notificaciones
-                </button>
-            @endcanany
+        <div class="agenda-admin-toolbar mb-4">
+            <div class="agenda-admin-toolbar__group">
+                <span class="agenda-admin-toolbar__label">Herramientas</span>
+                <div class="agenda-admin-toolbar__buttons">
+                    @canany(['ver-agenda-evento', 'editar-agenda-evento'])
+                        <button type="button" id="enable-web-push" class="btn btn-outline-secondary"
+                            data-vapid-key="{{ config('services.web_push.public_key') }}"
+                            data-subscription-url="{{ route('panel-agenda-eventos.push-subscriptions.store') }}">
+                            <i class="fa-regular fa-bell"></i><span>Activar notificaciones</span>
+                        </button>
+                    @endcanany
+                    @can('ver-agenda-evento')
+                        <a href="{{ route('panel-agenda-eventos.export') }}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-file-csv"></i><span>Exportar agenda</span>
+                        </a>
+                    @endcan
+                </div>
+            </div>
             @can('editar-agenda-evento')
-                <a href="{{ route('panel-eventos.capacidades-agenda.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-sliders me-1"></i>Capacidad de agenda</a>
-                <a href="{{ route('panel-eventos.fechas-bloqueadas-agenda.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-ban me-1"></i>Fechas no disponibles</a>
+                <div class="agenda-admin-toolbar__group">
+                    <span class="agenda-admin-toolbar__label">Configuración</span>
+                    <div class="agenda-admin-toolbar__buttons">
+                        <a href="{{ route('panel-eventos.capacidades-agenda.index') }}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-sliders"></i><span>Capacidad</span>
+                        </a>
+                        <a href="{{ route('panel-eventos.fechas-bloqueadas-agenda.index') }}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-ban"></i><span>Fechas no disponibles</span>
+                        </a>
+                    </div>
+                </div>
             @endcan
-            <a href="{{ route('panel-agenda-eventos.export') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-csv me-1"></i>Exportar contactos</a>
-            <a href="{{ route('panel-agenda-eventos.export-sesiones') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-arrow-down me-1"></i>Sesiones</a>
-            <a href="{{ route('panel-agenda-eventos.export-mesas-tecnicas') }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-file-arrow-down me-1"></i>Mesas técnicas</a>
-            <a href="{{ route('panel-agenda-eventos.create') }}" class="btn btn-custom-primary">Crear evento</a>
+            @can('crear-agenda-evento')
+                <a href="{{ route('panel-agenda-eventos.create') }}" class="btn btn-custom-primary agenda-admin-toolbar__create">
+                    <i class="fa-solid fa-plus"></i><span>Crear evento</span>
+                </a>
+            @endcan
         </div>
 
         <section id="agenda-admin-calendar" class="agenda-admin-calendar mb-5" aria-labelledby="agenda-admin-calendar-title">
@@ -138,6 +158,17 @@
                 const button = document.getElementById('enable-web-push');
                 if (!button || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
+                const ocultarSiEstaSuscrito = async () => {
+                    const registration = await navigator.serviceWorker.getRegistration('/service-worker.js');
+                    const subscription = await registration?.pushManager.getSubscription();
+
+                    if (subscription) {
+                        button.remove();
+                    }
+                };
+
+                ocultarSiEstaSuscrito().catch(() => {});
+
                 const vapidKey = button.dataset.vapidKey;
                 if (!vapidKey) {
                     button.disabled = true;
@@ -172,8 +203,7 @@
                         });
                         if (!response.ok) throw new Error('No fue posible guardar la suscripción.');
 
-                        button.disabled = true;
-                        button.innerHTML = '<i class="fa-solid fa-bell me-1"></i> Notificaciones activadas';
+                        button.remove();
                     } catch (error) {
                         Swal.fire({ icon: 'warning', title: 'No se activaron las notificaciones', text: error.message });
                     }

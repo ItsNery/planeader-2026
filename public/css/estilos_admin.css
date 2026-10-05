@@ -660,6 +660,47 @@ a {
     min-height: 2.7rem;
 }
 
+.agenda-admin-toolbar {
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #e7e3e5;
+    border-radius: .55rem;
+    background: #fff;
+}
+
+.agenda-admin-toolbar__group {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.agenda-admin-toolbar__label {
+    color: #77727a;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.agenda-admin-toolbar__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+}
+
+.agenda-admin-toolbar .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    min-height: 2.5rem;
+}
+
+.agenda-admin-toolbar__create {
+    margin-left: auto;
+}
+
 .agenda-admin-calendar {
     padding: 1.25rem;
     border: 1px solid #e7e3e5;
@@ -771,6 +812,12 @@ a {
 .agenda-admin-modal-status { display: inline-flex; padding: .35rem .8rem; border-radius: 999px; color: #fff; font-family: var(--fontFamilyBold); font-size: .8rem; }
 
 @media (max-width: 575.98px) {
+    .agenda-admin-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .agenda-admin-toolbar__create { margin-left: 0; }
+    .agenda-admin-toolbar .btn { justify-content: center; }
     .agenda-admin-calendar { padding: .7rem; }
     .agenda-admin-calendar__heading { align-items: flex-start; flex-direction: column; }
     .agenda-admin-calendar__grid { gap: .25rem; }
