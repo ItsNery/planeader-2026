@@ -22,6 +22,7 @@ class RegistroCopladep extends Model
         'firma',
         'tipo_asistente',
         'invitado_id',
+        'sesion',
     ];
 
     public function catMunicipio()

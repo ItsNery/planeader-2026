@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Primera Sesión Ordinaria 2026 del COPLADEP</title>
+    <title>Registro - {{ $config['nombre'] }} del COPLADEP</title>
     <link rel="shortcut icon" href="https://puebla.gob.mx/templates/dst_puebla_2024/favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/estilos-registro-capacitacion.css') }}">
@@ -23,10 +23,10 @@
             </div>
 
             <h2 class="text-center form-title">
-                Registro de asistencia de la Primera Sesión Ordinaria 2026 de la Asamblea Plenaria del COPLADEP
+                Registro de asistencia de la {{ $config['nombre'] }} de la Asamblea Plenaria del COPLADEP
             </h2>
 
-            <form method="POST" action="{{ route('copladep-registro.store') }}" novalidate id="miFormulario"> @csrf
+            <form method="POST" action="{{ route($sesion === 'segunda' ? 'copladep-registro-segunda.store' : 'copladep-registro.store') }}" novalidate id="miFormulario"> @csrf
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -214,8 +214,8 @@
                 if (!mensajeEstado) return;
 
                 const ahora = new Date();
-                const inicioRegistro = new Date(2026, 2, 26, 8, 30, 0); // 26-Mar-2026 08:30:00
-                const finRegistro = new Date(2026, 2, 31, 19, 0, 0);    // 31-Mar-2026 19:00:00
+                const inicioRegistro = new Date({{ $config['js_inicio'][0] }}, {{ $config['js_inicio'][1] }}, {{ $config['js_inicio'][2] }}, {{ $config['js_inicio'][3] }}, {{ $config['js_inicio'][4] }}, 0);
+                const finRegistro = new Date({{ $config['js_fin'][0] }}, {{ $config['js_fin'][1] }}, {{ $config['js_fin'][2] }}, {{ $config['js_fin'][3] }}, {{ $config['js_fin'][4] }}, 0);
 
                 if (ahora >= inicioRegistro && ahora <= finRegistro) {
                     boton.textContent = 'Registrarse';
@@ -232,7 +232,7 @@
                     mensajeEstado.className = 'text-center mb-2 fw-bold text-danger';
 
                     if (ahora < inicioRegistro) {
-                        mensajeEstado.textContent = 'El registro abrirá el 26 de marzo a las 8:30 AM.';
+                        mensajeEstado.textContent = '{{ $config['js_mensaje_inicio'] }}';
                     } else if (ahora > finRegistro) {
                         mensajeEstado.textContent = 'El periodo de registro ha finalizado.';
                     }

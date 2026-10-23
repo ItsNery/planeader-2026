@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\DocumentoSesion;
@@ -175,6 +176,15 @@ class DocumentoSesionController extends Controller
             ->get();
 
         return view('copladep-primera', compact('documentos'));
+    }
+
+    public function mostrarSegundaSesion()
+    {
+        $documentos = DocumentoSesion::where('publicado', true)
+            ->orderBy('orden', 'asc')
+            ->get();
+
+        return view('copladep-segunda', compact('documentos'));
     }
 
     protected function getModel()

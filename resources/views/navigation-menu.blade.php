@@ -64,11 +64,11 @@
                                     {{ __('Sesión COPLADEP') }}
                                 </x-dropdown-link>
                             @endcan
-                            {{-- @can('ver-doc-sesion')
+                            @can('ver-doc-sesion')
                                 <x-dropdown-link href="{{ route('panel-documentos-sesiones.index') }}">
                                     {{ __('Docs. Sesiones') }}
                                 </x-dropdown-link>
-                            @endcan --}}
+                            @endcan
                         </x-slot>
                     </x-dropdown>
                 @endcanany

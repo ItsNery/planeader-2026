@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BannerController;
@@ -66,8 +67,12 @@ Route::get('/ped', function () {
 //     return view('copladep');
 // });
 Route::get('/copladep/primera-sesion-ordinaria', [DocumentoSesionController::class, 'mostrarPrimeraSesion']);
-Route::get('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'create'])->name('copladep-registro.create');
-Route::post('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'store'])->name('copladep-registro.store');
+Route::get('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'createPrimera'])->name('copladep-registro.create');
+Route::post('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'storePrimera'])->name('copladep-registro.store');
+
+Route::get('/copladep/segunda-sesion-ordinaria', [DocumentoSesionController::class, 'mostrarSegundaSesion']);
+Route::get('/copladep/segunda-sesion-ordinaria/registro', [RegistroCopladepController::class, 'createSegunda'])->name('copladep-registro-segunda.create');
+Route::post('/copladep/segunda-sesion-ordinaria/registro', [RegistroCopladepController::class, 'storeSegunda'])->name('copladep-registro-segunda.store');
 
 Route::get('/ped-programas', [ProgramaDerivadoController::class, 'mostrarProgramasDerivados']);
 

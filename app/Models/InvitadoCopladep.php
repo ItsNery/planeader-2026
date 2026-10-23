@@ -15,6 +15,7 @@ class InvitadoCopladep extends Model
         'cargo',
         'municipio_id',
         'check_in_express',
+        'sesion',
     ];
     
     protected $casts = [
