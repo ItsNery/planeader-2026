@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\InvitadoCopladep;
 use App\Models\CatMunicipio;
-
 use Illuminate\Http\Request;
 
 class InvitadoCopladepController extends Controller
@@ -19,7 +18,7 @@ class InvitadoCopladepController extends Controller
 
     public function index()
     {
-        $invitados = InvitadoCopladep::with('municipio')->orderBy('nombre_completo', 'asc')->get();
+        $invitados = InvitadoCopladep::with('municipio')->where('sesion', 'primera')->orderBy('nombre_completo', 'asc')->get();
         $municipios = CatMunicipio::orderBy('nombre_municipio', 'asc')->get();
 
         return view('panel-copladep.primera-sesion-ordinaria-2026.invitados-copladep', compact('invitados', 'municipios'));
@@ -31,10 +30,11 @@ class InvitadoCopladepController extends Controller
             'nombre_completo' => 'required|string|max:50',
             'sexo' => 'required|string|in:Hombre,Mujer,Otro',
             'cargo' => 'required|string|max:191',
+            'dependencia' => 'nullable|string|max:1000',
             'municipio_id' => 'nullable|integer|exists:cat_municipios,id',
         ]);
 
-        InvitadoCopladep::create($request->all());
+        InvitadoCopladep::create($request->safe()->merge(['sesion' => 'primera'])->all());
 
         return redirect()->route('copladep-registro-invitados.index')->with('success', 'Invitado registrado exitosamente.');
     }
@@ -45,11 +45,12 @@ class InvitadoCopladepController extends Controller
             'nombre_completo' => 'required|string|max:255',
             'sexo'            => 'required|in:Hombre,Mujer,Otro',
             'cargo'           => 'required|string|max:255',
+            'dependencia'     => 'nullable|string|max:1000',
             'municipio_id'    => 'required|integer|exists:cat_municipios,id',
         ]);
 
-        $invitado = InvitadoCopladep::findOrFail($id);
-        $invitado->update($request->all());
+        $invitado = InvitadoCopladep::where('sesion', 'primera')->findOrFail($id);
+        $invitado->update($request->safe()->only(['nombre_completo', 'sexo', 'cargo', 'dependencia', 'municipio_id']));
 
         return redirect()->route('copladep-registro-invitados.index')
             ->with('success', '¡Datos del invitado actualizados correctamente!');
@@ -58,7 +59,7 @@ class InvitadoCopladepController extends Controller
     public function destroy($id)
     {
         try {
-            InvitadoCopladep::findOrFail($id)->delete();
+            InvitadoCopladep::where('sesion', 'primera')->findOrFail($id)->delete();
             return redirect()->route('copladep-registro-invitados.index')->with('success', 'Invitado eliminado.');
         } catch (\Exception $e) {
             return redirect()->route('copladep-registro-invitados.index')->withErrors(['error' => 'No se puede eliminar a este invitado porque ya tiene un registro de asistencia vinculado.']);
@@ -68,7 +69,7 @@ class InvitadoCopladepController extends Controller
     public function monitor()
     {
         // $invitados = InvitadoCopladep::whereHas('registro')->orderBy('nombre_completo', 'asc')->get();
-        $invitados = InvitadoCopladep::where(function ($query) {
+        $invitados = InvitadoCopladep::where('sesion', 'primera')->where(function ($query) {
             $query->whereHas('registro') 
                 ->orWhere('check_in_express', true);
         })->orderBy('nombre_completo', 'asc')->get();
@@ -83,7 +84,7 @@ class InvitadoCopladepController extends Controller
     }
     public function toggleCheckInExpress($id)
     {
-        $invitado = InvitadoCopladep::findOrFail($id);
+        $invitado = InvitadoCopladep::where('sesion', 'primera')->findOrFail($id);
         
         // Invertimos el valor y guardamos (Esto actualiza la columna 'updated_at' a la hora actual)
         $invitado->check_in_express = !$invitado->check_in_express;
@@ -117,7 +118,7 @@ class InvitadoCopladepController extends Controller
     }
     public function toggleCheckInExpressOld($id)
     {
-        $invitado = InvitadoCopladep::findOrFail($id);
+        $invitado = InvitadoCopladep::where('sesion', 'primera')->findOrFail($id);
 
         $invitado->check_in_express = !$invitado->check_in_express;
         $invitado->save();
@@ -128,4 +129,5 @@ class InvitadoCopladepController extends Controller
             'message' => $invitado->check_in_express ? '¡Pase de lista: Presente!' : 'Pase de lista: Revertido.'
         ]);
     }
+
 }

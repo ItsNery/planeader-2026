@@ -51,10 +51,15 @@
                                         <div class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">
                                             {{ $invitado->nombre_completo }}
                                         </div>
-                                        <div class="d-flex flex-wrap gap-2 align-items-center">
-                                            <span class="badge bg-light text-dark border">
-                                                {{ $invitado->cargo }}
-                                            </span>
+                                         <div class="d-flex flex-wrap gap-2 align-items-center">
+                                             <span class="badge bg-light text-dark border">
+                                                 {{ $invitado->cargo }}
+                                             </span>
+                                             @if ($invitado->dependencia)
+                                                 <span class="badge bg-light text-dark border">
+                                                     {{ $invitado->dependencia }}
+                                                 </span>
+                                             @endif
                                         </div>
                                     </div>
                                 </div>
@@ -91,8 +96,8 @@
                                             <i class="bi bi-person-check-fill"></i>
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary btn-editar"
-                                            data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
-                                            data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
+                                             data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
+                                             data-cargo="{{ $invitado->cargo }}" data-dependencia="{{ $invitado->dependencia }}" data-sexo="{{ $invitado->sexo }}"
                                             data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
@@ -144,11 +149,17 @@
                                         required placeholder="Ej. Juan Pérez López">
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="cargo_invitado" class="form-label fw-bold">Cargo</label>
-                                    <input type="text" class="form-control" id="cargo_invitado" name="cargo" required
-                                        placeholder="Ej. Secretario de Infraestructura">
-                                </div>
+                                 <div class="col-md-6 mb-3">
+                                     <label for="cargo_invitado" class="form-label fw-bold">Cargo</label>
+                                     <input type="text" class="form-control" id="cargo_invitado" name="cargo" required
+                                         placeholder="Ej. Secretario de Infraestructura">
+                                 </div>
+
+                                 <div class="col-md-6 mb-3">
+                                     <label for="dependencia_invitado" class="form-label fw-bold">Dependencia</label>
+                                     <input type="text" class="form-control" id="dependencia_invitado" name="dependencia"
+                                         placeholder="Ej. Ejecutivo del Estado">
+                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="sexo_invitado" class="form-label fw-bold">Sexo</label>
@@ -200,10 +211,15 @@
                                         name="nombre_completo" required>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="edit_cargo" class="form-label fw-bold">Cargo</label>
-                                    <input type="text" class="form-control" id="edit_cargo" name="cargo" required>
-                                </div>
+                                 <div class="col-md-6 mb-3">
+                                     <label for="edit_cargo" class="form-label fw-bold">Cargo</label>
+                                     <input type="text" class="form-control" id="edit_cargo" name="cargo" required>
+                                 </div>
+
+                                 <div class="col-md-6 mb-3">
+                                     <label for="edit_dependencia" class="form-label fw-bold">Dependencia</label>
+                                     <input type="text" class="form-control" id="edit_dependencia" name="dependencia">
+                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_sexo" class="form-label fw-bold">Sexo</label>
@@ -367,6 +383,7 @@
                     const id = botonEditar.dataset.id;
                     const nombre = botonEditar.dataset.nombre;
                     const cargo = botonEditar.dataset.cargo;
+                    const dependencia = botonEditar.dataset.dependencia;
                     const sexo = botonEditar.dataset.sexo;
                     const municipioId = botonEditar.dataset.municipio;
 
@@ -377,6 +394,7 @@
                     // 2. Llenamos los campos normales
                     document.getElementById('edit_nombre_completo').value = nombre;
                     document.getElementById('edit_cargo').value = cargo;
+                    document.getElementById('edit_dependencia').value = dependencia;
                     document.getElementById('edit_sexo').value = sexo;
 
                     // 3. Llenamos el Tom Select

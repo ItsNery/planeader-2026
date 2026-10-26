@@ -63,7 +63,7 @@
                                 data-sexo="{{ $invitado->sexo }}"
                                 data-municipio="{{ $invitado->municipio_id }}"
                                 {{ old('invitado_id') == $invitado->id ? 'selected' : '' }}>
-                                {{ $invitado->nombre_completo }} - {{ $invitado->cargo }}
+                                {{ $invitado->nombre_completo }} - {{ $invitado->cargo }}{{ $invitado->dependencia ? ' | ' . $invitado->dependencia : '' }}
                             </option>
                         @endforeach
                     </select>
@@ -214,8 +214,8 @@
                 if (!mensajeEstado) return;
 
                 const ahora = new Date();
-                const inicioRegistro = new Date({{ $config['js_inicio'][0] }}, {{ $config['js_inicio'][1] }}, {{ $config['js_inicio'][2] }}, {{ $config['js_inicio'][3] }}, {{ $config['js_inicio'][4] }}, 0);
-                const finRegistro = new Date({{ $config['js_fin'][0] }}, {{ $config['js_fin'][1] }}, {{ $config['js_fin'][2] }}, {{ $config['js_fin'][3] }}, {{ $config['js_fin'][4] }}, 0);
+                const inicioRegistro = new Date('{{ $config['js_inicio'] }}');
+                const finRegistro = new Date('{{ $config['js_fin'] }}');
 
                 if (ahora >= inicioRegistro && ahora <= finRegistro) {
                     boton.textContent = 'Registrarse';

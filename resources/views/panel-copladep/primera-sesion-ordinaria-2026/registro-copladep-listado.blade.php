@@ -1,4 +1,5 @@
 <x-app-layout>
+    @php($esSegunda = ($sesion ?? 'primera') === 'segunda')
     @section('title', 'Registro de asistencia de sesión ordinaria de COPLADEP: Listado')
     @if ($message = Session::get('success'))
         <script>
@@ -19,7 +20,7 @@
             <h2>Listado de participantes registrados</h2>
             <p class="text-white">
                 Aquí ver las personas registradas en el formulario de la
-                <a href="{{ url('/copladep/primera-sesion-ordinaria') }}" class="text-white">primera sesión ordinaria
+                <a href="{{ url($esSegunda ? '/copladep/segunda-sesion-ordinaria' : '/copladep/primera-sesion-ordinaria') }}" class="text-white">{{ $esSegunda ? 'segunda' : 'primera' }} sesión ordinaria
                     2026</a>.
             </p>
             <strong>
@@ -28,17 +29,19 @@
         </div>
 
         <div class="container d-flex justify-content-end">
+            @if (! $esSegunda)
             <a href="{{ route('copladep-registro-invitados-monitor.index') }}" class="mx-2">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Ver monitor
                 </button>
             </a>
-            <a href="{{ route('copladep-registro.create') }}" class="">
+            @endif
+            <a href="{{ route($esSegunda ? 'copladep-registro-segunda.create' : 'copladep-registro.create') }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Nuevo registro
                 </button>
             </a>
-            <a href="{{ route('copladep-registro-invitados.index') }}" class="mx-2">
+            <a href="{{ route($esSegunda ? 'copladep-registro-segunda-invitados.index' : 'copladep-registro-invitados.index') }}" class="mx-2">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Ver invitados
                 </button>

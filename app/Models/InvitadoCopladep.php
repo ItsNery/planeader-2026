@@ -13,6 +13,7 @@ class InvitadoCopladep extends Model
         'nombre_completo',
         'sexo',
         'cargo',
+        'dependencia',
         'municipio_id',
         'check_in_express',
         'sesion',

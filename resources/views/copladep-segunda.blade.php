@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@2" async defer></script>
 @endsection
 @section('content')
-    <section class="contenedor-imagen-primera-sesion">
+    <section class="contenedor-imagen-segunda-sesion">
         <h1>
             Segunda Sesión Ordinaria 2026
             <br>

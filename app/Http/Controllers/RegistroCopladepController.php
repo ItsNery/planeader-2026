@@ -8,6 +8,7 @@ use App\Models\InvitadoCopladep;
 use App\Models\RegistroCopladep;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class RegistroCopladepController extends Controller
@@ -15,36 +16,50 @@ class RegistroCopladepController extends Controller
     private array $configSesiones = [
         'primera' => [
             'nombre'        => 'Primera Sesión Ordinaria 2026',
-            'inicio'        => ['2026-03-26 08:30:00', 'Y-m-d H:i:s'],
-            'fin'           => ['2026-03-31 19:00:00', 'Y-m-d H:i:s'],
+            'inicio'        => '2026-03-26 08:30:00',
+            'fin'           => '2026-03-31 19:00:00',
             'mensaje_fuera' => 'El registro solo está disponible desde el 26 hasta el 31 de marzo a 7:00 PM.',
-            'js_inicio'     => [2026, 2, 26, 8, 30],
-            'js_fin'        => [2026, 2, 31, 19, 0],
+            'js_inicio'     => '2026-03-26T08:30:00-06:00',
+            'js_fin'        => '2026-03-31T19:00:00-06:00',
             'js_mensaje_inicio' => 'El registro abrirá el 26 de marzo a las 8:30 AM.',
         ],
         'segunda' => [
             'nombre'        => 'Segunda Sesión Ordinaria 2026',
-            'inicio'        => ['2026-06-15 08:30:00', 'Y-m-d H:i:s'],
-            'fin'           => ['2026-06-20 19:00:00', 'Y-m-d H:i:s'],
-            'mensaje_fuera' => 'El registro de la segunda sesión aún no está disponible.',
-            'js_inicio'     => [2026, 5, 15, 8, 30],
-            'js_fin'        => [2026, 5, 20, 19, 0],
-            'js_mensaje_inicio' => 'El registro abrirá el 15 de junio a las 8:30 AM.',
+            'inicio'        => '2026-10-30 00:00:00',
+            'fin'           => '2026-11-26 13:00:00',
+            'mensaje_fuera' => 'El registro solo está disponible del 30 de octubre al 26 de noviembre a la 1:00 PM.',
+            'js_inicio'     => '2026-10-30T00:00:00-06:00',
+            'js_fin'        => '2026-11-26T13:00:00-06:00',
+            'js_mensaje_inicio' => 'El registro abrirá el 30 de octubre a las 12:00 AM.',
         ],
     ];
 
     public function __construct()
     {
-        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index']]);
+        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'indexSegunda']]);
     }
 
     public function index()
     {
         $registros = RegistroCopladep::with('catMunicipio', 'invitado')
+            ->where('sesion', 'primera')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('panel-copladep.primera-sesion-ordinaria-2026.registro-copladep-listado', compact('registros'));
+        $sesion = 'primera';
+
+        return view('panel-copladep.primera-sesion-ordinaria-2026.registro-copladep-listado', compact('registros', 'sesion'));
+    }
+
+    public function indexSegunda()
+    {
+        $registros = RegistroCopladep::with('catMunicipio', 'invitado')
+            ->where('sesion', 'segunda')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $sesion = 'segunda';
+
+        return view('panel-copladep.primera-sesion-ordinaria-2026.registro-copladep-listado', compact('registros', 'sesion'));
     }
 
     public function createPrimera()
@@ -86,10 +101,10 @@ class RegistroCopladepController extends Controller
     {
         Log::info("Inicio del método store para registro COPLADEP - sesión: {$sesion}.");
         $config = $this->configSesiones[$sesion] ?? $this->configSesiones['primera'];
-        $now = Carbon::now();
+        $now = Carbon::now(config('app.timezone'));
 
-        $inicioRegistro = Carbon::createFromFormat($config['inicio'][1], $config['inicio'][0]);
-        $finRegistro    = Carbon::createFromFormat($config['fin'][1], $config['fin'][0]);
+        $inicioRegistro = Carbon::parse($config['inicio'], config('app.timezone'));
+        $finRegistro    = Carbon::parse($config['fin'], config('app.timezone'));
 
         if (!$now->between($inicioRegistro, $finRegistro)) {
             Log::warning("Intento de registro COPLADEP fuera de horario (sesión {$sesion}). Hora actual: {$now}");
@@ -100,7 +115,7 @@ class RegistroCopladepController extends Controller
 
         $rules = [
             'tipo_asistente'     => 'required|string|in:titular,representante',
-            'invitado_id'        => 'required|integer|exists:invitado_copladeps,id',
+            'invitado_id'        => ['required', 'integer', Rule::exists('invitado_copladeps', 'id')->where('sesion', $sesion)],
             'nombre_completo' => 'required|string|max:50',
             'sexo' => 'required|string|in:Hombre,Mujer,Otro',
             'cargo' => 'required|string|max:200',

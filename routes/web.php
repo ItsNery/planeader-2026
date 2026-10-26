@@ -180,6 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('panel-documentos-subcomites', DocumentoSubcomiteController::class);
 
     Route::get('/copladep/primera-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'index'])->name('copladep-registro.index');
+    Route::get('/copladep/segunda-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'indexSegunda'])->name('copladep-registro-segunda.index');
     Route::get('/copladep/primera-sesion-ordinaria/invitados', [InvitadoCopladepController::class, 'index'])->name('copladep-registro-invitados.index');
     Route::post('/copladep/primera-sesion-ordinaria/invitados', [InvitadoCopladepController::class, 'store'])->name('copladep-registro-invitados.store');
     Route::put('/copladep/primera-sesion-ordinaria/invitados/{id}', [InvitadoCopladepController::class, 'update'])->name('copladep-registro-invitados.update');

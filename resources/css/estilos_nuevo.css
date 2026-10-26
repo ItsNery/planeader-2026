@@ -4241,3 +4241,30 @@ footer {
     text-align: center;
     opacity: 0.9;
 }
+
+/* Estilos de segunda sesion de COPLADEP */
+.contenedor-imagen-segunda-sesion {
+    background-image: url('../img/fondos-seccion/segunda-cop-2026/COPLADEP-en-Puebla (1).webp');
+    background-size: cover;
+    background-position: center center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    position: relative;
+}
+
+.contenedor-imagen-segunda-sesion h1 {
+    background-size: cover;
+    background-position: center center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--arena);
+    text-shadow: 2px 2px rgba(0, 0, 0, 1);
+    font-family: 'Gilroy-Black', sans-serif;
+    font-weight: 900;
+    line-height: 1.2;
+    font-size: clamp(2rem, 7vw, 6rem);
+    text-align: center;
+    opacity: 0.9;
+}
