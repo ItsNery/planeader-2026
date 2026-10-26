@@ -63,7 +63,7 @@
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <div class="container">
-                                    @php
+                                    {{-- @php
                                         $descripcionEvento =
                                             "Evento: Privado | Sectores Estratégicos | Código de vestimenta: Formal\n\n" .
                                             "Presentar avances en materia de planeación estatal:\n" .
@@ -82,7 +82,7 @@
                                         hideTextLabelButton lightMode="system"></add-to-calendar-button>
                                     <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
-                                        frameborder="0" class="iframe-documento" title="Logística del evento"></iframe>
+                                        frameborder="0" class="iframe-documento" title="Logística del evento"></iframe> --}}
                                 </div>
                             </div>
                         </div>
@@ -98,9 +98,9 @@
                             data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <div class="container">
-                                    <iframe
+                                    {{-- <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
-                                        frameborder="0" class="iframe-documento" title="Orden del día"></iframe>
+                                        frameborder="0" class="iframe-documento" title="Orden del día"></iframe> --}}
                                 </div>
                             </div>
                         </div>

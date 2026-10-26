@@ -32,6 +32,7 @@ use App\Http\Controllers\AgendaFechaBloqueadaController;
 use App\Http\Controllers\PanelAgendaEventoController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\RegistroCopladepController;
+use App\Http\Controllers\SesionCopladepController;
 
 
 /*
@@ -179,6 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('panel-marco-juridico', MarcoJuridicoController::class);
     Route::resource('panel-documentos-subcomites', DocumentoSubcomiteController::class);
 
+    Route::get('/panel-copladep/sesiones', [SesionCopladepController::class, 'index'])->name('panel-copladep-sesiones.index');
     Route::get('/copladep/primera-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'index'])->name('copladep-registro.index');
     Route::get('/copladep/segunda-sesion-ordinaria/registro/listado', [RegistroCopladepController::class, 'indexSegunda'])->name('copladep-registro-segunda.index');
     Route::get('/copladep/primera-sesion-ordinaria/invitados', [InvitadoCopladepController::class, 'index'])->name('copladep-registro-invitados.index');

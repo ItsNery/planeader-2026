@@ -41,11 +41,13 @@
                     Nuevo registro
                 </button>
             </a>
-            <a href="{{ route($esSegunda ? 'copladep-registro-segunda-invitados.index' : 'copladep-registro-invitados.index') }}" class="mx-2">
-                <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
-                    Ver invitados
-                </button>
-            </a>
+            @if (! $esSegunda)
+                <a href="{{ route('copladep-registro-invitados.index') }}" class="mx-2">
+                    <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
+                        Ver invitados
+                    </button>
+                </a>
+            @endif
         </div>
         <div class="container table-responsive">
             <table id="registrosCopladepTable" class="table w-100 table-hover align-middle">
