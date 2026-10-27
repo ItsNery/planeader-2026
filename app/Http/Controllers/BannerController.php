@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -13,7 +14,7 @@ class BannerController extends Controller
     {
         $this->middleware('permission:ver-banner|crear-banner|editar-banner|borrar-banner', ['only' => ['index']]);
         $this->middleware('permission:crear-banner', ['only' => ['create', 'store']]);
-        $this->middleware('permission:editar-banner', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:editar-banner', ['only' => ['edit', 'update', 'orden', 'actualizarOrden']]);
         $this->middleware('permission:borrar-banner', ['only' => ['destroy']]);
     }
 
@@ -24,8 +25,42 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $banners = Banner::paginate(1000);
+        $banners = Banner::orderBy('orden')->orderBy('id')->paginate(1000);
         return view('panel-banners.index', compact('banners'));
+    }
+
+    public function orden()
+    {
+        $banners = Banner::orderBy('orden')->orderBy('id')->get();
+
+        return view('panel-banners.orden', compact('banners'));
+    }
+
+    public function actualizarOrden(Request $request)
+    {
+        $data = $request->validate([
+            'banners' => ['required', 'array', 'min:1'],
+            'banners.*' => ['required', 'integer', 'distinct', 'exists:banners,id'],
+        ]);
+
+        $ids = array_map('intval', $data['banners']);
+        $idsEsperados = Banner::orderBy('id')->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $idsRecibidos = $ids;
+        sort($idsRecibidos);
+
+        if ($idsRecibidos !== $idsEsperados) {
+            return back()->withErrors([
+                'banners' => 'La lista debe incluir todos los banners una sola vez. Recarga la página e intenta nuevamente.',
+            ]);
+        }
+
+        DB::transaction(function () use ($ids) {
+            foreach ($ids as $indice => $id) {
+                Banner::whereKey($id)->update(['orden' => $indice + 1]);
+            }
+        });
+
+        return redirect()->route('panel-banners.index')->with('success', 'El orden de los banners fue actualizado.');
     }
 
     /**

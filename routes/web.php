@@ -201,6 +201,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('panel-programas-derivados.storeMassive');
     Route::resource('panel-programas-derivados', ProgramaDerivadoController::class);
     Route::resource('panel-subcomites', SubcomiteController::class);
+    Route::get('panel-banners/orden', [BannerController::class, 'orden'])->name('panel-banners.orden');
+    Route::put('panel-banners/orden', [BannerController::class, 'actualizarOrden'])->name('panel-banners.actualizar-orden');
     Route::resource('panel-banners', BannerController::class);
     Route::resource('panel-contacto', FormularioContactoController::class);
     // Route::resource('panel-capacitaciones', CapacitacionController::class);

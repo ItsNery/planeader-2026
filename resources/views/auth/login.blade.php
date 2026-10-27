@@ -8,13 +8,14 @@
                 </div>
             @endif
             <div class="login-form">
-                <h2 style="font-weight: 600; text-transform:uppercase;">Bienvenido</h2>
+                <h2>Bienvenido</h2>
                 <p>Sistema Estatal de Planeación Democrática</p>
-                <form method="POST" action="{{ route('login') }}" class="w-sm-50 w-md-100">
+                <form method="POST" action="{{ route('login') }}" class="contenedor-formulario" novalidate>
                     @csrf
                     <div class="mb-3 w-100">
+                        <label for="email" class="visually-hidden">Correo</label>
                         <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }} w-100" type="email"
-                            name="email" :value="old('email')" placeholder="Correo" required>
+                            id="email" name="email" :value="old('email')" placeholder="Correo" required autocomplete="email">
                         @error('email')
                             <small class="invalid-feedback">
                                 <strong>{{ $message }}</strong>
@@ -22,9 +23,22 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3 w-100">
+                    <div class="mb-3 w-100 password-field">
+                        <label for="password" class="visually-hidden">Contraseña</label>
                         <input class="form-control {{ $errors->has('password') ? ' is-invalid' : '' }} w-100" type="password"
-                            name="password" required autocomplete="current-password" placeholder="Contraseña">
+                            id="password" name="password" required autocomplete="current-password" placeholder="Contraseña">
+                        <button type="button" class="password-toggle" aria-controls="password" aria-pressed="false"
+                            aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                            <svg class="password-toggle__show" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false">
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <svg class="password-toggle__hide d-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false">
+                                <path d="m3 3 18 18" />
+                                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                                <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c6.5 0 10 8 10 8a18.5 18.5 0 0 1-3 4.2M6.6 6.6C3.7 8.5 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6" />
+                            </svg>
+                        </button>
                         @error('password')
                             <small class="invalid-feedback">
                                 <strong>{{ $message }}</strong>
@@ -66,6 +80,26 @@
             </div>
         </div>
     </section>
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const password = document.getElementById('password');
+                const toggle = document.querySelector('.password-toggle');
+
+                if (!password || !toggle) return;
+
+                toggle.addEventListener('click', function() {
+                    const isVisible = password.type === 'password';
+                    password.type = isVisible ? 'text' : 'password';
+                    toggle.setAttribute('aria-pressed', String(isVisible));
+                    toggle.setAttribute('aria-label', isVisible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+                    toggle.setAttribute('title', isVisible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+                    toggle.querySelector('.password-toggle__show').classList.toggle('d-none', isVisible);
+                    toggle.querySelector('.password-toggle__hide').classList.toggle('d-none', !isVisible);
+                });
+            });
+        </script>
+    @endpush
     {{-- <x-authentication-card>
         <x-slot name="logo">
             <img src="/imagen/LOGO CORTADO.png" alt="" width="90PX">

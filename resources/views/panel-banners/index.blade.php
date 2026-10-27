@@ -23,12 +23,17 @@
                 </strong>
             </p>
         </div>
-        <div class="container d-flex justify-content-end">
-            <a href="{{ route('panel-banners.create') }}" class="text-decoration-none">
-                <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
-                    Subir banner
-                </button>
-            </a>
+        <div class="container d-flex justify-content-end flex-wrap gap-2">
+            @can('editar-banner')
+                <a href="{{ route('panel-banners.orden') }}" class="btn btn-outline-secondary mt-3 mb-3">
+                    <i class="fa-solid fa-arrow-down-up-across-line me-1"></i>Reordenar banners
+                </a>
+            @endcan
+            @can('crear-banner')
+                <a href="{{ route('panel-banners.create') }}" class="btn btn-custom-primary mt-3 mb-3">
+                    <i class="fa-solid fa-upload me-1"></i>Subir banner
+                </a>
+            @endcan
         </div>
         <table id="myTable" class="table w-100 table-hover align-middle">
             <thead class="table-light">
