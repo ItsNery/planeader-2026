@@ -13,10 +13,65 @@
 @section('twitter-description',
     'Página principal de la Segunda Sesión Ordinaria del Comité de Planeación para el
     Desarrollo del Estado de Puebla del Estado de Puebla.')
-@section('css')
-    <script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@2" async defer></script>
-@endsection
 @section('content')
+    <main class="copladep-session">
+        <section class="contenedor-imagen-segunda-sesion" aria-labelledby="copladep-session__title">
+            <h1 id="copladep-session__title">Segunda Sesión Ordinaria 2026 de la Asamblea Plenaria del COPLADEP</h1>
+        </section>
+
+        <div class="copladep-session__shell">
+            <p class="copladep-session__kicker">Conoce los detalles</p>
+
+            <section class="copladep-session__card copladep-session__card--registration" aria-labelledby="registration-title">
+                <div class="copladep-session__mark" aria-hidden="true">
+                    <img class="copladep-session__mark-image" src="{{ asset('img/iconos-inicio/Copladep.png') }}" alt="" />
+                </div>
+                <div class="copladep-session__registration">
+                    <h2 class="copladep-session__heading" id="registration-title">Realiza tu registro y confirma tu asistencia</h2>
+                    <a class="copladep-session__registration-link" href="{{ url('/copladep/segunda-sesion-ordinaria/registro') }}" target="_blank" rel="noopener" title="Abrir registro de asistencia en una nueva pestaña">REGISTRO</a>
+                </div>
+            </section>
+
+            <section class="copladep-session__card copladep-session__card--logistics" aria-labelledby="logistics-title">
+                <h2 class="copladep-session__heading copladep-session__heading--section" id="logistics-title">Logística del evento</h2>
+                <dl class="copladep-session__logistics">
+                    <div class="copladep-session__logistics-item">
+                        <i class="fa-regular fa-calendar-days copladep-session__logistics-icon" aria-hidden="true"></i>
+                        <dd class="copladep-session__logistics-text">Miércoles 25 de noviembre del 2026</dd>
+                    </div>
+                    <div class="copladep-session__logistics-item">
+                        <i class="fa-regular fa-clock copladep-session__logistics-icon" aria-hidden="true"></i>
+                        <dd class="copladep-session__logistics-text">13:00 horas</dd>
+                    </div>
+                    <div class="copladep-session__logistics-item">
+                        <i class="fa-solid fa-map-location-dot copladep-session__logistics-icon" aria-hidden="true"></i>
+                        <dd class="copladep-session__logistics-text">Salón SUM, ubicado en Casa Puebla, Calzada de los Fuertes 106, 72260, Puebla de Zaragoza</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section class="copladep-session__card copladep-session__card--agenda" aria-labelledby="agenda-title">
+                <h2 class="copladep-session__heading copladep-session__heading--section" id="agenda-title">Orden del día</h2>
+                <ol class="copladep-session__agenda-list">
+                    <li>Apertura de la sesión y declaración del Quórum Legal.</li>
+                    <li>Aprobación del Orden del Día.</li>
+                    <li>Seguimiento a los puntos de acuerdo de la sesión anterior.</li>
+                    <li>Presentación y, en su caso, aprobación de la Modificación a los Lineamientos para el Funcionamiento del Comité de Planeación para el Desarrollo del Estado de Puebla y sus Órganos Auxiliares.</li>
+                    <li>Presentación del Funcionamiento del COPLADEP y sus Órganos Auxiliares.</li>
+                    <li>Presentación del Informe Anual de Trabajo de los Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria, así como presentación de resultados de las Mesas Técnicas Especiales.</li>
+                    <li>Presentación y, en su caso, aprobación del Programa Especial de Personas con Discapacidad, Neurodivergentes y Altas Capacidades y Programa Estatal de Pro-Igualdad.</li>
+                    <li>Presentación de los Resultados Estratégicos de los Órganos Auxiliares del COPLADEP.</li>
+                    <li>Presentación del seguimiento a la Propuesta para el Relanzamiento de la incorporación de la Agenda 2030 en la Planeación para el Desarrollo del Estado de Puebla.</li>
+                    <li>Presentación y, en su caso, aprobación del Programa Anual de Trabajo 2027 del COPLADEP.</li>
+                    <li>Asuntos Generales.</li>
+                    <li>Mensaje del Gobernador Constitucional del Estado Libre y Soberano de Puebla y Presidente del COPLADEP.</li>
+                    <li>Clausura de la sesión.</li>
+                </ol>
+            </section>
+        </div>
+    </main>
+
+    @if (false) {{-- Legacy accordion retained temporarily for reference. --}}
     <section class="contenedor-imagen-segunda-sesion">
         <h1>
             Segunda Sesión Ordinaria 2026
@@ -346,7 +401,7 @@
             </div>
         </div>
     </section>
-
+    @endif
 @endsection
 
 @section('scripts')

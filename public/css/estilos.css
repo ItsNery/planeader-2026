@@ -6226,3 +6226,28 @@ footer {
     border-radius: 50%;
     object-fit: cover;
 }
+
+
+/* Segunda sesión ordinaria del COPLADEP */
+.copladep-session { background:var(--colorBlanco); color:var(--blackColor); font-family:'Gilroy-Regular',Arial,sans-serif; padding-bottom:5rem; }
+        .copladep-session__shell { margin:auto; max-width:1180px; padding:0 1.25rem; }
+        .copladep-session__kicker { color:var(--colorGris); font-family:'Gilroy-Light',Arial,sans-serif; font-size:clamp(1.2rem,1.6vw,1.55rem); margin:1rem 0 .6rem; }
+        .copladep-session__card { border:1px solid var(--color2); margin-top:.85rem; padding:clamp(1rem,2vw,1.6rem); }
+        .copladep-session__card--registration { align-items:center; display:grid; gap:1.5rem; grid-template-columns:minmax(7rem,11rem) 1fr; }
+        .copladep-session__mark { margin:auto; max-width:9rem; width:100%; }
+        .copladep-session__mark-image { display:block; height:auto; max-width:100%; width:100%; }
+        .copladep-session__registration { border-left:2px solid var(--colorGris); min-height:7rem; padding:.75rem clamp(1rem,5vw,5rem); text-align:center; }
+        .copladep-session__heading { color:var(--color2); font-family:'Gilroy-Regular',Arial,sans-serif; font-size:clamp(1.2rem,1.55vw,1.55rem); font-weight:500; margin:0 0 1.25rem; }
+        .copladep-session__registration-link { border:2px solid var(--color6); border-radius:99rem; color:var(--color6); display:inline-block; font-family:'Gilroy-Bold',Arial,sans-serif; font-size:1.1rem; font-weight:700; min-width:min(100%,13rem); padding:.55rem 2rem; text-decoration:none; transition:.18s ease; }
+        .copladep-session__registration-link:hover, .copladep-session__registration-link:focus-visible { background:var(--color6); color:var(--colorBlanco); transform:translateY(-2px); }
+        .copladep-session__heading--section { margin-bottom:1rem; }
+        .copladep-session__logistics { display:grid; grid-template-columns:1fr .72fr 1.35fr; margin:0; }
+        .copladep-session__logistics-item { align-items:center; display:flex; gap:.85rem; margin:0; min-height:5rem; padding:.5rem clamp(.75rem,1.5vw,1.5rem); }
+        .copladep-session__logistics-item + .copladep-session__logistics-item { border-left:2px solid var(--colorGris); }
+        .copladep-session__logistics-icon { color:var(--color6); flex:0 0 auto; font-size:clamp(2rem,2.8vw,2.8rem); line-height:1; width:1em; }
+        .copladep-session__logistics-text { color:var(--colorGris); font-family:'Gilroy-Light',Arial,sans-serif; font-size:clamp(1rem,1.2vw,1.2rem); line-height:1.3; margin:0; }
+        .copladep-session__card--agenda { padding-bottom:1.5rem; }
+        .copladep-session__agenda-list { color:var(--colorGris); counter-reset:agenda; font-family:'Gilroy-Light',Arial,sans-serif; font-size:1rem; line-height:1.4; list-style:none; margin:0; padding:0 0 0 4.5rem; }
+        .copladep-session__agenda-list li { counter-increment:agenda; padding-left:.75rem; position:relative; }
+        .copladep-session__agenda-list li::before { content:counter(agenda,upper-roman) '.'; position:absolute; right:100%; width:3.5rem; }
+        @media (max-width:767.98px) { .copladep-session { padding-bottom:3rem; } .copladep-session__card--registration,.copladep-session__logistics { grid-template-columns:1fr; } .copladep-session__registration { border-left:0; border-top:2px solid var(--colorGris); min-height:0; padding:1.5rem 0 0; } .copladep-session__logistics-item { padding:1.2rem 0; } .copladep-session__logistics-item + .copladep-session__logistics-item { border-left:0; border-top:2px solid var(--colorGris); } .copladep-session__agenda-list { padding-left:3.5rem; } }
