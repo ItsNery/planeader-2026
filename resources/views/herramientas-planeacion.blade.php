@@ -24,7 +24,7 @@
 @endsection
 @section('content')
     <section class="contenedor-imagen-herramientas-plan">
-        <h1>Herramientas de planeación</h1>
+        <h1 class="visually-hidden">Herramientas de planeación</h1>
     </section>
     <section class="herramientas-planeacion">
         <div class="container">
@@ -35,11 +35,7 @@
             <div class="row my-5">
                 @foreach ($herramientas as $herramienta)
                     <div class="mx-auto px-4 py-4 col-12 col-md-6 col-lg-3">
-                        <x-tarjeta-documento
-                            :titulo="$herramienta->titulo"
-                            :imagen="$herramienta->imagen"
-                            :archivo="$herramienta->archivo"
-                        />
+                        <x-tarjeta-documento :titulo="$herramienta->titulo" :imagen="$herramienta->imagen" :archivo="$herramienta->archivo" />
 
                         @if ($herramienta->anexos->isNotEmpty())
                             <div class="w-100 text-center mt-3">
@@ -72,7 +68,7 @@
                             </div>
                         @endif
                     </div>
-                    @endforeach
+                @endforeach
 
             </div>
 

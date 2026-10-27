@@ -14,23 +14,9 @@
     'Bienvenido a la página de visión general de los Programas Derivados del Plan Estatal de Desarrollo
     2024-2030 del Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('content')
-    <section class="contenedor-imagen-programasest">
-        <h1>Programas Derivados</h1>
+    <section class="contenedor-imagen-derivados">
+        <h1 class="visually-hidden">Programas Derivados</h1>
     </section>
-    {{-- <section class="ped-programas-inicio">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="titulo-seccion">
-                        Programas Derivados
-                    </div>
-                    <div class="subtitulo-seccion">
-                    <a href="https://ped2024-2030.puebla.gob.mx/programas/" title="Programas Derivados" rel="noopener">Conócelos</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
     <section class="programas-derivados bckgrnd-gradient-plan">
         <div class="container derivadosnew">
             <div class="container py-5">

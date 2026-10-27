@@ -26,7 +26,7 @@
         </script>
     @endif
     <section class="contenedor-imagen-contacto">
-        <h1>Contáctanos</h1>
+        <h1 class="visually-hidden">Contáctanos</h1>
     </section>
     <section id="contact" class="contacto">
         <div class="container-fluid contact overflow-hidden py-5">

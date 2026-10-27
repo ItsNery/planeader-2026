@@ -17,7 +17,7 @@
 @endsection
 @section('content')
     <section class="contenedor-imagen-coplademun">
-        <h1>COPLADEMUN</h1>
+        <h1 class="visually-hidden">COPLADEMUN</h1>
     </section>
     <section class="coplademun">
         <div class="container">

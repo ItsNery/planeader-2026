@@ -18,7 +18,7 @@
 
 @section('content')
     <section class="contenedor-imagen-capacitaciones">
-        <h1>Capacitación municipal</h1>
+        <h1 class="visually-hidden">Capacitación municipal</h1>
     </section>
     <section class="capacitaciones">
         <div class="container py-5">
@@ -110,9 +110,11 @@
                                                                             title="Ver documento">
                                                                             <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                                                         </a>
-                                                                        <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}" target="_blank"
-                                                                            rel="noopener noreferrer" title="Abrir en nueva pestaña">
-                                                                            <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                        <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}"
+                                                                            target="_blank" rel="noopener noreferrer"
+                                                                            title="Abrir en nueva pestaña">
+                                                                            <i class="fas fa-external-link-alt"></i>
+                                                                            <span>Abrir</span>
                                                                         </a>
                                                                         <a href="{{ asset('documentos/capacitacion-municipal/' . $documento->ruta_archivo) }}"
                                                                             download rel="noopener"

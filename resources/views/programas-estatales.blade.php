@@ -9,7 +9,7 @@
 @section('twitter-description', 'Documentos de carácter estatal que no son derivados del Plan Estatal de Desarrollo.')
 @section('content')
     <section class="contenedor-imagen-programasest">
-        <h1>Programas Estatales</h1>
+        <h1 class="visually-hidden">Programas Estatales</h1>
     </section>
     <section class="programas-estatales">
         <div class="container py-5">

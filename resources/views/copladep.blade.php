@@ -15,7 +15,7 @@
     del Estado de Puebla del Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('content')
     <section class="contenedor-imagen-copladep">
-        <h1>COPLADEP</h1>
+        <h1 class="visually-hidden">COPLADEP</h1>
     </section>
     <section class="copladep-inicio">
         <div class="container">
@@ -86,7 +86,8 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <img src="{{ asset('img/integrantes-copladep.jpg') }}" alt="Esquema de conformación del COPLADEP" title="Conformación del Copladep" class="esquema-visual">
+                    <img src="{{ asset('img/integrantes-copladep.jpg') }}" alt="Esquema de conformación del COPLADEP"
+                        title="Conformación del Copladep" class="esquema-visual">
                 </div>
             </div>
         </div>
@@ -165,9 +166,10 @@
                                                                     <i class="fas fa-eye"></i> <span>Ver aquí</span>
                                                                 </a>
                                                                 <a href="{{ asset('documentocopladep/' . $documento->ruta_documento) }}"
-                                                                    target="_blank" rel="noopener noreferrer" 
+                                                                    target="_blank" rel="noopener noreferrer"
                                                                     title="Abrir en nueva pestaña">
-                                                                    <i class="fas fa-external-link-alt"></i> <span>Abrir</span>
+                                                                    <i class="fas fa-external-link-alt"></i>
+                                                                    <span>Abrir</span>
                                                                 </a>
                                                                 <a href="{{ asset('documentocopladep/' . $documento->ruta_documento) }}"
                                                                     download="{{ $documento->nombre }}" rel="noopener"

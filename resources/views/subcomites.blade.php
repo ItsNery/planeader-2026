@@ -13,7 +13,7 @@
     Sistema Estatal de Planeación Democrática del Estado de Puebla.')
 @section('content')
     <section class="contenedor-imagen-subcomites">
-        <h1>Subcomités</h1>
+        <h1 class="visually-hidden">Subcomités</h1>
     </section>
     <section class="subcomites-actual">
         <div class="container pt-5 pb-4 text-center">

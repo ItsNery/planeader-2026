@@ -18,7 +18,7 @@
 
 @section('content')
     <section class="contenedor-imagen-docsmetodologicos">
-        <h1>Documentos metodológicos</h1>
+        <h1 class="visually-hidden">Documentos metodológicos</h1>
     </section>
     <section class="documentos-metodologicos">
         <div class="container">

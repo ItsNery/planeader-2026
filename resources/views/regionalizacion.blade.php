@@ -35,7 +35,7 @@
 @endsection
 @section('content')
     <section class="contenedor-imagen-regionalizacion">
-        <h1>Regionalización</h1>
+        <h1 class="visually-hidden">Regionalización</h1>
     </section>
     <section class="regionalizacion">
         <div class="container">
@@ -152,7 +152,8 @@
                             <button type="button" class="map-retry-button d-none" data-map-retry>Reintentar</button>
                         </div>
 
-                        <div class="mapa wihi100" id="mapa" role="region" aria-label="Mapa interactivo de regionalización"
+                        <div class="mapa wihi100" id="mapa" role="region"
+                            aria-label="Mapa interactivo de regionalización"
                             data-municipios-url="{{ asset('geojson/municipios.geojson') }}"
                             data-microrregiones-url="{{ asset('geojson/microrregiones-2026.geojson') }}"
                             data-macrorregiones-url="{{ asset('geojson/macrorregiones-2026.geojson') }}"
@@ -162,7 +163,8 @@
                         <!-- CONTENEDOR FLOTANTE (ABSOLUTO) -->
                         <div class="controles-flotantes controles-flotantes-regionalizacion">
                             <div class="botonera-vertical">
-                                <button type="button" class="btn-info" id="btnInfo" aria-label="Mostrar instrucciones"
+                                <button type="button" class="btn-info" id="btnInfo"
+                                    aria-label="Mostrar instrucciones"
                                     title="Seleccione una región de la lista o haga clic en el mapa">
                                     <i class="fa-solid fa-circle-info"></i>
                                 </button>

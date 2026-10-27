@@ -22,7 +22,7 @@
 
 @section('content')
     <section class="contenedor-imagen-planesmun">
-        <h1>Planes Municipales de Desarrollo</h1>
+        <h1 class="visually-hidden">Planes Municipales de Desarrollo</h1>
     </section>
     <section class="planes-mun">
         <div class="container py-5">
@@ -71,7 +71,8 @@
                                         alt="Figura con la forma del municipio de {{ $municipio->nombre }}"
                                         title="{{ $municipio->nombre }}" class="leaderboard__picture">
                                     <span class="leaderboard__name">{{ $municipio->id }}. {{ $municipio->nombre }}</span>
-                                    <span class="map-item-count" aria-label="{{ $municipio->planes_publicados_count }} planes publicados">
+                                    <span class="map-item-count"
+                                        aria-label="{{ $municipio->planes_publicados_count }} planes publicados">
                                         {{ $municipio->planes_publicados_count }} PMD
                                     </span>
                                 </article>
@@ -93,8 +94,7 @@
 
                         <div class="controles-flotantes">
                             <div class="botonera-vertical">
-                                <button class="btn-info" id="btnInfo"
-                                    type="button" aria-label="Mostrar instrucciones"
+                                <button class="btn-info" id="btnInfo" type="button" aria-label="Mostrar instrucciones"
                                     title="Seleccione un municipio de la lista o haga clic en el mapa">
                                     <i class="fa-solid fa-circle-info"></i>
                                 </button>

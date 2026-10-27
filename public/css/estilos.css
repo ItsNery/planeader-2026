@@ -1751,7 +1751,7 @@ footer {
 /* Inician estilos de COPLADEP */
 /* Estilos para el contenedor principal */
 .contenedor-imagen-copladep {
-    background-image: url("../img/fondos-seccion/copladep.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_03-03_COPLADEP.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2025,9 +2025,36 @@ footer {
 }
 
 /* Terminan estilos de Copladep */
+.contenedor-imagen-derivados {
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_03-02_Programas-Derivados.webp");
+    background-size: cover;
+    background-position: center center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    position: relative;
+}
+
+/* Estilos para el texto que creará el efecto */
+.contenedor-imagen-derivados h1 {
+    background-size: cover;
+    background-position: center center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--arena);
+    font-family: "Gilroy-Black", sans-serif;
+    font-weight: 900;
+    line-height: 1.2;
+    text-shadow: 2px 2px rgba(0, 0, 0, 1);
+    font-size: clamp(2rem, 7vw, 6rem);
+    /* text-transform: uppercase; */
+    text-align: center;
+    opacity: 0.9;
+}
 /* Estilos de Programas Estatales inician */
 .contenedor-imagen-programasest {
-    background-image: url("../img/fondos-seccion/programas-est.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_03-04_Programas-Estatales.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2168,7 +2195,7 @@ footer {
 /* Terminan estilos de programas estatales */
 /* Inician estilos de Subcomités */
 .contenedor-imagen-subcomites {
-    background-image: url("../img/fondos-seccion/subcomites_.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_03-05_Subcomites.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2672,7 +2699,7 @@ footer {
 /* Inician estilos de Marco Jur+idico */
 /* Estilos de Programas Estatales inician */
 .contenedor-imagen-marco {
-    background-image: url("../img/fondos-seccion/marco-ju.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_02-01_Marco-Juridico.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2802,7 +2829,7 @@ footer {
 /* Terminan estilos de Marco Jurídico */
 /* Inician estilos de Contacto */
 .contenedor-imagen-contacto {
-    background-image: url("../img/fondos-seccion/contacto.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_06-01_Contactanos.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -2842,7 +2869,7 @@ footer {
 /* Terminan estilos de contacto */
 /* Estilos de Regionalizacion inicia */
 .contenedor-imagen-regionalizacion {
-    background-image: url("../img/fondos-seccion/1regionalizacion.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_05-01_Regionalizacion.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3232,7 +3259,7 @@ footer {
 /* Estilos de regionalizacion terminan */
 /* Inician estilos de Planes Municipales */
 .contenedor-imagen-planesmun {
-    background-image: url("../img/fondos-seccion/planes-municipales.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_04-01_Planes-Municipales-Desarrollo.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3567,7 +3594,7 @@ footer {
 /* Termina estilos de Planes Municipales de Desarrollo */
 /* Inician estilos de coplademun */
 .contenedor-imagen-coplademun {
-    background-image: url("../img/fondos-seccion/coplademun.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_04-02_COPLADEMUN.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3661,7 +3688,7 @@ footer {
 /* Acaban estilos de COPLADEMUN */
 /* Inician estilos de capacitaciones municipales */
 .contenedor-imagen-capacitaciones {
-    background-image: url("../img/fondos-seccion/capacitacion-municipal.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_04-03_Capacitacion-Municipal.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -3792,7 +3819,7 @@ footer {
 /* Terminan estilos de capacitaciones */
 /* Inician estilos de documentos metodologicos */
 .contenedor-imagen-docsmetodologicos {
-    background-image: url("../img/fondos-seccion/documentos-met.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_04-04_Documentos-Metodologicos.webp");
     background-size: cover;
     background-position: center center;
     display: flex;
@@ -4045,7 +4072,7 @@ footer {
 /* Terminan estilos de página 404 */
 /* Inician estilos de Herramientas de planeación */
 .contenedor-imagen-herramientas-plan {
-    background-image: url("../img/fondos-seccion/herramientas-plan.webp");
+    background-image: url("../img/fondos-seccion-26/Planeader_Banner_03-06_Herramientas-Planeacion.webp");
     background-size: cover;
     background-position: center center;
     display: flex;

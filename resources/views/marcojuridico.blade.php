@@ -18,7 +18,7 @@
 
 @section('content')
     <section class="contenedor-imagen-marco">
-        <h1>Marco Jurídico</h1>
+        <h1 class="visually-hidden">Marco Jurídico</h1>
     </section>
     <section class="documentos-marco">
         <div class="container py-2">
