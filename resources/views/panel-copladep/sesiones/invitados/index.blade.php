@@ -10,17 +10,19 @@
         <div class="form-header py-3">
             <h2>Listado de invitados registrados</h2>
             <p class="text-white">
-                Aquí ver las personas invitadas para la
-                <a href="{{ url('/copladep/primera-sesion-ordinaria') }}" class="text-white">primera sesión ordinaria
-                    2026</a>.
+                Aquí se muestran las personas invitadas para la
+                <a href="{{ $sesion->ruta_publica ?: route('copladep-sesiones.registro.create', $sesion) }}" class="text-white">{{ $sesion->nombre }}</a>.
             </p>
             <strong>
                 Para registrar un nuevo invitado, pulsa el botón de Nuevo invitado situado debajo de esta tarjeta.
             </strong>
         </div>
 
-        <div class="container d-flex justify-content-end">
-            <a href="{{ route('copladep-registro-invitados-monitor.index') }}" class="mx-2">
+        <div class="container d-flex flex-wrap justify-content-end gap-2">
+            @can('crear-invitado-copladep')
+                <a href="{{ route('panel-copladep-sesiones.invitados.importar.form', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3">Importar invitados</a>
+            @endcan
+            <a href="{{ route('panel-copladep-sesiones.invitados.monitor', $sesion) }}" class="mx-2">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Ver monitor
                 </button>
@@ -55,9 +57,9 @@
                                              <span class="badge bg-light text-dark border">
                                                  {{ $invitado->cargo }}
                                              </span>
-                                             @if ($invitado->dependencia)
-                                                 <span class="badge bg-light text-dark border">
-                                                     {{ $invitado->dependencia }}
+                                              @if ($invitado->dependenciaCopladep)
+                                                  <span class="badge bg-light text-dark border">
+                                                  {{ $invitado->dependenciaCopladep->nombre }}
                                                  </span>
                                              @endif
                                         </div>
@@ -72,9 +74,9 @@
                             <td>
                                 @php
                                     // Definimos la hora límite (31-03 a las 17:00 hrs)
-                                    $fechaLimite = \Carbon\Carbon::parse('2026-03-31 17:00:00');
+                                    $fechaLimite = $sesion->fecha_evento;
                                     // Revisamos si su último check-in fue después de esa hora
-                                    $esTolerancia = $invitado->updated_at && $invitado->updated_at->greaterThan($fechaLimite);
+                                    $esTolerancia = $fechaLimite && $invitado->updated_at && $invitado->updated_at->greaterThan($fechaLimite);
                                 @endphp
 
                                 @if($invitado->check_in_express)
@@ -97,19 +99,10 @@
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary btn-editar"
                                              data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
-                                             data-cargo="{{ $invitado->cargo }}" data-dependencia="{{ $invitado->dependencia }}" data-sexo="{{ $invitado->sexo }}"
+                                             data-cargo="{{ $invitado->cargo }}" data-dependencia="{{ $invitado->dependencia_id }}" data-modalidad="{{ $invitado->modalidad }}" data-sexo="{{ $invitado->sexo }}"
                                             data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        {{-- <form
-                                            action="{{ route('copladep-registro-invitados.destroy', $invitado->id) }}"
-                                            method="POST" class="formEliminar ms-1">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Eliminar Invitado">
-                                                <i class="bi bi-trash-fill"></i>
-                                            </button>
-                                        </form> --}}
                                     </div>
                                 </div>
                             </td>
@@ -138,7 +131,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('copladep-registro-invitados.store') }}" method="POST">
+                    <form action="{{ route('panel-copladep-sesiones.invitados.store', $sesion) }}" method="POST">
                         @csrf
                         <div class="modal-body">
                             <div class="row">
@@ -156,20 +149,25 @@
                                  </div>
 
                                  <div class="col-md-6 mb-3">
-                                     <label for="dependencia_invitado" class="form-label fw-bold">Dependencia</label>
-                                     <input type="text" class="form-control" id="dependencia_invitado" name="dependencia"
-                                         placeholder="Ej. Ejecutivo del Estado">
+                                      <label for="dependencia_invitado" class="form-label fw-bold">Dependencia</label>
+                                      <select class="form-select" id="dependencia_invitado" name="dependencia_id"><option value="">Seleccionar...</option>@foreach ($dependencias as $dependencia)<option value="{{ $dependencia->id }}">{{ $dependencia->nombre }}</option>@endforeach</select>
+                                      <button type="button" class="btn btn-link btn-sm px-0 mt-1" data-bs-toggle="modal" data-bs-target="#modalNuevaDependencia">Nueva dependencia</button>
                                  </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="sexo_invitado" class="form-label fw-bold">Sexo</label>
-                                    <select class="form-select" id="sexo_invitado" name="sexo" required>
+                                 <div class="col-md-6 mb-3">
+                                     <label for="sexo_invitado" class="form-label fw-bold">Sexo</label>
+                                     <select class="form-select" id="sexo_invitado" name="sexo" required>
                                         <option value="" selected disabled>Seleccionar...</option>
                                         <option value="Hombre">Hombre</option>
                                         <option value="Mujer">Mujer</option>
                                         <option value="Otro">Otro</option>
-                                    </select>
-                                </div>
+                                     </select>
+                                 </div>
+
+                                 <div class="col-md-6 mb-3">
+                                     <label for="modalidad_invitado" class="form-label fw-bold">Modalidad</label>
+                                     <select class="form-select" id="modalidad_invitado" name="modalidad"><option value="">Por definir</option><option value="presencial">Presencial</option><option value="virtual">Virtual</option></select>
+                                 </div>
 
                                 <div class="col-md-12 mb-3">
                                     <label for="municipio_id_invitado" class="form-label fw-bold">Municipio</label>
@@ -217,17 +215,22 @@
                                  </div>
 
                                  <div class="col-md-6 mb-3">
-                                     <label for="edit_dependencia" class="form-label fw-bold">Dependencia</label>
-                                     <input type="text" class="form-control" id="edit_dependencia" name="dependencia">
+                                      <label for="edit_dependencia" class="form-label fw-bold">Dependencia</label>
+                                      <select class="form-select" id="edit_dependencia" name="dependencia_id"><option value="">Seleccionar...</option>@foreach ($dependencias as $dependencia)<option value="{{ $dependencia->id }}">{{ $dependencia->nombre }}</option>@endforeach</select>
                                  </div>
 
-                                <div class="col-md-6 mb-3">
+                                 <div class="col-md-6 mb-3">
                                     <label for="edit_sexo" class="form-label fw-bold">Sexo</label>
                                     <select class="form-select" id="edit_sexo" name="sexo" required>
                                         <option value="Hombre">Hombre</option>
                                         <option value="Mujer">Mujer</option>
                                     </select>
-                                </div>
+                                 </div>
+
+                                 <div class="col-md-6 mb-3">
+                                     <label for="edit_modalidad" class="form-label fw-bold">Modalidad</label>
+                                     <select class="form-select" id="edit_modalidad" name="modalidad"><option value="">Por definir</option><option value="presencial">Presencial</option><option value="virtual">Virtual</option></select>
+                                 </div>
 
                                 <div class="col-md-12 mb-3">
                                     <label for="edit_municipio_id" class="form-label fw-bold">Municipio</label>
@@ -248,6 +251,19 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalNuevaDependencia" tabindex="-1" aria-labelledby="modalNuevaDependenciaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <form id="formNuevaDependencia" class="modal-content">
+                    <div class="modal-header"><h2 class="h5 modal-title" id="modalNuevaDependenciaLabel">Nueva dependencia</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+                    <div class="modal-body">
+                        <label for="nueva_dependencia_nombre" class="form-label">Nombre</label><input class="form-control mb-3" id="nueva_dependencia_nombre" name="nombre" required maxlength="255">
+                        <label for="nueva_dependencia_siglas" class="form-label">Siglas</label><input class="form-control" id="nueva_dependencia_siglas" name="siglas" maxlength="30">
+                        <div id="errorNuevaDependencia" class="alert alert-danger d-none mt-3 mb-0"></div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-custom-primary">Guardar dependencia</button></div>
+                </form>
             </div>
         </div>
     </div>
@@ -315,9 +331,53 @@
                     sortField: { field: "text", direction: "asc" }
                 });
 
+                let selectDependencia = new TomSelect("#dependencia_invitado", {
+                    create: false,
+                    sortField: { field: "text", direction: "asc" },
+                    placeholder: "Buscar dependencia..."
+                });
+
                 let selectEditMunicipio = new TomSelect("#edit_municipio_id", {
                     create: false,
                     sortField: { field: "text", direction: "asc" }
+                });
+
+                let selectEditDependencia = new TomSelect("#edit_dependencia", {
+                    create: false,
+                    sortField: { field: "text", direction: "asc" },
+                    placeholder: "Buscar dependencia..."
+                });
+
+                const modalAgregarInvitado = document.getElementById('modalAgregarInvitado');
+                const modalNuevaDependencia = document.getElementById('modalNuevaDependencia');
+                modalNuevaDependencia.addEventListener('show.bs.modal', () => {
+                    bootstrap.Modal.getInstance(modalAgregarInvitado)?.hide();
+                });
+                modalNuevaDependencia.addEventListener('hidden.bs.modal', () => {
+                    bootstrap.Modal.getOrCreateInstance(modalAgregarInvitado).show();
+                });
+
+                document.getElementById('formNuevaDependencia').addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    const error = document.getElementById('errorNuevaDependencia');
+                    error.classList.add('d-none');
+                    const response = await fetch('{{ route('panel-copladep-dependencias.store-quick') }}', {
+                        method: 'POST',
+                        headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                        body: new FormData(this)
+                    });
+                    const data = await response.json();
+                    if (!response.ok) {
+                        error.textContent = data.errors?.nombre?.[0] || 'No fue posible guardar la dependencia.';
+                        error.classList.remove('d-none');
+                        return;
+                    }
+                    const option = {value: data.id, text: data.nombre};
+                    selectDependencia.addOption(option);
+                    selectEditDependencia.addOption(option);
+                    selectDependencia.setValue(data.id);
+                    this.reset();
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaDependencia')).hide();
                 });
 
                 // 3. Delegación de eventos con Vanilla JS para el botón de Editar
@@ -328,7 +388,7 @@
 
                     if (btnExpress) {
                         const id = btnExpress.dataset.id;
-                        const url = `{{ url('/copladep/primera-sesion-ordinaria/invitados') }}/${id}/toggle-express`;
+                        const url = `{{ url('/panel-copladep/sesiones/' . $sesion->clave . '/invitados') }}/${id}/toggle-express`;
 
                         fetch(url, {
                             method: 'POST',
@@ -384,17 +444,19 @@
                     const nombre = botonEditar.dataset.nombre;
                     const cargo = botonEditar.dataset.cargo;
                     const dependencia = botonEditar.dataset.dependencia;
+                    const modalidad = botonEditar.dataset.modalidad;
                     const sexo = botonEditar.dataset.sexo;
                     const municipioId = botonEditar.dataset.municipio;
 
                     // 1. Armamos la ruta dinámica hacia el controlador
                     const formEditar = document.getElementById('formEditarInvitado');
-                    formEditar.action = "{{ url('/copladep/primera-sesion-ordinaria/invitados') }}/" + id;
+                    formEditar.action = "{{ url('/panel-copladep/sesiones/' . $sesion->clave . '/invitados') }}/" + id;
 
                     // 2. Llenamos los campos normales
                     document.getElementById('edit_nombre_completo').value = nombre;
                     document.getElementById('edit_cargo').value = cargo;
-                    document.getElementById('edit_dependencia').value = dependencia;
+                    selectEditDependencia.setValue(dependencia);
+                    document.getElementById('edit_modalidad').value = modalidad;
                     document.getElementById('edit_sexo').value = sexo;
 
                     // 3. Llenamos el Tom Select

@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - {{ $config['nombre'] }} del COPLADEP</title>
+    <title>Registro - {{ $sesion->nombre }} del COPLADEP</title>
     <link rel="shortcut icon" href="https://puebla.gob.mx/templates/dst_puebla_2024/favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/estilos-registro-capacitacion.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -18,92 +18,113 @@
     <div class="container">
         <div class="registration-form-container mx-auto">
             <div class="logo-container">
-                <img src="{{ asset('img/logo-gobierno.png') }}" alt="Logos Dependencia" class="logo-img">
-                <img src="{{ asset('img/Logo-Copladep.png') }}" alt="Logos Dependencia" class="logo-img">
+                <img src="{{ asset('img/Logos-SPFA_.png') }}" alt="Logos Dependencia" class="logo-img">
+                <img src="{{ asset('img/Copladep_Logo_v1.png') }}" alt="Logos Dependencia" class="logo-img">
             </div>
 
             <h2 class="text-center form-title">
-                Registro de asistencia de la {{ $config['nombre'] }} de la Asamblea Plenaria del COPLADEP
+                Registro de asistencia de la {{ $sesion->nombre }} de la Asamblea Plenaria del COPLADEP
             </h2>
 
-            <form method="POST" action="{{ route($sesion === 'segunda' ? 'copladep-registro-segunda.store' : 'copladep-registro.store') }}" novalidate id="miFormulario"> @csrf
+            <form method="POST"
+                action="{{ route('copladep-sesiones.registro.store', $sesion) }}"
+                novalidate id="miFormulario"> @csrf
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
+                @if (session('warning'))
+                    <div class="alert alert-warning" role="alert">{{ session('warning') }}</div>
+                @endif
                 @if ($errors->any())
-                    <div class="alert alert-danger">
-                        Revise los campos en rojo o la firma.
+                    <div class="alert alert-danger" role="alert">
+                        <p class="mb-2 fw-bold">No se pudo completar el registro. Revisa lo siguiente:</p>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 
                 <div class="mb-4 text-center">
                     <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" name="tipo_asistente" id="soy_titular" value="titular" 
+                        <input type="radio" class="btn-check" name="tipo_asistente" id="soy_titular" value="titular"
                             {{ old('tipo_asistente', 'titular') == 'titular' ? 'checked' : '' }}>
-                        <label class="btn btn-outline-primary" for="soy_titular">Soy la persona Titular / Invitada</label>
+                        <label class="btn btn-outline-primary" for="soy_titular">Soy la persona Titular /
+                            Invitada</label>
 
-                        <input type="radio" class="btn-check" name="tipo_asistente" id="soy_representante" value="representante"
-                            {{ old('tipo_asistente') == 'representante' ? 'checked' : '' }}>
+                        <input type="radio" class="btn-check" name="tipo_asistente" id="soy_representante"
+                            value="representante" {{ old('tipo_asistente') == 'representante' ? 'checked' : '' }}>
                         <label class="btn btn-outline-primary" for="soy_representante">Vengo en Representación</label>
                     </div>
                 </div>
 
                 <div class="mb-4 bg-light p-3 rounded border" id="seccion_buscador_invitado">
-                    <label id="label_buscador" for="invitado_id" class="form-label fw-bold">Busque su nombre en la lista:</label>
+                    <label id="label_buscador" for="invitado_id" class="form-label fw-bold">Busque su nombre en la
+                        lista: <span class="text-danger">*</span></label>
                     <select class="form-select" id="invitado_id" name="invitado_id" required>
                         <option value="">Buscar nombre del funcionario...</option>
-                        @foreach($invitados as $invitado)
-
-                            <option value="{{ $invitado->id }}" 
-                                data-nombre="{{ $invitado->nombre_completo }}"
-                                data-cargo="{{ $invitado->cargo }}"
-                                data-sexo="{{ $invitado->sexo }}"
+                        @foreach ($invitados as $invitado)
+                            <option value="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
+                                data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
                                 data-municipio="{{ $invitado->municipio_id }}"
+                                data-modalidad="{{ $invitado->modalidad }}"
                                 {{ old('invitado_id') == $invitado->id ? 'selected' : '' }}>
-                                {{ $invitado->nombre_completo }} - {{ $invitado->cargo }}{{ $invitado->dependencia ? ' | ' . $invitado->dependencia : '' }}
+                                {{ $invitado->nombre_completo }} -
+                                {{ $invitado->cargo }}{{ $invitado->dependenciaCopladep?->nombre ? ' | ' . $invitado->dependenciaCopladep->nombre : '' }}
                             </option>
                         @endforeach
                     </select>
                 </div>
+                <div id="modalidadAviso" class="alert alert-info d-none">La modalidad de asistencia se define en tu
+                    invitación.</div>
 
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="nombre_completo" class="form-label">Nombre del Asistente <span
                                 class="text-danger">*</span> </label>
-                        <input type="text" class="form-control" id="nombre_completo" name="nombre_completo" value="{{ old('nombre_completo') }}" required
-                            readonly>
+                        <input type="text" class="form-control @error('nombre_completo') is-invalid @enderror" id="nombre_completo" name="nombre_completo"
+                            value="{{ old('nombre_completo') }}" maxlength="50" required readonly>
+                        @error('nombre_completo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         <small id="ayuda_nombre" class="text-muted">Este campo se llena automáticamente al seleccionar
                             al titular.</small>
                     </div>
 
                     <div class="col-md-12 mb-3">
                         <label for="cargo" class="form-label">Cargo <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="cargo" name="cargo" value="{{ old('cargo') }}" required readonly>
+                        <input type="text" class="form-control @error('cargo') is-invalid @enderror" id="cargo" name="cargo"
+                            value="{{ old('cargo') }}" maxlength="191" required readonly>
+                        @error('cargo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="sexo" class="form-label">Sexo</label>
-                        <select class="form-select" id="sexo" name="sexo" required readonly style="pointer-events: none; background-color: #e9ecef;">
+                        <label for="sexo" class="form-label">Sexo <span class="text-danger">*</span></label>
+                        <select class="form-select @error('sexo') is-invalid @enderror" id="sexo" name="sexo" required readonly
+                            style="pointer-events: none; background-color: #e9ecef;">
                             <option value="">Seleccionar...</option>
                             <option value="Hombre" {{ old('sexo') == 'Hombre' ? 'selected' : '' }}>Hombre</option>
                             <option value="Mujer" {{ old('sexo') == 'Mujer' ? 'selected' : '' }}>Mujer</option>
 
                         </select>
+                        @error('sexo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="municipio_id" class="form-label">Municipio</label>
-                        <select class="form-select" id="municipio_id" name="municipio_id" required readonly style="pointer-events: none; background-color: #e9ecef;">
+                        <label for="municipio_id" class="form-label">Municipio <span class="text-danger">*</span></label>
+                        <select class="form-select @error('municipio_id') is-invalid @enderror" id="municipio_id" name="municipio_id" required readonly
+                            style="pointer-events: none; background-color: #e9ecef;">
                             <option value="">Seleccionar...</option>
                             @foreach ($municipios as $municipio)
-                                <option value="{{ $municipio->id }}" {{ old('municipio_id') == $municipio->id ? 'selected' : '' }}>
+                                <option value="{{ $municipio->id }}"
+                                    {{ old('municipio_id') == $municipio->id ? 'selected' : '' }}>
                                     {{ $municipio->nombre_municipio }}
                                 </option>
                             @endforeach
                         </select>
+                        @error('municipio_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
@@ -120,8 +141,7 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="telefono_oficina" class="form-label">Teléfono de oficina <span
-                                class="text-danger">*</span></label>
+                        <label for="telefono_oficina" class="form-label">Teléfono de oficina <span class="text-muted">(opcional)</span></label>
                         <input type="tel" class="form-control @error('telefono_oficina') is-invalid @enderror"
                             id="telefono_oficina" name="telefono_oficina" value="{{ old('telefono_oficina') }}"
                             placeholder="Ej: 222 123 4567" maxlength="20">
@@ -131,10 +151,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="telefono_celular" class="form-label">Teléfono celular</label>
+                        <label for="telefono_celular" class="form-label">Teléfono celular <span class="text-danger">*</span></label>
                         <input type="tel" class="form-control @error('telefono_celular') is-invalid @enderror"
                             id="telefono_celular" name="telefono_celular" value="{{ old('telefono_celular') }}"
-                            placeholder="Ej: 221 123 4567" maxlength="20">
+                            placeholder="Ej: 221 123 4567" maxlength="20" required>
                         @error('telefono_celular')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -154,8 +174,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
- <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
             // --- ALERTA DE ÉXITO ---
             @if (session('success'))
@@ -169,25 +189,13 @@
                 });
             @endif
 
-            // --- ALERTA DE ERRORES DE VALIDACIÓN ---
-            @if ($errors->any())
-                let errores = '';
-                @foreach ($errors->all() as $error)
-                    errores += '• {{ $error }}\n';
-                @endforeach
-
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Revisa los datos!',
-                    text: errores,
-                    confirmButtonColor: '#dc3545' 
-                });
-            @endif
-
             // 1. Inicializar Tom Select del Invitado
             let tomSelectInvitado = new TomSelect("#invitado_id", {
                 create: false,
-                sortField: { field: "text", direction: "asc" },
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
                 maxOptions: null,
                 maxItems: 1,
                 plugins: ['remove_button'],
@@ -208,14 +216,15 @@
             const inputCargo = document.getElementById('cargo');
             const selectSexo = document.getElementById('sexo');
             const selectMunicipio = document.getElementById('municipio_id');
+            const modalidadAviso = document.getElementById('modalidadAviso');
 
             // 3. Lógica del candado de tiempo
             function actualizarEstadoBoton() {
                 if (!mensajeEstado) return;
 
                 const ahora = new Date();
-                const inicioRegistro = new Date('{{ $config['js_inicio'] }}');
-                const finRegistro = new Date('{{ $config['js_fin'] }}');
+                const inicioRegistro = new Date('{{ optional($sesion->registro_inicio)->toIso8601String() }}');
+                const finRegistro = new Date('{{ optional($sesion->registro_fin)->toIso8601String() }}');
 
                 if (ahora >= inicioRegistro && ahora <= finRegistro) {
                     boton.textContent = 'Registrarse';
@@ -232,7 +241,7 @@
                     mensajeEstado.className = 'text-center mb-2 fw-bold text-danger';
 
                     if (ahora < inicioRegistro) {
-                        mensajeEstado.textContent = '{{ $config['js_mensaje_inicio'] }}';
+                        mensajeEstado.textContent = 'El registro abrirá en la fecha programada.';
                     } else if (ahora > finRegistro) {
                         mensajeEstado.textContent = 'El periodo de registro ha finalizado.';
                     }
@@ -241,7 +250,7 @@
 
             // Evitamos que manden el form si el botón está deshabilitado por el candado de tiempo
             if (formulario) {
-                formulario.addEventListener('submit', function (event) {
+                formulario.addEventListener('submit', function(event) {
                     if (boton.disabled) {
                         event.preventDefault();
                     }
@@ -255,7 +264,7 @@
             // 4. Lógica de Titular vs Representante
             function cambiarModo(esEventoDelUsuario = true) {
                 if (radioTitular.checked) {
-                    labelBuscador.textContent = "Busque su nombre en la lista:";
+                    labelBuscador.textContent = "Busque su nombre en la lista (obligatorio):";
                     ayudaNombre.textContent = "Este campo se llena automáticamente.";
 
                     inputNombre.readOnly = true;
@@ -267,7 +276,7 @@
 
                     llenarCamposDesdeSelect();
                 } else {
-                    labelBuscador.textContent = "¿A quién viene representando? Busque al titular:";
+                    labelBuscador.textContent = "¿A quién representa? Busque al titular (obligatorio):";
                     ayudaNombre.textContent = "Escriba SU propio nombre completo (el de usted).";
 
                     inputNombre.readOnly = false;
@@ -291,7 +300,7 @@
                 if (!radioTitular.checked) return;
 
                 let val = tomSelectInvitado.getValue();
-                
+
                 if (val) {
                     let selectNativo = document.getElementById('invitado_id');
                     let opcionNativa = selectNativo.querySelector(`option[value="${val}"]`);
@@ -301,20 +310,30 @@
                         inputCargo.value = opcionNativa.dataset.cargo || "";
                         selectSexo.value = opcionNativa.dataset.sexo || "";
                         selectMunicipio.value = opcionNativa.dataset.municipio || "";
+                        // Si la invitación no tiene municipio, permitir que la persona lo complete.
+                        selectMunicipio.style.pointerEvents = selectMunicipio.value ? "none" : "auto";
+                        selectMunicipio.style.backgroundColor = selectMunicipio.value ? "#e9ecef" : "#fff";
+                        if (modalidadAviso) {
+                            const modalidad = opcionNativa.dataset.modalidad;
+                            modalidadAviso.classList.remove('d-none');
+                            modalidadAviso.textContent = modalidad ? `Modalidad de asistencia: ${modalidad}.` :
+                                'La modalidad de asistencia aún no ha sido definida; el registro se guardará, pero no se generará el PDF.';
+                        }
                     }
                 } else {
                     inputNombre.value = "";
                     inputCargo.value = "";
                     selectSexo.value = "";
                     selectMunicipio.value = "";
+                    modalidadAviso?.classList.add('d-none');
                 }
             }
 
             // Listeners: Les pasamos "true" para indicar que es un clic manual
             radioTitular.addEventListener('change', () => cambiarModo(true));
             radioRep.addEventListener('change', () => cambiarModo(true));
-            
-            tomSelectInvitado.on('change', function () {
+
+            tomSelectInvitado.on('change', function() {
                 llenarCamposDesdeSelect();
             });
 

@@ -187,6 +187,15 @@ class DocumentoSesionController extends Controller
         return view('copladep-segunda', compact('documentos'));
     }
 
+    public function mostrarSegundaSesionVirtual()
+    {
+        $documentos = DocumentoSesion::where('publicado', true)
+            ->orderBy('orden', 'asc')
+            ->get();
+
+        return view('copladep-segunda', compact('documentos'))->with('modalidadEvento', 'virtual');
+    }
+
     protected function getModel()
     {
         return DocumentoSesion::class;

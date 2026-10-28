@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\CatMunicipio;
+use App\Models\CatDependenciaCopladep;
 use App\Models\InvitadoCopladep;
+use App\Models\SesionCopladep;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -45,8 +47,15 @@ class ImportarInvitadosSegundaSesionCopladep extends Command
             return self::FAILURE;
         }
 
+        $sesion = SesionCopladep::where('clave', '2026-segunda-ordinaria')->first();
+        if (! $sesion) {
+            $this->error('No se encontró la sesión 2026-segunda-ordinaria. Ejecute las migraciones primero.');
+
+            return self::FAILURE;
+        }
+
         $municipios = CatMunicipio::all()->keyBy(fn (CatMunicipio $municipio) => $this->normalizar($municipio->nombre_municipio));
-        $existentes = InvitadoCopladep::where('sesion', 'segunda')
+        $existentes = InvitadoCopladep::where('sesion_copladep_id', $sesion->id)
             ->get()
             ->keyBy(fn (InvitadoCopladep $invitado) => $this->clave($invitado->nombre_completo, $invitado->cargo));
         $vistos = [];
@@ -54,7 +63,7 @@ class ImportarInvitadosSegundaSesionCopladep extends Command
         $actualizados = 0;
         $omitidos = 0;
 
-        DB::transaction(function () use ($filas, $encabezados, $municipios, $municipioPredeterminado, $existentes, &$vistos, &$creados, &$actualizados, &$omitidos) {
+        DB::transaction(function () use ($filas, $encabezados, $municipios, $municipioPredeterminado, $existentes, $sesion, &$vistos, &$creados, &$actualizados, &$omitidos) {
             foreach (array_slice($filas, $encabezados['fila'] + 1) as $fila) {
                 $nombre = trim((string) ($fila[$encabezados['nombre']] ?? ''));
                 $cargo = trim((string) ($fila[$encabezados['cargo']] ?? ''));
@@ -71,12 +80,13 @@ class ImportarInvitadosSegundaSesionCopladep extends Command
                 $vistos[$clave] = true;
 
                 $dependencia = trim((string) ($fila[$encabezados['dependencia']] ?? ''));
+                $dependenciaId = $dependencia === '' ? null : CatDependenciaCopladep::firstOrCreate(['nombre' => $dependencia])->id;
                 $nombreMunicipio = trim((string) ($fila[$encabezados['municipio'] ?? -1] ?? ''));
                 $municipio = $municipios->get($this->normalizar($nombreMunicipio)) ?? $municipioPredeterminado;
 
                 if (isset($existentes[$clave])) {
-                    if ($existentes[$clave]->dependencia !== ($dependencia ?: null)) {
-                        $existentes[$clave]->update(['dependencia' => $dependencia ?: null]);
+                    if ($existentes[$clave]->dependencia_id !== $dependenciaId) {
+                        $existentes[$clave]->update(['dependencia' => $dependencia ?: null, 'dependencia_id' => $dependenciaId]);
                         $actualizados++;
                     } else {
                         $omitidos++;
@@ -88,9 +98,11 @@ class ImportarInvitadosSegundaSesionCopladep extends Command
                     'nombre_completo' => Str::limit($nombre, 50, ''),
                     'cargo' => Str::limit($cargo, 191, ''),
                     'dependencia' => $dependencia ?: null,
+                    'dependencia_id' => $dependenciaId,
                     'sexo' => 'Otro',
                     'municipio_id' => $municipio->id,
                     'sesion' => 'segunda',
+                    'sesion_copladep_id' => $sesion->id,
                 ]);
                 $creados++;
             }

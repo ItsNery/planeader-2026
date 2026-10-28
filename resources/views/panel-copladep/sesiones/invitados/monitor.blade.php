@@ -10,9 +10,8 @@
         <div class="form-header py-3">
             <h2>Listado de invitados registrados</h2>
             <p class="text-white">
-                Aquí ver las personas que han llegado para la
-                <a href="{{ url('/copladep/primera-sesion-ordinaria') }}" class="text-white">primera sesión ordinaria
-                    2026</a>.
+                Aquí se muestran las personas que han llegado para la
+                <a href="{{ $sesion->ruta_publica ?: route('copladep-sesiones.registro.create', $sesion) }}" class="text-white">{{ $sesion->nombre }}</a>.
             </p>
             <strong>
                 Para registrar un nuevo invitado, pulsa el botón de Nuevo invitado situado debajo de esta tarjeta.
@@ -21,12 +20,12 @@
 
         <div class="container d-flex justify-content-end">
 
-            <a href="{{ route('copladep-registro.index') }}" class="">
+            <a href="{{ route('panel-copladep-sesiones.registros.index', $sesion) }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Volver al listado
                 </button>
             </a>
-            <a href="{{ route('copladep-registro.create') }}" class="mx-2">
+            <a href="{{ route('copladep-sesiones.registro.create', $sesion) }}" class="mx-2">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Nuevo registro
                 </button>
@@ -64,7 +63,7 @@
                         $yaLlego = $invitado->check_in_express;
 
                         // Calculamos si llegó en tolerancia
-                        $fechaLimite = \Carbon\Carbon::parse('2026-03-31 17:00:00');
+                        $fechaLimite = $sesion->fecha_evento;
                         $esTolerancia = false;
 
                         if ($yaLlego && $invitado->updated_at) {

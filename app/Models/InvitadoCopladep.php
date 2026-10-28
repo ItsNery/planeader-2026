@@ -14,9 +14,12 @@ class InvitadoCopladep extends Model
         'sexo',
         'cargo',
         'dependencia',
+        'dependencia_id',
         'municipio_id',
         'check_in_express',
         'sesion',
+        'sesion_copladep_id',
+        'modalidad',
     ];
     
     protected $casts = [
@@ -30,5 +33,15 @@ class InvitadoCopladep extends Model
     public function registro()
     {
         return $this->hasOne(RegistroCopladep::class, 'invitado_id', 'id');
+    }
+
+    public function sesionCopladep()
+    {
+        return $this->belongsTo(SesionCopladep::class);
+    }
+
+    public function dependenciaCopladep()
+    {
+        return $this->belongsTo(CatDependenciaCopladep::class, 'dependencia_id');
     }
 }

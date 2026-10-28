@@ -22,18 +22,9 @@
         <div class="copladep-session__shell">
             <p class="copladep-session__kicker">Conoce los detalles</p>
 
-            <section class="copladep-session__card copladep-session__card--registration" aria-labelledby="registration-title">
-                <div class="copladep-session__mark" aria-hidden="true">
-                    <img class="copladep-session__mark-image" src="{{ asset('img/iconos-inicio/Copladep.png') }}" alt="" />
-                </div>
-                <div class="copladep-session__registration">
-                    <h2 class="copladep-session__heading" id="registration-title">Realiza tu registro y confirma tu asistencia</h2>
-                    <a class="copladep-session__registration-link" href="{{ url('/copladep/segunda-sesion-ordinaria/registro') }}" target="_blank" rel="noopener" title="Abrir registro de asistencia en una nueva pestaña">REGISTRO</a>
-                </div>
-            </section>
-
             <section class="copladep-session__card copladep-session__card--logistics" aria-labelledby="logistics-title">
-                <h2 class="copladep-session__heading copladep-session__heading--section" id="logistics-title">Logística del evento</h2>
+                <h2 class="copladep-session__heading copladep-session__heading--section" id="logistics-title">Logística del
+                    evento</h2>
                 <dl class="copladep-session__logistics">
                     <div class="copladep-session__logistics-item">
                         <i class="fa-regular fa-calendar-days copladep-session__logistics-icon" aria-hidden="true"></i>
@@ -44,81 +35,109 @@
                         <dd class="copladep-session__logistics-text">13:00 horas</dd>
                     </div>
                     <div class="copladep-session__logistics-item">
-                        <i class="fa-solid fa-map-location-dot copladep-session__logistics-icon" aria-hidden="true"></i>
-                        <dd class="copladep-session__logistics-text">Salón SUM, ubicado en Casa Puebla, Calzada de los Fuertes 106, 72260, Puebla de Zaragoza</dd>
+                        <i class="fa-solid {{ ($modalidadEvento ?? 'presencial') === 'virtual' ? 'fa-video' : 'fa-map-location-dot' }} copladep-session__logistics-icon" aria-hidden="true"></i>
+                        <dd class="copladep-session__logistics-text">
+                            @if (($modalidadEvento ?? 'presencial') === 'virtual')
+                                Sesión Virtual | Transmisión por Google Meet
+                            @else
+                                Salón SUM, ubicado en Casa Puebla, Calzada de los Fuertes 106, 72260, Puebla de Zaragoza
+                            @endif
+                        </dd>
                     </div>
                 </dl>
             </section>
 
+            <section class="copladep-session__card copladep-session__card--registration"
+                aria-labelledby="registration-title">
+                <div class="copladep-session__mark" aria-hidden="true">
+                    <img class="copladep-session__mark-image" src="{{ asset('img/iconos-inicio/Copladep.png') }}"
+                        alt="" />
+                </div>
+                <div class="copladep-session__registration">
+                    <h2 class="copladep-session__heading" id="registration-title">Realiza tu registro y confirma tu
+                        asistencia</h2>
+                    <a class="copladep-session__registration-link"
+                        href="{{ url('/copladep/segunda-sesion-ordinaria/registro') }}" target="_blank" rel="noopener"
+                        title="Abrir registro de asistencia en una nueva pestaña">REGISTRO</a>
+                </div>
+            </section>
+
             <section class="copladep-session__card copladep-session__card--agenda" aria-labelledby="agenda-title">
-                <h2 class="copladep-session__heading copladep-session__heading--section" id="agenda-title">Orden del día</h2>
+                <h2 class="copladep-session__heading copladep-session__heading--section" id="agenda-title">Orden del día
+                </h2>
                 <ol class="copladep-session__agenda-list">
                     <li>Apertura de la sesión y declaración del Quórum Legal.</li>
                     <li>Aprobación del Orden del Día.</li>
                     <li>Seguimiento a los puntos de acuerdo de la sesión anterior.</li>
-                    <li>Presentación y, en su caso, aprobación de la Modificación a los Lineamientos para el Funcionamiento del Comité de Planeación para el Desarrollo del Estado de Puebla y sus Órganos Auxiliares.</li>
+                    <li>Presentación y, en su caso, aprobación de la Modificación a los Lineamientos para el Funcionamiento
+                        del Comité de Planeación para el Desarrollo del Estado de Puebla y sus Órganos Auxiliares.</li>
                     <li>Presentación del Funcionamiento del COPLADEP y sus Órganos Auxiliares.</li>
-                    <li>Presentación del Informe Anual de Trabajo de los Subcomités Sectoriales para el Desarrollo Regional y la Riqueza Comunitaria, así como presentación de resultados de las Mesas Técnicas Especiales.</li>
-                    <li>Presentación y, en su caso, aprobación del Programa Especial de Personas con Discapacidad, Neurodivergentes y Altas Capacidades y Programa Estatal de Pro-Igualdad.</li>
+                    <li>Presentación del Informe Anual de Trabajo de los Subcomités Sectoriales para el Desarrollo Regional
+                        y la Riqueza Comunitaria, así como presentación de resultados de las Mesas Técnicas Especiales.</li>
+                    <li>Presentación y, en su caso, aprobación del Programa Especial de Personas con Discapacidad,
+                        Neurodivergentes y Altas Capacidades y Programa Estatal de Pro-Igualdad.</li>
                     <li>Presentación de los Resultados Estratégicos de los Órganos Auxiliares del COPLADEP.</li>
-                    <li>Presentación del seguimiento a la Propuesta para el Relanzamiento de la incorporación de la Agenda 2030 en la Planeación para el Desarrollo del Estado de Puebla.</li>
+                    <li>Presentación del seguimiento a la Propuesta para el Relanzamiento de la incorporación de la Agenda
+                        2030 en la Planeación para el Desarrollo del Estado de Puebla.</li>
                     <li>Presentación y, en su caso, aprobación del Programa Anual de Trabajo 2027 del COPLADEP.</li>
                     <li>Asuntos Generales.</li>
-                    <li>Mensaje del Gobernador Constitucional del Estado Libre y Soberano de Puebla y Presidente del COPLADEP.</li>
+                    <li>Mensaje del Gobernador Constitucional del Estado Libre y Soberano de Puebla y Presidente del
+                        COPLADEP.</li>
                     <li>Clausura de la sesión.</li>
                 </ol>
             </section>
         </div>
     </main>
 
-    @if (false) {{-- Legacy accordion retained temporarily for reference. --}}
-    <section class="contenedor-imagen-segunda-sesion">
-        <h1>
-            Segunda Sesión Ordinaria 2026
-            <br>
-            de la Asamblea Plenaria
-            <br> del COPLADEP
-        </h1>
-    </section>
-    <section class="documentos-metodologicos">
-        <div class="container">
-            <p class="corra-light text-justify my-5">
-                Listado con los anexos a la convocatoria:
-            </p>
-            <div class="container my-4">
-                <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading0">
-                            <button class="accordion-button show" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0">
-                                Liga de registro
-                            </button>
-                        </h2>
-                        <div id="collapse0" class="accordion-collapse collapse show" aria-labelledby="heading0"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <div class="container d-flex justify-content-center bg-light px-4 py-4">
-                                    <a href="{{ url('/copladep/segunda-sesion-ordinaria/registro') }}" rel="noopener"
-                                        target="_blank" title="Registro de asistencia"
-                                        class="btn btn-outline-primary btn-sm shadow-sm px-5 py-3 rounded-pill fw-bold text-uppercase">
-                                        Registro
-                                    </a>
+    @if (false)
+        {{-- Legacy accordion retained temporarily for reference. --}}
+        <section class="contenedor-imagen-segunda-sesion">
+            <h1>
+                Segunda Sesión Ordinaria 2026
+                <br>
+                de la Asamblea Plenaria
+                <br> del COPLADEP
+            </h1>
+        </section>
+        <section class="documentos-metodologicos">
+            <div class="container">
+                <p class="corra-light text-justify my-5">
+                    Listado con los anexos a la convocatoria:
+                </p>
+                <div class="container my-4">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading0">
+                                <button class="accordion-button show" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0">
+                                    Liga de registro
+                                </button>
+                            </h2>
+                            <div id="collapse0" class="accordion-collapse collapse show" aria-labelledby="heading0"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container d-flex justify-content-center bg-light px-4 py-4">
+                                        <a href="{{ url('/copladep/segunda-sesion-ordinaria/registro') }}" rel="noopener"
+                                            target="_blank" title="Registro de asistencia"
+                                            class="btn btn-outline-primary btn-sm shadow-sm px-5 py-3 rounded-pill fw-bold text-uppercase">
+                                            Registro
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading1">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
-                                Logística del evento
-                            </button>
-                        </h2>
-                        <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="heading1"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <div class="container">
-                                    {{-- @php
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                    Logística del evento
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="heading1"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        {{-- @php
                                         $descripcionEvento =
                                             "Evento: Privado | Sectores Estratégicos | Código de vestimenta: Formal\n\n" .
                                             "Presentar avances en materia de planeación estatal:\n" .
@@ -138,29 +157,29 @@
                                     <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/1. Logística del evento.pdf') }}"
                                         frameborder="0" class="iframe-documento" title="Logística del evento"></iframe> --}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading2">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                                Orden del día
-                            </button>
-                        </h2>
-                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <div class="container">
-                                    {{-- <iframe
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                    Orden del día
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        {{-- <iframe
                                         src="{{ asset('documentos/primera-sesion-ordinaria-2026/2. Orden del Día.pdf') }}"
                                         frameborder="0" class="iframe-documento" title="Orden del día"></iframe> --}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {{-- <div class="accordion-item">
+                        {{-- <div class="accordion-item">
                         <h2 class="accordion-header" id="heading9">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
@@ -397,10 +416,10 @@
                             </div>
                         </div>
                     </div> --}}
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
     @endif
 @endsection
 

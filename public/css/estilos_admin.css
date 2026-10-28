@@ -1290,3 +1290,209 @@ select[name="publicado"]:focus {
     color: #000 !important;
     border: 1px solid #e0a800 !important;
 }
+
+/* Check-in de sesiones COPLADEP */
+.checkin-scanner {
+    padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+.checkin-scanner__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+}
+
+.checkin-scanner__heading {
+    color: var(--color5);
+    font-family: var(--fontFamilyBold);
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+}
+
+.checkin-scanner__description,
+.checkin-scanner__status {
+    color: var(--text-color);
+    line-height: 1.5;
+    margin: 0 0 1rem;
+}
+
+.checkin-scanner__viewer {
+    align-items: center;
+    background: var(--bg-content);
+    border: 1px solid var(--colorGris);
+    border-radius: 0.75rem;
+    display: flex;
+    justify-content: center;
+    min-height: 15rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.checkin-scanner__reader {
+    width: 100%;
+}
+
+.checkin-scanner__reader video,
+.checkin-scanner__reader img {
+    display: block;
+    max-width: 100%;
+}
+
+.checkin-scanner__placeholder {
+    color: var(--color8);
+    margin: 0;
+    padding: 1rem;
+    position: absolute;
+    text-align: center;
+}
+
+.checkin-scanner__placeholder[hidden],
+.checkin-scanner__actions [hidden] {
+    display: none;
+}
+
+.checkin-scanner__status {
+    font-size: 0.9rem;
+    margin: 0.75rem 0 1rem;
+}
+
+.checkin-scanner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.checkin-scanner__file {
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+
+.checkin-scanner__file:focus-visible + .checkin-scanner__file-label {
+    outline: 3px solid var(--color6);
+    outline-offset: 3px;
+}
+
+.checkin-scanner__file-label {
+    margin: 0;
+}
+
+.checkin-scanner__submit {
+    margin-top: 0.75rem;
+}
+
+.checkin-scanner__result {
+    margin: 1.5rem 0 0;
+    overflow-wrap: anywhere;
+}
+
+/* Importación de invitados COPLADEP */
+.importar-invitados {
+    padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+.importar-invitados__back {
+    color: var(--color6);
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    text-underline-offset: 0.2em;
+}
+
+.importar-invitados__back:hover,
+.importar-invitados__back:focus-visible {
+    color: var(--color5);
+}
+
+.importar-invitados__intro {
+    color: var(--text-color);
+    line-height: 1.5;
+    margin: 0 0 2rem;
+    max-width: 70ch;
+}
+
+.importar-invitados__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+}
+
+.importar-invitados__template,
+.importar-invitados__upload {
+    min-width: 0;
+}
+
+.importar-invitados__heading {
+    color: var(--color5);
+    font-family: var(--fontFamilyBold);
+    font-size: 1.2rem;
+    margin: 0 0 0.65rem;
+}
+
+.importar-invitados__template p,
+.importar-invitados__upload p {
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.importar-invitados__download {
+    margin: 0.25rem 0 1.5rem;
+}
+
+.importar-invitados__guidance {
+    background: var(--bg-content);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+}
+
+.importar-invitados__subheading {
+    color: var(--color5);
+    font-family: var(--fontFamilyBold);
+    font-size: 1rem;
+    margin: 0 0 0.6rem;
+}
+
+.importar-invitados__list {
+    color: var(--text-color);
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.importar-invitados__list li + li {
+    margin-top: 0.35rem;
+}
+
+.importar-invitados__file {
+    max-width: 100%;
+}
+
+.importar-invitados__errors {
+    max-height: 18rem;
+    overflow: auto;
+    overflow-wrap: anywhere;
+}
+
+.importar-invitados__submit {
+    min-height: 2.75rem;
+}
+
+@media (max-width: 767.98px) {
+    .importar-invitados__layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .checkin-scanner__layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .checkin-scanner__viewer {
+        min-height: 12rem;
+    }
+}

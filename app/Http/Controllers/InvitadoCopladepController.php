@@ -2,132 +2,135 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InvitadoCopladep;
+use App\Models\CatDependenciaCopladep;
 use App\Models\CatMunicipio;
+use App\Models\InvitadoCopladep;
+use App\Models\SesionCopladep;
+use App\Services\ImportacionInvitadosCopladep;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class InvitadoCopladepController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index']]);
-        $this->middleware('permission:crear-invitado-copladep', ['only' => ['create', 'store']]);
-        $this->middleware('permission:editar-invitado-copladep', ['only' => ['update']]);
+        $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index', 'monitor']]);
+        $this->middleware('permission:crear-invitado-copladep', ['only' => ['store', 'importarForm', 'plantilla', 'importar']]);
+        $this->middleware('permission:editar-invitado-copladep', ['only' => ['update', 'toggleCheckInExpress']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
     }
 
-    public function index()
+    public function index(SesionCopladep $sesion)
     {
-        $invitados = InvitadoCopladep::with('municipio')->where('sesion', 'primera')->orderBy('nombre_completo', 'asc')->get();
-        $municipios = CatMunicipio::orderBy('nombre_municipio', 'asc')->get();
+        $invitados = $sesion->invitados()->with(['municipio', 'dependenciaCopladep'])->orderBy('nombre_completo')->get();
+        $municipios = CatMunicipio::orderBy('nombre_municipio')->get();
+        $dependencias = CatDependenciaCopladep::where('activo', true)->orderBy('nombre')->get();
 
-        return view('panel-copladep.primera-sesion-ordinaria-2026.invitados-copladep', compact('invitados', 'municipios'));
+        return view('panel-copladep.sesiones.invitados.index', compact('sesion', 'invitados', 'municipios', 'dependencias'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, SesionCopladep $sesion)
     {
-        $request->validate([
-            'nombre_completo' => 'required|string|max:50',
-            'sexo' => 'required|string|in:Hombre,Mujer,Otro',
-            'cargo' => 'required|string|max:191',
-            'dependencia' => 'nullable|string|max:1000',
-            'municipio_id' => 'nullable|integer|exists:cat_municipios,id',
+        $datos = $this->validated($request);
+        $datos['sesion_copladep_id'] = $sesion->id;
+        $datos['sesion'] = $sesion->numero === 2 ? 'segunda' : 'primera';
+        InvitadoCopladep::create($datos);
+
+        return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->with('success', 'Invitado registrado exitosamente.');
+    }
+
+    public function importarForm(SesionCopladep $sesion)
+    {
+        return view('panel-copladep.sesiones.invitados.importar', compact('sesion'));
+    }
+
+    public function plantilla(SesionCopladep $sesion, ImportacionInvitadosCopladep $importacion)
+    {
+        $book = $importacion->plantilla();
+
+        return response()->streamDownload(function () use ($book) {
+            try {
+                (new Xlsx($book))->save('php://output');
+            } finally {
+                $book->disconnectWorksheets();
+            }
+        }, 'plantilla-invitados-copladep.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    public function importar(Request $request, SesionCopladep $sesion, ImportacionInvitadosCopladep $importacion)
+    {
+        $request->validate(['archivo' => 'required|file|mimes:xlsx|max:5120'], [
+            'archivo.required' => 'Selecciona un archivo XLSX para importar.',
+            'archivo.mimes' => 'Selecciona un archivo XLSX generado con la plantilla.',
+            'archivo.max' => 'El archivo no debe superar los 5 MB.',
         ]);
 
-        InvitadoCopladep::create($request->safe()->merge(['sesion' => 'primera'])->all());
+        $count = $importacion->importar($request->file('archivo')->getRealPath(), $sesion);
 
-        return redirect()->route('copladep-registro-invitados.index')->with('success', 'Invitado registrado exitosamente.');
+        return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)
+            ->with('success', "Se importaron {$count} invitados correctamente.");
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, SesionCopladep $sesion, InvitadoCopladep $invitado)
     {
-        $request->validate([
-            'nombre_completo' => 'required|string|max:255',
-            'sexo'            => 'required|in:Hombre,Mujer,Otro',
-            'cargo'           => 'required|string|max:255',
-            'dependencia'     => 'nullable|string|max:1000',
-            'municipio_id'    => 'required|integer|exists:cat_municipios,id',
-        ]);
+        abort_unless($invitado->sesion_copladep_id === $sesion->id, 404);
+        $invitado->update($this->validated($request));
 
-        $invitado = InvitadoCopladep::where('sesion', 'primera')->findOrFail($id);
-        $invitado->update($request->safe()->only(['nombre_completo', 'sexo', 'cargo', 'dependencia', 'municipio_id']));
-
-        return redirect()->route('copladep-registro-invitados.index')
-            ->with('success', '¡Datos del invitado actualizados correctamente!');
+        return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->with('success', 'Datos del invitado actualizados correctamente.');
     }
 
-    public function destroy($id)
+    public function destroy(SesionCopladep $sesion, InvitadoCopladep $invitado)
     {
+        abort_unless($invitado->sesion_copladep_id === $sesion->id, 404);
         try {
-            InvitadoCopladep::where('sesion', 'primera')->findOrFail($id)->delete();
-            return redirect()->route('copladep-registro-invitados.index')->with('success', 'Invitado eliminado.');
-        } catch (\Exception $e) {
-            return redirect()->route('copladep-registro-invitados.index')->withErrors(['error' => 'No se puede eliminar a este invitado porque ya tiene un registro de asistencia vinculado.']);
+            $invitado->delete();
+            return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->with('success', 'Invitado eliminado.');
+        } catch (\Exception) {
+            return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->withErrors(['error' => 'No se puede eliminar a este invitado porque ya tiene un registro de asistencia vinculado.']);
         }
     }
 
-    public function monitor()
+    public function monitor(SesionCopladep $sesion)
     {
-        // $invitados = InvitadoCopladep::whereHas('registro')->orderBy('nombre_completo', 'asc')->get();
-        $invitados = InvitadoCopladep::where('sesion', 'primera')->where(function ($query) {
-            $query->whereHas('registro') 
-                ->orWhere('check_in_express', true);
-        })->orderBy('nombre_completo', 'asc')->get();
-
+        $invitados = $sesion->invitados()->where(function ($query) {
+            $query->whereHas('registro')->orWhere('check_in_express', true);
+        })->orderBy('nombre_completo')->get();
         $total = $invitados->count();
-
         $asistencias = $invitados->where('check_in_express', true)->count();
-
         $faltantes = $total - $asistencias;
 
-        return view('panel-copladep.primera-sesion-ordinaria-2026.monitor-invitados', compact('invitados', 'total', 'asistencias', 'faltantes'));
+        return view('panel-copladep.sesiones.invitados.monitor', compact('sesion', 'invitados', 'total', 'asistencias', 'faltantes'));
     }
-    public function toggleCheckInExpress($id)
+
+    public function toggleCheckInExpress(SesionCopladep $sesion, InvitadoCopladep $invitado)
     {
-        $invitado = InvitadoCopladep::where('sesion', 'primera')->findOrFail($id);
-        
-        // Invertimos el valor y guardamos (Esto actualiza la columna 'updated_at' a la hora actual)
-        $invitado->check_in_express = !$invitado->check_in_express;
+        abort_unless($invitado->sesion_copladep_id === $sesion->id, 404);
+        $invitado->check_in_express = ! $invitado->check_in_express;
         $invitado->save();
-
-        // Evaluamos si es retardo/tolerancia
-        $fechaLimite = \Carbon\Carbon::parse('2026-03-31 17:00:00');
-        $esTolerancia = $invitado->updated_at->greaterThan($fechaLimite);
-
-        // Preparamos la respuesta visual
-        $estado_texto = 'Falta';
-        $estado_clase = 'bg-secondary';
-
-        if ($invitado->check_in_express) {
-            if ($esTolerancia) {
-                $estado_texto = 'Asistencia con retardo';
-                $estado_clase = 'bg-warning text-dark';
-            } else {
-                $estado_texto = 'Presente';
-                $estado_clase = 'bg-success';
-            }
-        }
-
-        return response()->json([
-            'success' => true, 
-            'estado_actual' => $invitado->check_in_express,
-            'estado_texto' => $estado_texto,
-            'estado_clase' => $estado_clase,
-            'message' => $invitado->check_in_express ? "Pase de lista: {$estado_texto}" : 'Pase de lista revertido.'
-        ]);
-    }
-    public function toggleCheckInExpressOld($id)
-    {
-        $invitado = InvitadoCopladep::where('sesion', 'primera')->findOrFail($id);
-
-        $invitado->check_in_express = !$invitado->check_in_express;
-        $invitado->save();
+        $esTolerancia = $sesion->fecha_evento && $invitado->updated_at->greaterThan($sesion->fecha_evento);
+        $estado = $invitado->check_in_express ? ($esTolerancia ? 'Asistencia con retardo' : 'Presente') : 'Falta';
 
         return response()->json([
             'success' => true,
             'estado_actual' => $invitado->check_in_express,
-            'message' => $invitado->check_in_express ? '¡Pase de lista: Presente!' : 'Pase de lista: Revertido.'
+            'estado_texto' => $estado,
+            'estado_clase' => $invitado->check_in_express ? ($esTolerancia ? 'bg-warning text-dark' : 'bg-success') : 'bg-secondary',
+            'message' => $invitado->check_in_express ? "Pase de lista: {$estado}" : 'Pase de lista revertido.',
         ]);
     }
 
+    private function validated(Request $request): array
+    {
+        return $request->validate([
+            'nombre_completo' => 'required|string|max:255',
+            'sexo' => 'required|in:Hombre,Mujer,Otro',
+            'cargo' => 'required|string|max:255',
+            'dependencia_id' => 'nullable|integer|exists:cat_dependencias_copladep,id',
+            'municipio_id' => 'nullable|integer|exists:cat_municipios,id',
+            'modalidad' => 'nullable|in:presencial,virtual',
+        ]);
+    }
 }

@@ -231,3 +231,50 @@ body {
 .btn-check:focus + .btn-outline-primary {
     box-shadow: 0 0 0 0.25rem rgba(105, 28, 50, 0.25);
 }
+
+/* Confirmación del registro COPLADEP */
+.copladep-confirmacion {
+    max-width: 680px;
+}
+
+.copladep-confirmacion__contenido {
+    margin: 1.5rem auto 0;
+    max-width: 34rem;
+    text-align: center;
+}
+
+.copladep-confirmacion__titulo {
+    color: var(--maincolor);
+    font-size: 1.75rem;
+    line-height: 1.25;
+}
+
+.copladep-confirmacion__modalidad {
+    background: var(--bg-content);
+    border-radius: 0.5rem;
+    color: var(--blackColor);
+    padding: 0.85rem 1rem;
+}
+
+.copladep-confirmacion__boton {
+    margin: 0.5rem 0;
+    padding: 0.75rem 1.5rem;
+}
+
+.copladep-confirmacion__ayuda {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin: 1rem 0 0;
+}
+
+.copladep-confirmacion__volver {
+    color: var(--maincolor);
+    display: inline-block;
+    margin-top: 1.5rem;
+    text-underline-offset: 0.2em;
+}
+
+.copladep-confirmacion__volver:hover,
+.copladep-confirmacion__volver:focus-visible {
+    color: var(--color5);
+}

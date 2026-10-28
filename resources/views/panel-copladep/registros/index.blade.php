@@ -1,5 +1,4 @@
 <x-app-layout>
-    @php($esSegunda = ($sesion ?? 'primera') === 'segunda')
     @section('title', 'Registro de asistencia de sesión ordinaria de COPLADEP: Listado')
     @if ($message = Session::get('success'))
         <script>
@@ -19,9 +18,8 @@
         <div class="form-header py-3">
             <h2>Listado de participantes registrados</h2>
             <p class="text-white">
-                Aquí ver las personas registradas en el formulario de la
-                <a href="{{ url($esSegunda ? '/copladep/segunda-sesion-ordinaria' : '/copladep/primera-sesion-ordinaria') }}" class="text-white">{{ $esSegunda ? 'segunda' : 'primera' }} sesión ordinaria
-                    2026</a>.
+                Aquí se muestran las personas registradas en la
+                <a href="{{ $sesion->ruta_publica ?: route('copladep-sesiones.registro.create', $sesion) }}" class="text-white">{{ $sesion->nombre }}</a>.
             </p>
             <strong>
                 Para un nuevo registro, pulsa el botón de Nuevo registro situado debajo de esta tarjeta.
@@ -29,25 +27,24 @@
         </div>
 
         <div class="container d-flex justify-content-end">
-            @if (! $esSegunda)
-            <a href="{{ route('copladep-registro-invitados-monitor.index') }}" class="mx-2">
+            <a href="{{ route('panel-copladep-sesiones.scanner', $sesion) }}" class="mx-2">
+                <button class="btn btn-outline-secondary mt-3 mb-3 ml-3">Check-in QR</button>
+            </a>
+            <a href="{{ route('panel-copladep-sesiones.invitados.monitor', $sesion) }}" class="mx-2">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Ver monitor
                 </button>
             </a>
-            @endif
-            <a href="{{ route($esSegunda ? 'copladep-registro-segunda.create' : 'copladep-registro.create') }}" class="">
+            <a href="{{ route('copladep-sesiones.registro.create', $sesion) }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Nuevo registro
                 </button>
             </a>
-            @if (! $esSegunda)
-                <a href="{{ route('copladep-registro-invitados.index') }}" class="mx-2">
+                <a href="{{ route('panel-copladep-sesiones.invitados.index', $sesion) }}" class="mx-2">
                     <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                         Ver invitados
                     </button>
                 </a>
-            @endif
         </div>
         <div class="container table-responsive">
             <table id="registrosCopladepTable" class="table w-100 table-hover align-middle">

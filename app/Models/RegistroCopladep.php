@@ -23,7 +23,14 @@ class RegistroCopladep extends Model
         'tipo_asistente',
         'invitado_id',
         'sesion',
+        'sesion_copladep_id',
+        'modalidad',
+        'token_qr',
+        'qr_path',
+        'check_in_at',
     ];
+
+    protected $casts = ['check_in_at' => 'datetime'];
 
     public function catMunicipio()
     {
@@ -33,5 +40,10 @@ class RegistroCopladep extends Model
     public function invitado()
     {
         return $this->belongsTo(InvitadoCopladep::class, 'invitado_id');
+    }
+
+    public function sesionCopladep()
+    {
+        return $this->belongsTo(SesionCopladep::class);
     }
 }
