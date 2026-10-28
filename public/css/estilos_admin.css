@@ -1234,6 +1234,12 @@ select[name="publicado"]:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.asiento--qr {
+    height: auto;
+    min-height: 65px;
+    overflow-wrap: anywhere;
+}
+
 .nombre-truncado {
     font-size: 0.75rem;
     font-weight: bold;

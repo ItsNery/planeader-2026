@@ -19,6 +19,10 @@
         </div>
 
         <div class="container d-flex flex-wrap justify-content-end gap-2">
+            <a href="{{ route('panel-copladep-sesiones.invitados.csv', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3">Exportar CSV</a>
+            @can('ver-listado-registro-copladep')
+                <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3">Volver a la sesión</a>
+            @endcan
             @can('crear-invitado-copladep')
                 <a href="{{ route('panel-copladep-sesiones.invitados.importar.form', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3">Importar invitados</a>
             @endcan
@@ -73,28 +77,20 @@
                             </td>
                             <td>
                                 @php
-                                    // Definimos la hora límite (31-03 a las 17:00 hrs)
-                                    $fechaLimite = $sesion->fecha_evento;
-                                    // Revisamos si su último check-in fue después de esa hora
-                                    $esTolerancia = $fechaLimite && $invitado->updated_at && $invitado->updated_at->greaterThan($fechaLimite);
+                                    $estado = $invitado->estadoAsistencia($sesion->fecha_evento);
+                                    $claseEstado = $estado === 'Falta' ? 'bg-secondary' : ($estado === 'Asistencia con retardo' ? 'bg-warning text-dark' : 'bg-success');
                                 @endphp
-
-                                @if($invitado->check_in_express)
-                                    @if($esTolerancia)
-                                        <span class="badge bg-warning text-dark" id="badge-status-{{ $invitado->id }}">Asistencia
-                                    con retardo</span> @else
-                                            <span class="badge bg-success" id="badge-status-{{ $invitado->id }}">Presente</span>
-                                        @endif
-                                @else
-                                    <span class="badge bg-secondary" id="badge-status-{{ $invitado->id }}">Falta</span>
-                                @endif
+                                <span class="badge {{ $claseEstado }}" id="badge-status-{{ $invitado->id }}">{{ $estado }}</span>
+                                @foreach ($invitado->ingresosQr as $ingreso)
+                                    <small class="d-block mt-1">QR: {{ $ingreso->nombre_completo }}@if ($ingreso->tipo_asistente === 'representante') (representante)@endif</small>
+                                @endforeach
                             </td>
                             <td>
                                 <div class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <button type="button"
                                             class="btn btn-express {{ $invitado->check_in_express ? 'btn-success' : 'btn-outline-success' }} me-4 px-3 shadow-sm rounded"
-                                            data-id="{{ $invitado->id }}" title="Check-in Express (Entrada directa)">
+                                            data-id="{{ $invitado->id }}" title="Activar o retirar asistencia manual" aria-label="Activar o retirar asistencia manual de {{ $invitado->nombre_completo }}">
                                             <i class="bi bi-person-check-fill"></i>
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary btn-editar"

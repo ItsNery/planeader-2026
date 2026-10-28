@@ -26,7 +26,10 @@
             </strong>
         </div>
 
-        <div class="container d-flex justify-content-end">
+        <div class="container d-flex flex-wrap justify-content-end">
+            @can('ver-listado-registro-copladep')
+                <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3 mx-2">Volver a la sesión</a>
+            @endcan
             <a href="{{ route('panel-copladep-sesiones.scanner', $sesion) }}" class="mx-2">
                 <button class="btn btn-outline-secondary mt-3 mb-3 ml-3">Check-in QR</button>
             </a>

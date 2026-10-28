@@ -3,6 +3,9 @@
     <div class="container tarjeta-admin py-3">
         <div class="form-header py-3 px-3"><h2>Check-in con QR</h2><p class="text-white mb-0">Escanea el código de acceso de {{ $sesion->nombre }}.</p></div>
         <div class="checkin-scanner">
+            @can('ver-listado-registro-copladep')
+                <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mb-4">Volver a la sesión</a>
+            @endcan
             <div class="checkin-scanner__layout">
                 <section class="checkin-scanner__camera" aria-labelledby="scanner-heading">
                     <h3 id="scanner-heading" class="checkin-scanner__heading">Escanear código QR</h3>
@@ -54,6 +57,21 @@
                     output.textContent = message;
                 }
 
+                async function notifyResult(message, success) {
+                    if (window.Swal) {
+                        await Swal.fire({
+                            icon: success ? 'success' : 'warning',
+                            title: success ? 'Asistencia registrada' : 'Atención',
+                            text: message,
+                            confirmButtonText: 'Continuar',
+                            confirmButtonColor: 'var(--color6)',
+                            allowOutsideClick: false
+                        });
+                    } else {
+                        window.alert(message);
+                    }
+                }
+
                 async function send(token, fromCamera = false) {
                     token = token.trim();
                     if (!token || busy || (fromCamera && token === lastToken && Date.now() - lastScan < 5000)) return;
@@ -69,11 +87,16 @@
                             body: JSON.stringify({token})
                         });
                         const data = await response.json();
-                        showResult(data.message || 'No se pudo registrar la asistencia. Inténtalo de nuevo.', response.ok ? 'success' : 'danger');
+                        const message = data.message || 'No se pudo registrar la asistencia. Inténtalo de nuevo.';
+                        showResult(message, response.ok ? 'success' : 'danger');
                         if (response.ok && !fromCamera) document.getElementById('token').value = '';
+                        await notifyResult(message, response.ok);
                     } catch (error) {
-                        showResult('No fue posible conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.', 'danger');
+                        const message = 'No fue posible conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.';
+                        showResult(message, 'danger');
+                        await notifyResult(message, false);
                     } finally {
+                        lastScan = Date.now();
                         busy = false;
                         submitButton.disabled = false;
                     }

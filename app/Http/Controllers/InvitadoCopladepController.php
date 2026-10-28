@@ -8,13 +8,14 @@ use App\Models\InvitadoCopladep;
 use App\Models\SesionCopladep;
 use App\Services\ImportacionInvitadosCopladep;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class InvitadoCopladepController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index', 'monitor']]);
+        $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index', 'monitor', 'exportarCsv']]);
         $this->middleware('permission:crear-invitado-copladep', ['only' => ['store', 'importarForm', 'plantilla', 'importar']]);
         $this->middleware('permission:editar-invitado-copladep', ['only' => ['update', 'toggleCheckInExpress']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
@@ -22,7 +23,7 @@ class InvitadoCopladepController extends Controller
 
     public function index(SesionCopladep $sesion)
     {
-        $invitados = $sesion->invitados()->with(['municipio', 'dependenciaCopladep'])->orderBy('nombre_completo')->get();
+        $invitados = $sesion->invitados()->with(['municipio', 'dependenciaCopladep', 'ingresosQr' => fn ($query) => $query->where('sesion_copladep_id', $sesion->id)])->orderBy('nombre_completo')->get();
         $municipios = CatMunicipio::orderBy('nombre_municipio')->get();
         $dependencias = CatDependenciaCopladep::where('activo', true)->orderBy('nombre')->get();
 
@@ -37,6 +38,32 @@ class InvitadoCopladepController extends Controller
         InvitadoCopladep::create($datos);
 
         return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->with('success', 'Invitado registrado exitosamente.');
+    }
+
+    public function exportarCsv(SesionCopladep $sesion)
+    {
+        return response()->streamDownload(function () use ($sesion) {
+            $output = fopen('php://output', 'wb');
+            fwrite($output, "\xEF\xBB\xBF");
+            fputcsv($output, ['ID', 'Nombre completo', 'Sexo', 'Cargo', 'Dependencia', 'Municipio', 'Modalidad', 'Estatus de asistencia'], ';', '"', '');
+
+            $invitados = $sesion->invitados()->with(['municipio', 'dependenciaCopladep', 'ingresosQr' => fn ($query) => $query->where('sesion_copladep_id', $sesion->id)])->orderBy('nombre_completo')->get();
+            foreach ($invitados as $invitado) {
+                $estatus = $invitado->estadoAsistencia($sesion->fecha_evento);
+                $campos = [$invitado->id, $invitado->nombre_completo, $invitado->sexo, $invitado->cargo,
+                    $invitado->dependenciaCopladep?->nombre ?? $invitado->dependencia ?? '',
+                    $invitado->municipio?->nombre_municipio ?? '', $invitado->modalidad ?? 'Por definir', $estatus];
+                $campos = array_map(static function ($valor) {
+                    $texto = (string) $valor;
+                    return preg_match('/^[\x00-\x20]*[=+\-@]/u', $texto) ? "'" . $texto : $texto;
+                }, $campos);
+                fputcsv($output, $campos, ';', '"', '');
+            }
+            fclose($output);
+        }, 'invitados-' . Str::slug($sesion->clave) . '.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Cache-Control' => 'no-store',
+        ]);
     }
 
     public function importarForm(SesionCopladep $sesion)
@@ -95,11 +122,12 @@ class InvitadoCopladepController extends Controller
 
     public function monitor(SesionCopladep $sesion)
     {
-        $invitados = $sesion->invitados()->where(function ($query) {
-            $query->whereHas('registro')->orWhere('check_in_express', true);
-        })->orderBy('nombre_completo')->get();
+        $invitados = $sesion->invitados()->where(function ($query) use ($sesion) {
+            $query->whereHas('registros', fn ($registros) => $registros->where('sesion_copladep_id', $sesion->id))->orWhere('check_in_express', true);
+        })->with(['municipio', 'ingresosQr' => fn ($query) => $query->where('sesion_copladep_id', $sesion->id)])
+            ->orderBy('nombre_completo')->get();
         $total = $invitados->count();
-        $asistencias = $invitados->where('check_in_express', true)->count();
+        $asistencias = $invitados->filter(fn ($invitado) => $invitado->presente())->count();
         $faltantes = $total - $asistencias;
 
         return view('panel-copladep.sesiones.invitados.monitor', compact('sesion', 'invitados', 'total', 'asistencias', 'faltantes'));
@@ -110,15 +138,15 @@ class InvitadoCopladepController extends Controller
         abort_unless($invitado->sesion_copladep_id === $sesion->id, 404);
         $invitado->check_in_express = ! $invitado->check_in_express;
         $invitado->save();
-        $esTolerancia = $sesion->fecha_evento && $invitado->updated_at->greaterThan($sesion->fecha_evento);
-        $estado = $invitado->check_in_express ? ($esTolerancia ? 'Asistencia con retardo' : 'Presente') : 'Falta';
+        $invitado->load(['ingresosQr' => fn ($query) => $query->where('sesion_copladep_id', $sesion->id)]);
+        $estado = $invitado->estadoAsistencia($sesion->fecha_evento);
 
         return response()->json([
             'success' => true,
             'estado_actual' => $invitado->check_in_express,
             'estado_texto' => $estado,
-            'estado_clase' => $invitado->check_in_express ? ($esTolerancia ? 'bg-warning text-dark' : 'bg-success') : 'bg-secondary',
-            'message' => $invitado->check_in_express ? "Pase de lista: {$estado}" : 'Pase de lista revertido.',
+            'estado_clase' => $estado === 'Falta' ? 'bg-secondary' : ($estado === 'Asistencia con retardo' ? 'bg-warning text-dark' : 'bg-success'),
+            'message' => $invitado->check_in_express ? 'Asistencia manual registrada.' : ($invitado->presente() ? 'Asistencia manual retirada; el ingreso por QR permanece registrado.' : 'Asistencia manual retirada.'),
         ]);
     }
 

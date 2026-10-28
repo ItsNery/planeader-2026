@@ -197,6 +197,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel-copladep/sesiones/{sesion}/scanner', [RegistroCopladepController::class, 'scanner'])->name('panel-copladep-sesiones.scanner');
     Route::post('/panel-copladep/sesiones/{sesion}/scanner/checkin', [RegistroCopladepController::class, 'checkin'])->name('panel-copladep-sesiones.checkin');
     Route::get('/panel-copladep/sesiones/{sesion}/invitados', [InvitadoCopladepController::class, 'index'])->name('panel-copladep-sesiones.invitados.index');
+    Route::get('/panel-copladep/sesiones/{sesion}/invitados/exportar-csv', [InvitadoCopladepController::class, 'exportarCsv'])->name('panel-copladep-sesiones.invitados.csv');
     Route::post('/panel-copladep/sesiones/{sesion}/invitados', [InvitadoCopladepController::class, 'store'])->name('panel-copladep-sesiones.invitados.store');
     Route::get('/panel-copladep/sesiones/{sesion}/invitados/importar', [InvitadoCopladepController::class, 'importarForm'])->name('panel-copladep-sesiones.invitados.importar.form');
     Route::get('/panel-copladep/sesiones/{sesion}/invitados/plantilla', [InvitadoCopladepController::class, 'plantilla'])->name('panel-copladep-sesiones.invitados.plantilla');

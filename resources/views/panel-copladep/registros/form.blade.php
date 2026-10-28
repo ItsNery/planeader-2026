@@ -71,7 +71,6 @@
                             <option value="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
                                 data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}"
                                 data-municipio="{{ $invitado->municipio_id }}"
-                                data-modalidad="{{ $invitado->modalidad }}"
                                 {{ old('invitado_id') == $invitado->id ? 'selected' : '' }}>
                                 {{ $invitado->nombre_completo }} -
                                 {{ $invitado->cargo }}{{ $invitado->dependenciaCopladep?->nombre ? ' | ' . $invitado->dependenciaCopladep->nombre : '' }}
@@ -79,9 +78,6 @@
                         @endforeach
                     </select>
                 </div>
-                <div id="modalidadAviso" class="alert alert-info d-none">La modalidad de asistencia se define en tu
-                    invitación.</div>
-
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="nombre_completo" class="form-label">Nombre del Asistente <span
@@ -216,7 +212,6 @@
             const inputCargo = document.getElementById('cargo');
             const selectSexo = document.getElementById('sexo');
             const selectMunicipio = document.getElementById('municipio_id');
-            const modalidadAviso = document.getElementById('modalidadAviso');
 
             // 3. Lógica del candado de tiempo
             function actualizarEstadoBoton() {
@@ -313,19 +308,12 @@
                         // Si la invitación no tiene municipio, permitir que la persona lo complete.
                         selectMunicipio.style.pointerEvents = selectMunicipio.value ? "none" : "auto";
                         selectMunicipio.style.backgroundColor = selectMunicipio.value ? "#e9ecef" : "#fff";
-                        if (modalidadAviso) {
-                            const modalidad = opcionNativa.dataset.modalidad;
-                            modalidadAviso.classList.remove('d-none');
-                            modalidadAviso.textContent = modalidad ? `Modalidad de asistencia: ${modalidad}.` :
-                                'La modalidad de asistencia aún no ha sido definida; el registro se guardará, pero no se generará el PDF.';
-                        }
                     }
                 } else {
                     inputNombre.value = "";
                     inputCargo.value = "";
                     selectSexo.value = "";
                     selectMunicipio.value = "";
-                    modalidadAviso?.classList.add('d-none');
                 }
             }
 

@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\CatMunicipio;
+use App\Models\PlanEstatal;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -106,6 +108,11 @@ class InicioController extends Controller
      */
     public function regionalizacion()
     {
+        $plan = PlanEstatal::with('anexos')
+            ->where('publicado', 1)
+            ->where('nombre', '=', 'Plan Estatal de Desarrollo 2024-2030')
+            ->first();
+        $anexo5 = $plan->anexos->where('titulo', '=', 'Anexo 5: Regionalización')->first();
         // $regiones = CatMunicipio::select('id_microrregion', 'nombre_microrregion', 'id_macrorregion', 'nombre_macrorregion',)
         //     ->groupBy('id_microrregion', 'nombre_microrregion', 'id_macrorregion', 'nombre_macrorregion',) // Agrupas por todas las columnas que seleccionas para obtener combinaciones únicas
         //     ->orderBy('id_microrregion', 'asc')
@@ -120,7 +127,7 @@ class InicioController extends Controller
             ->orderBy('id_macrorregion', 'asc')
             ->get();
 
-        return view('regionalizacion', compact( 'microrregiones', 'macrorregiones'));
+        return view('regionalizacion', compact('microrregiones', 'macrorregiones', 'anexo5'));
     }
 
     /**

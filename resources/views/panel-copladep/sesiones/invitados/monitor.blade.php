@@ -18,7 +18,10 @@
             </strong>
         </div>
 
-        <div class="container d-flex justify-content-end">
+        <div class="container d-flex flex-wrap justify-content-end">
+            @can('ver-listado-registro-copladep')
+                <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3 mx-2">Volver a la sesión</a>
+            @endcan
 
             <a href="{{ route('panel-copladep-sesiones.registros.index', $sesion) }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
@@ -60,16 +63,8 @@
             <div class="grid-asientos">
                 @foreach($invitados as $invitado)
                     @php
-                        $yaLlego = $invitado->check_in_express;
-
-                        // Calculamos si llegó en tolerancia
-                        $fechaLimite = $sesion->fecha_evento;
-                        $esTolerancia = false;
-
-                        if ($yaLlego && $invitado->updated_at) {
-                            $fechaCheckin = \Carbon\Carbon::parse($invitado->updated_at);
-                            $esTolerancia = $fechaCheckin->greaterThan($fechaLimite);
-                        }
+                        $yaLlego = $invitado->presente();
+                        $esTolerancia = $invitado->estadoAsistencia($sesion->fecha_evento) === 'Asistencia con retardo';
 
                         // Asignamos la clase: gris (falta), naranja (tolerancia) o verde (llegó bien)
                         if (!$yaLlego) {
@@ -87,13 +82,19 @@
 
                         $nombreMunicipio = $invitado->municipio->nombre_municipio ?? 'N/A';
                         $tooltipText = "{$invitado->nombre_completo} | Cargo: {$invitado->cargo} | Municipio: {$nombreMunicipio}";
+                        if ($invitado->ingresosQr->isNotEmpty()) {
+                            $tooltipText .= ' | Ingreso QR: ' . $invitado->ingresosQr->map(fn ($ingreso) => $ingreso->nombre_completo . ($ingreso->tipo_asistente === 'representante' ? ' (representante)' : ''))->join(', ');
+                        }
                     @endphp
 
-                    <div class="asiento {{ $claseAsiento }}" data-bs-toggle="tooltip" data-bs-placement="top"
+                    <div class="asiento {{ $claseAsiento }} {{ $invitado->ingresosQr->isNotEmpty() ? 'asiento--qr' : '' }}" data-bs-toggle="tooltip" data-bs-placement="top"
                         title="{{ $tooltipText }}">
                         <div class="nombre-truncado">
                             {{ $nombreCorto }}
                         </div>
+                        @foreach ($invitado->ingresosQr as $ingreso)
+                            <small class="d-block">{{ $ingreso->nombre_completo }}@if ($ingreso->tipo_asistente === 'representante') (representante)@endif</small>
+                        @endforeach
 
                         @if($yaLlego)
                             <i class="bi bi-check-circle-fill mb-1" style="font-size: 0.85rem;"></i>

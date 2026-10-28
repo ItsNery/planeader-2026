@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\SesionCopladep;
+use App\Http\Controllers\InvitadoCopladepController;
+use App\Http\Controllers\RegistroCopladepController;
+use Illuminate\Http\Request;
 use App\Services\ImportacionInvitadosCopladep;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +20,7 @@ class ImportacionInvitadosCopladepTest extends TestCase
     {
         parent::setUp();
         Schema::create('sesiones_copladep', function (Blueprint $table) {
-            $table->id(); $table->string('clave'); $table->string('nombre'); $table->integer('numero'); $table->timestamps();
+            $table->id(); $table->string('clave'); $table->string('nombre'); $table->integer('numero'); $table->timestamp('fecha_evento')->nullable(); $table->timestamps();
         });
         Schema::create('cat_dependencias_copladep', function (Blueprint $table) {
             $table->id(); $table->string('nombre'); $table->boolean('activo'); $table->timestamps();
@@ -27,9 +30,15 @@ class ImportacionInvitadosCopladepTest extends TestCase
         });
         Schema::create('invitado_copladeps', function (Blueprint $table) {
             $table->id(); $table->string('nombre_completo'); $table->string('sexo'); $table->string('cargo');
-            $table->unsignedBigInteger('dependencia_id')->nullable(); $table->unsignedBigInteger('municipio_id');
+            $table->unsignedBigInteger('dependencia_id')->nullable(); $table->text('dependencia')->nullable(); $table->unsignedBigInteger('municipio_id');
+            $table->boolean('check_in_express')->default(false);
             $table->string('sesion'); $table->unsignedBigInteger('sesion_copladep_id'); $table->string('modalidad')->nullable();
             $table->timestamps();
+        });
+        Schema::create('registro_copladeps', function (Blueprint $table) {
+            $table->id(); $table->unsignedBigInteger('invitado_id'); $table->unsignedBigInteger('sesion_copladep_id');
+            $table->string('nombre_completo'); $table->string('tipo_asistente'); $table->string('modalidad');
+            $table->string('token_qr')->nullable(); $table->timestamp('check_in_at')->nullable(); $table->timestamps();
         });
         DB::table('cat_dependencias_copladep')->insert(['id' => 1, 'nombre' => 'Dependencia de prueba', 'activo' => true]);
         DB::table('cat_municipios')->insert(['id' => 1, 'nombre_municipio' => 'Puebla']);
@@ -105,6 +114,67 @@ class ImportacionInvitadosCopladepTest extends TestCase
             $book->disconnectWorksheets();
             unlink($path);
         }
+    }
+
+    public function test_csv_exports_only_the_selected_session_and_neutralizes_formulas(): void
+    {
+        $sesion = $this->sesion();
+        $otraSesion = SesionCopladep::create(['clave' => 'otra', 'nombre' => 'Otra sesión', 'numero' => 1]);
+        $sesion->invitados()->create([
+            'nombre_completo' => '=Persona', 'sexo' => 'Mujer', 'cargo' => 'Titular; enlace',
+            'municipio_id' => 1, 'dependencia_id' => 1, 'sesion' => 'segunda', 'modalidad' => 'presencial',
+        ]);
+        $otraSesion->invitados()->create([
+            'nombre_completo' => 'Otra persona', 'sexo' => 'Hombre', 'cargo' => 'Titular',
+            'municipio_id' => 1, 'sesion' => 'primera',
+        ]);
+
+        $response = app(InvitadoCopladepController::class)->exportarCsv($sesion);
+        ob_start();
+        $response->sendContent();
+        $csv = ob_get_clean();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
+        $this->assertStringContainsString("'=Persona", $csv);
+        $this->assertStringContainsString('"Titular; enlace"', $csv);
+        $this->assertStringContainsString('"Dependencia de prueba";Puebla;presencial;Falta', $csv);
+        $this->assertStringNotContainsString('Otra persona', $csv);
+    }
+
+    public function test_qr_checkin_updates_monitor_and_csv_without_changing_manual_attendance(): void
+    {
+        $sesion = $this->sesion();
+        $sesion->fecha_evento = now()->addHour();
+        $sesion->save();
+        $invitado = $sesion->invitados()->create([
+            'nombre_completo' => 'Persona titular', 'sexo' => 'Mujer', 'cargo' => 'Titular',
+            'municipio_id' => 1, 'sesion' => 'segunda',
+        ]);
+        DB::table('registro_copladeps')->insert([
+            ['invitado_id' => $invitado->id, 'sesion_copladep_id' => $sesion->id, 'nombre_completo' => 'Persona titular', 'tipo_asistente' => 'titular', 'modalidad' => 'presencial', 'token_qr' => 'titular', 'check_in_at' => null],
+            ['invitado_id' => $invitado->id, 'sesion_copladep_id' => $sesion->id, 'nombre_completo' => 'Persona representante', 'tipo_asistente' => 'representante', 'modalidad' => 'presencial', 'token_qr' => 'representante', 'check_in_at' => null],
+        ]);
+
+        $response = app(RegistroCopladepController::class)->checkin(Request::create('/', 'POST', ['token' => 'representante']), $sesion);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertFalse($invitado->fresh()->check_in_express);
+        $monitor = app(InvitadoCopladepController::class)->monitor($sesion)->getData();
+        $this->assertSame(1, $monitor['asistencias']);
+        $this->assertSame(0, $monitor['faltantes']);
+        $this->assertSame('Persona representante', $monitor['invitados']->first()->ingresosQr->first()->nombre_completo);
+        $this->assertSame('Presente', $monitor['invitados']->first()->estadoAsistencia($sesion->fecha_evento));
+
+        ob_start();
+        app(InvitadoCopladepController::class)->exportarCsv($sesion)->sendContent();
+        $csv = ob_get_clean();
+        $this->assertStringContainsString(';Presente', $csv);
+
+        $controller = app(InvitadoCopladepController::class);
+        $controller->toggleCheckInExpress($sesion, $invitado);
+        $manualOff = $controller->toggleCheckInExpress($sesion, $invitado)->getData(true);
+        $this->assertSame('Presente', $manualOff['estado_texto']);
+        $this->assertStringContainsString('QR permanece', $manualOff['message']);
+        $duplicate = app(RegistroCopladepController::class)->checkin(Request::create('/', 'POST', ['token' => 'representante']), $sesion);
+        $this->assertSame(422, $duplicate->getStatusCode());
     }
 
     private function sesion(): SesionCopladep
