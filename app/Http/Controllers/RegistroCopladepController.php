@@ -7,11 +7,11 @@ use App\Models\InvitadoCopladep;
 use App\Models\RegistroCopladep;
 use App\Models\SesionCopladep;
 use App\Services\CopladepQrService;
+use App\Support\CopladepPdf;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use setasign\Fpdi\Fpdi;
@@ -110,7 +110,7 @@ class RegistroCopladepController extends Controller
             }
 
             if ($registro->modalidad === 'presencial') {
-                app(CopladepQrService::class)->ensureStored($registro);
+                app(CopladepQrService::class)->respaldar($registro);
             }
 
             return redirect()->route('copladep-registro.confirmacion', $registro->token_qr ?: $registro->id)
@@ -139,11 +139,13 @@ class RegistroCopladepController extends Controller
         $evento = $this->evento($registro->sesionCopladep, $registro->modalidad);
         $qrDataUri = null;
         if ($registro->modalidad === 'presencial') {
-            $path = app(CopladepQrService::class)->ensureStored($registro);
-            $qrDataUri = 'data:image/png;base64,' . base64_encode(Storage::disk('local')->get($path));
+            $qrService = app(CopladepQrService::class);
+            $imagenQr = $qrService->imagen($registro);
+            $qrService->respaldar($registro, $imagenQr);
+            $qrDataUri = 'data:image/png;base64,' . base64_encode($imagenQr);
         }
         if ($registro->sesionCopladep->clave === '2026-segunda-ordinaria') {
-            return response($this->convocatoriaSegundaSesion($registro, $path ?? null), 200, [
+            return response($this->convocatoriaSegundaSesion($registro, $qrDataUri), 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="COPLADEP-' . $registro->id . '.pdf"',
             ]);
@@ -214,13 +216,13 @@ class RegistroCopladepController extends Controller
         ];
     }
 
-    private function convocatoriaSegundaSesion(RegistroCopladep $registro, ?string $qrPath): string
+    private function convocatoriaSegundaSesion(RegistroCopladep $registro, ?string $qrDataUri): string
     {
         $esPresencial = $registro->modalidad === 'presencial';
         $plantilla = public_path('sesiones-copladep/segunda-2026/' . ($esPresencial ? 'CONVOC_2.PDF' : 'CONVOC_1.PDF'));
         abort_unless(is_file($plantilla), 500, 'No se encontró la plantilla de convocatoria.');
 
-        $pdf = new Fpdi();
+        $pdf = new CopladepPdf();
         $paginas = $pdf->setSourceFile($plantilla);
 
         for ($pagina = 1; $pagina <= $paginas; $pagina++) {
@@ -233,9 +235,9 @@ class RegistroCopladepController extends Controller
                 continue;
             }
 
-            if ($esPresencial && $qrPath) {
+            if ($esPresencial && $qrDataUri) {
                 $ladoQr = min(72, $tamano['width'] * 0.27);
-                $pdf->Image(Storage::disk('local')->path($qrPath), ($tamano['width'] - $ladoQr) / 2, $tamano['height'] * 0.385, $ladoQr, $ladoQr, 'PNG');
+                $pdf->Image($qrDataUri, ($tamano['width'] - $ladoQr) / 2, $tamano['height'] * 0.385, $ladoQr, $ladoQr, 'PNG');
                 continue;
             }
 

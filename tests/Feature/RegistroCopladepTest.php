@@ -3,9 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\SesionCopladep;
+use App\Models\RegistroCopladep;
+use App\Services\CopladepQrService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class RegistroCopladepTest extends TestCase
@@ -19,6 +22,11 @@ class RegistroCopladepTest extends TestCase
             $table->string('clave');
             $table->string('nombre');
             $table->integer('numero')->nullable();
+            $table->integer('anio')->nullable();
+            $table->timestamp('fecha_evento')->nullable();
+            $table->string('lugar')->nullable();
+            $table->string('enlace_virtual')->nullable();
+            $table->text('agenda')->nullable();
             $table->timestamp('registro_inicio')->nullable();
             $table->timestamp('registro_fin')->nullable();
             $table->timestamps();
@@ -46,6 +54,7 @@ class RegistroCopladepTest extends TestCase
             $table->unsignedBigInteger('sesion_copladep_id');
             $table->string('modalidad')->nullable();
             $table->string('token_qr')->nullable();
+            $table->string('qr_path')->nullable();
             $table->timestamps();
         });
     }
@@ -76,6 +85,50 @@ class RegistroCopladepTest extends TestCase
             'telefono_celular' => 'Completa el campo teléfono celular.',
         ]);
         $this->assertDatabaseCount('registro_copladeps', 0);
+    }
+
+    public function test_presential_registration_and_pdf_work_when_qr_backup_storage_fails(): void
+    {
+        $sesion = $this->sesionConInvitado();
+        $sesion->update(['clave' => '2026-segunda-ordinaria', 'anio' => 2026]);
+        DB::table('invitado_copladeps')->where('id', 1)->update(['modalidad' => 'presencial']);
+        Storage::shouldReceive('disk')->with('local')->andThrow(new \RuntimeException('Almacenamiento no disponible'));
+
+        $response = $this->post(route('copladep-sesiones.registro.store', $sesion), $this->datos());
+        $response->assertSessionHasNoErrors()->assertRedirect();
+        $registro = RegistroCopladep::firstOrFail();
+        $this->assertNotEmpty($registro->token_qr);
+        $this->assertNull($registro->qr_path);
+        $this->assertStringStartsWith("\x89PNG\r\n\x1a\n", app(CopladepQrService::class)->imagen($registro));
+
+        $pdf = $this->get(route('copladep-registro.pdf', $registro->token_qr));
+        $pdf->assertOk()->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+        $this->assertSame($registro->token_qr, $registro->fresh()->token_qr);
+
+        // Los registros anteriores pueden conservar una ruta que ya no existe.
+        $registro->forceFill(['qr_path' => 'qr-copladep/archivo-anterior.png'])->save();
+        $this->get(route('copladep-registro.pdf', $registro->token_qr))->assertOk();
+    }
+
+    public function test_presential_registration_saves_a_qr_backup_and_reuses_it(): void
+    {
+        $sesion = $this->sesionConInvitado();
+        $sesion->update(['clave' => '2026-segunda-ordinaria', 'anio' => 2026]);
+        DB::table('invitado_copladeps')->where('id', 1)->update(['modalidad' => 'presencial']);
+        $disk = \Mockery::mock();
+        $disk->shouldReceive('put')->once()->with(
+            \Mockery::on(fn ($path) => str_starts_with($path, 'qr-copladep/2026-segunda-ordinaria/') && str_ends_with($path, '.png')),
+            \Mockery::on(fn ($data) => str_starts_with($data, "\x89PNG\r\n\x1a\n"))
+        )->andReturn(true);
+        $disk->shouldReceive('exists')->once()->andReturn(true);
+        Storage::shouldReceive('disk')->with('local')->twice()->andReturn($disk);
+
+        $this->post(route('copladep-sesiones.registro.store', $sesion), $this->datos())
+            ->assertSessionHasNoErrors()->assertRedirect();
+        $registro = RegistroCopladep::firstOrFail();
+        $this->assertSame('qr-copladep/2026-segunda-ordinaria/' . $registro->token_qr . '.png', $registro->qr_path);
+        $this->get(route('copladep-registro.pdf', $registro->token_qr))->assertOk();
     }
 
     private function sesionConInvitado(): SesionCopladep
