@@ -194,6 +194,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel-copladep/sesiones/{sesion}/editar', [SesionCopladepController::class, 'edit'])->name('panel-copladep-sesiones.edit');
     Route::put('/panel-copladep/sesiones/{sesion}', [SesionCopladepController::class, 'update'])->name('panel-copladep-sesiones.update');
     Route::get('/panel-copladep/sesiones/{sesion}/registros', [RegistroCopladepController::class, 'index'])->name('panel-copladep-sesiones.registros.index');
+    Route::get('/panel-copladep/sesiones/{sesion}/registros/{registro}/qr', [RegistroCopladepController::class, 'descargarQr'])->name('panel-copladep-sesiones.registros.qr');
+    Route::delete('/panel-copladep/sesiones/{sesion}/registros/{registro}', [RegistroCopladepController::class, 'destroy'])->name('panel-copladep-sesiones.registros.destroy');
     Route::get('/panel-copladep/sesiones/{sesion}/scanner', [RegistroCopladepController::class, 'scanner'])->name('panel-copladep-sesiones.scanner');
     Route::post('/panel-copladep/sesiones/{sesion}/scanner/checkin', [RegistroCopladepController::class, 'checkin'])->name('panel-copladep-sesiones.checkin');
     Route::get('/panel-copladep/sesiones/{sesion}/invitados', [InvitadoCopladepController::class, 'index'])->name('panel-copladep-sesiones.invitados.index');

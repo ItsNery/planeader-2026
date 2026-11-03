@@ -66,6 +66,7 @@
                         <th>Correo Electrónico</th>
                         <th>Tel. oficina</th>
                         <th>Tel. celular</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,6 +133,20 @@
                             <td>{{ $registro->correo_electronico }}</td>
                             <td>{{ $registro->telefono_oficina ?? 'ND'}}</td>
                             <td>{{ $registro->telefono_celular ?? 'ND'}}</td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @if ($registro->modalidad === 'presencial' && $registro->token_qr)
+                                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('panel-copladep-sesiones.registros.qr', [$sesion, $registro->id]) }}" aria-label="Descargar QR de {{ $registro->nombre_completo }}">Descargar QR</a>
+                                    @endif
+                                    @can('borrar-invitado-copladep')
+                                        <form method="POST" action="{{ route('panel-copladep-sesiones.registros.destroy', [$sesion, $registro->id]) }}" onsubmit="return confirm('¿Eliminar este registro? También se eliminará su asistencia registrada. Esta acción no se puede deshacer.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Eliminar registro de {{ $registro->nombre_completo }}">Eliminar</button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -150,6 +165,7 @@
                         <th>Correo Electrónico</th>
                         <th>Tel. oficina</th>
                         <th>Tel. celular</th>
+                        <th>Acciones</th>
                     </tr>
                 </tfoot>
             </table>

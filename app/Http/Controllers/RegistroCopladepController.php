@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use setasign\Fpdi\Fpdi;
@@ -21,7 +22,8 @@ class RegistroCopladepController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'scanner', 'checkin']]);
+        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'scanner', 'checkin', 'descargarQr']]);
+        $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
     }
 
     public function index(SesionCopladep $sesion)
@@ -168,20 +170,51 @@ class RegistroCopladepController extends Controller
 
     public function scanner(SesionCopladep $sesion)
     {
-        return view('panel-copladep.check-in.scanner', compact('sesion'));
+        $registros = $sesion->registros()->where('modalidad', 'presencial')->orderBy('nombre_completo')->get(['id', 'nombre_completo', 'cargo', 'check_in_at']);
+
+        return view('panel-copladep.check-in.scanner', compact('sesion', 'registros'));
     }
 
     public function checkin(Request $request, SesionCopladep $sesion)
     {
-        $data = $request->validate(['token' => 'required|string']);
-        $token = preg_replace('/^COPLADEP\d{2}:[^:]+:/', '', trim($data['token']));
-        $registro = $sesion->registros()->where('token_qr', $token)->first();
+        $data = $request->validate(['token' => 'required_without:registro_id|string', 'registro_id' => 'required_without:token|integer']);
+        $query = $sesion->registros();
+        if (isset($data['registro_id'])) {
+            $registro = $query->find($data['registro_id']);
+        } else {
+            $token = preg_replace('/^COPLADEP\d{2}:[^:]+:/', '', trim($data['token']));
+            $registro = $query->where('token_qr', $token)->first();
+        }
         if (! $registro) return response()->json(['message' => 'Código QR no válido.'], 404);
         if ($registro->modalidad !== 'presencial') return response()->json(['message' => 'Este registro no corresponde a asistencia presencial.'], 422);
         if ($registro->check_in_at) return response()->json(['message' => 'El ingreso ya fue registrado a las ' . $registro->check_in_at->format('H:i') . '.'], 422);
-        $registro->update(['check_in_at' => now()]);
+        $actualizado = $sesion->registros()->whereKey($registro->id)->whereNull('check_in_at')->update(['check_in_at' => now()]);
+        if (! $actualizado) return response()->json(['message' => 'El ingreso ya fue registrado.'], 422);
 
         return response()->json(['message' => 'Check-in registrado para ' . $registro->nombre_completo . '.']);
+    }
+
+    public function descargarQr(SesionCopladep $sesion, int $registro)
+    {
+        $registro = $sesion->registros()->findOrFail($registro);
+        abort_unless($registro->modalidad === 'presencial' && $registro->token_qr, 404);
+
+        return response(app(CopladepQrService::class)->imagen($registro), 200, [
+            'Content-Type' => 'image/png',
+            'Content-Disposition' => 'attachment; filename="COPLADEP-QR-' . $registro->id . '.png"',
+        ]);
+    }
+
+    public function destroy(SesionCopladep $sesion, int $registro)
+    {
+        $registro = $sesion->registros()->findOrFail($registro);
+        $qrPath = $registro->qr_path;
+        $registro->delete();
+        if ($qrPath && str_starts_with($qrPath, 'qr-copladep/')) {
+            Storage::disk('local')->delete($qrPath);
+        }
+
+        return redirect()->route('panel-copladep-sesiones.registros.index', $sesion)->with('success', 'Registro del participante eliminado.');
     }
 
     public function legacyCreate(string $clave)

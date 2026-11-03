@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocumentoSesion;
+use App\Models\SesionCopladep;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Traits\UpdatesPublicado;
@@ -184,7 +185,9 @@ class DocumentoSesionController extends Controller
             ->orderBy('orden', 'asc')
             ->get();
 
-        return view('copladep-segunda', compact('documentos'));
+        $sesion = SesionCopladep::where('clave', '2026-segunda-ordinaria')->first();
+
+        return view('copladep-segunda', compact('documentos', 'sesion'));
     }
 
     public function mostrarSegundaSesionVirtual()
@@ -193,7 +196,9 @@ class DocumentoSesionController extends Controller
             ->orderBy('orden', 'asc')
             ->get();
 
-        return view('copladep-segunda', compact('documentos'))->with('modalidadEvento', 'virtual');
+        $sesion = SesionCopladep::where('clave', '2026-segunda-ordinaria')->first();
+
+        return view('copladep-segunda', compact('documentos', 'sesion'))->with('modalidadEvento', 'virtual');
     }
 
     protected function getModel()

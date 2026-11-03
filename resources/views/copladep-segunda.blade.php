@@ -65,26 +65,15 @@
             <section class="copladep-session__card copladep-session__card--agenda" aria-labelledby="agenda-title">
                 <h2 class="copladep-session__heading copladep-session__heading--section" id="agenda-title">Orden del día
                 </h2>
-                <ol class="copladep-session__agenda-list">
-                    <li>Apertura de la sesión y declaración del Quórum Legal.</li>
-                    <li>Aprobación del Orden del Día.</li>
-                    <li>Seguimiento a los puntos de acuerdo de la sesión anterior.</li>
-                    <li>Presentación y, en su caso, aprobación de la Modificación a los Lineamientos para el Funcionamiento
-                        del Comité de Planeación para el Desarrollo del Estado de Puebla y sus Órganos Auxiliares.</li>
-                    <li>Presentación del Funcionamiento del COPLADEP y sus Órganos Auxiliares.</li>
-                    <li>Presentación del Informe Anual de Trabajo de los Subcomités Sectoriales para el Desarrollo Regional
-                        y la Riqueza Comunitaria, así como presentación de resultados de las Mesas Técnicas Especiales.</li>
-                    <li>Presentación y, en su caso, aprobación del Programa Especial de Personas con Discapacidad,
-                        Neurodivergentes y Altas Capacidades y Programa Estatal de Pro-Igualdad.</li>
-                    <li>Presentación de los Resultados Estratégicos de los Órganos Auxiliares del COPLADEP.</li>
-                    <li>Presentación del seguimiento a la Propuesta para el Relanzamiento de la incorporación de la Agenda
-                        2030 en la Planeación para el Desarrollo del Estado de Puebla.</li>
-                    <li>Presentación y, en su caso, aprobación del Programa Anual de Trabajo 2027 del COPLADEP.</li>
-                    <li>Asuntos Generales.</li>
-                    <li>Mensaje del Gobernador Constitucional del Estado Libre y Soberano de Puebla y Presidente del
-                        COPLADEP.</li>
-                    <li>Clausura de la sesión.</li>
-                </ol>
+                @if (!empty($sesion?->agenda))
+                    <ol class="copladep-session__agenda-list">
+                        @foreach ($sesion->agenda as $punto)
+                            <li>{{ $punto }}</li>
+                        @endforeach
+                    </ol>
+                @else
+                    <p>El orden del día se publicará próximamente.</p>
+                @endif
             </section>
         </div>
     </main>

@@ -177,6 +177,45 @@ class ImportacionInvitadosCopladepTest extends TestCase
         $this->assertSame(422, $duplicate->getStatusCode());
     }
 
+    public function test_manual_checkin_is_scoped_to_session_and_rejects_duplicates_and_virtual_attendees(): void
+    {
+        $sesion = $this->sesion();
+        $otra = SesionCopladep::create(['clave' => 'otra', 'nombre' => 'Otra', 'numero' => 1]);
+        $base = ['invitado_id' => 1, 'nombre_completo' => 'Persona', 'tipo_asistente' => 'titular', 'check_in_at' => null];
+        $presencial = DB::table('registro_copladeps')->insertGetId($base + ['sesion_copladep_id' => $sesion->id, 'modalidad' => 'presencial']);
+        $virtual = DB::table('registro_copladeps')->insertGetId($base + ['sesion_copladep_id' => $sesion->id, 'modalidad' => 'virtual']);
+        $ajeno = DB::table('registro_copladeps')->insertGetId($base + ['sesion_copladep_id' => $otra->id, 'modalidad' => 'presencial']);
+        $controller = app(RegistroCopladepController::class);
+        $checkin = fn ($id) => $controller->checkin(Request::create('/', 'POST', ['registro_id' => $id]), $sesion);
+
+        $this->assertSame(404, $checkin($ajeno)->getStatusCode());
+        $this->assertSame(422, $checkin($virtual)->getStatusCode());
+        $this->assertSame(200, $checkin($presencial)->getStatusCode());
+        $this->assertSame(422, $checkin($presencial)->getStatusCode());
+    }
+
+    public function test_qr_download_and_delete_are_scoped_to_session(): void
+    {
+        $sesion = $this->sesion();
+        $otra = SesionCopladep::create(['clave' => 'otra', 'nombre' => 'Otra', 'numero' => 1]);
+        $id = DB::table('registro_copladeps')->insertGetId([
+            'invitado_id' => 1, 'sesion_copladep_id' => $sesion->id, 'nombre_completo' => 'Persona',
+            'tipo_asistente' => 'titular', 'modalidad' => 'presencial', 'token_qr' => 'token', 'check_in_at' => null,
+        ]);
+        $controller = app(RegistroCopladepController::class);
+        $response = $controller->descargarQr($sesion, $id);
+        $this->assertSame('image/png', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith("\x89PNG", $response->getContent());
+        try {
+            $controller->destroy($otra, $id);
+            $this->fail('Se eliminó un registro de otra sesión.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
+            $this->assertDatabaseHas('registro_copladeps', ['id' => $id]);
+        }
+        $controller->destroy($sesion, $id);
+        $this->assertDatabaseMissing('registro_copladeps', ['id' => $id]);
+    }
+
     private function sesion(): SesionCopladep
     {
         return SesionCopladep::create(['clave' => 'prueba', 'nombre' => 'Sesión de prueba', 'numero' => 2]);

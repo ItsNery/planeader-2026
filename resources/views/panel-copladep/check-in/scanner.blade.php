@@ -24,11 +24,19 @@
                 </section>
                 <section class="checkin-scanner__manual" aria-labelledby="manual-heading">
                     <h3 id="manual-heading" class="checkin-scanner__heading">Registro manual</h3>
-                    <p class="checkin-scanner__description">Si no puedes escanear el QR, escribe o pega el código de acceso.</p>
-                    <form id="manual">
-                        <label class="form-label" for="token">Código de acceso</label>
-                        <input id="token" class="form-control" autocomplete="off" required>
-                        <button id="manual-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit">Registrar asistencia</button>
+                    <p class="checkin-scanner__description">Busca y selecciona a la persona registrada para registrar su ingreso.</p>
+                    <form id="manual-nombre">
+                        <label class="form-label" for="buscar-asistente">Buscar por nombre</label>
+                        <input id="buscar-asistente" class="form-control" type="search" autocomplete="off" placeholder="Escribe el nombre del asistente">
+                        <label class="form-label mt-3" for="registro-id">Asistente presencial</label>
+                        <select id="registro-id" class="form-control" required>
+                            <option value="">Selecciona un asistente</option>
+                            @foreach ($registros as $registro)
+                                <option value="{{ $registro->id }}">{{ $registro->nombre_completo }} — {{ $registro->cargo }}{{ $registro->check_in_at ? ' (ingreso registrado)' : '' }}</option>
+                            @endforeach
+                        </select>
+                        <p id="busqueda-estado" class="mt-2" role="status" aria-live="polite"></p>
+                        <button id="nombre-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit">Registrar asistencia</button>
                     </form>
                     <div id="resultado" class="alert d-none checkin-scanner__result" role="status" aria-live="polite"></div>
                 </section>
@@ -45,7 +53,6 @@
                 const startButton = document.getElementById('camera-start');
                 const stopButton = document.getElementById('camera-stop');
                 const imageInput = document.getElementById('qr-image');
-                const submitButton = document.getElementById('manual-submit');
                 let scanner;
                 let cameraActive = false;
                 let busy = false;
@@ -72,24 +79,27 @@
                     }
                 }
 
-                async function send(token, fromCamera = false) {
+                async function send(token, fromCamera = false, registroId = null) {
                     token = token.trim();
-                    if (!token || busy || (fromCamera && token === lastToken && Date.now() - lastScan < 5000)) return;
+                    if ((!token && !registroId) || busy || (fromCamera && token === lastToken && Date.now() - lastScan < 5000)) return;
                     busy = true;
                     lastToken = token;
                     lastScan = Date.now();
-                    submitButton.disabled = true;
+                    document.getElementById('nombre-submit').disabled = true;
                     showResult('Registrando asistencia…', 'secondary');
                     try {
                         const response = await fetch('{{ route('panel-copladep-sesiones.checkin', $sesion) }}', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                            body: JSON.stringify({token})
+                            body: JSON.stringify(registroId ? {registro_id: registroId} : {token})
                         });
                         const data = await response.json();
                         const message = data.message || 'No se pudo registrar la asistencia. Inténtalo de nuevo.';
                         showResult(message, response.ok ? 'success' : 'danger');
-                        if (response.ok && !fromCamera) document.getElementById('token').value = '';
+                        if (response.ok && registroId) {
+                            const option = document.getElementById('registro-id').selectedOptions[0];
+                            if (option && !option.textContent.includes('(ingreso registrado)')) option.textContent += ' (ingreso registrado)';
+                        }
                         await notifyResult(message, response.ok);
                     } catch (error) {
                         const message = 'No fue posible conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.';
@@ -98,18 +108,29 @@
                     } finally {
                         lastScan = Date.now();
                         busy = false;
-                        submitButton.disabled = false;
+                        document.getElementById('nombre-submit').disabled = false;
                     }
                 }
 
-                document.getElementById('manual').addEventListener('submit', event => {
+                const searchInput = document.getElementById('buscar-asistente');
+                const select = document.getElementById('registro-id');
+                const options = Array.from(select.options).slice(1).map(option => ({value: option.value, text: option.textContent}));
+                searchInput.addEventListener('input', () => {
+                    const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                    const query = normalize(searchInput.value.trim());
+                    const matches = options.filter(option => normalize(option.text).includes(query));
+                    select.replaceChildren(new Option('Selecciona un asistente', ''));
+                    matches.forEach(option => select.add(new Option(option.text, option.value)));
+                    document.getElementById('busqueda-estado').textContent = matches.length ? `${matches.length} asistente(s) encontrado(s).` : 'No se encontraron asistentes presenciales.';
+                });
+                document.getElementById('manual-nombre').addEventListener('submit', event => {
                     event.preventDefault();
-                    send(document.getElementById('token').value);
+                    send('', false, select.value);
                 });
 
                 window.addEventListener('load', () => {
                     if (!window.Html5Qrcode) {
-                        cameraStatus.textContent = 'No se pudo cargar el lector. Usa el código manual o recarga la página.';
+                        cameraStatus.textContent = 'No se pudo cargar el lector. Busca al asistente por nombre o recarga la página.';
                         startButton.disabled = true;
                         imageInput.disabled = true;
                         return;
@@ -126,7 +147,7 @@
                             stopButton.hidden = false;
                             cameraStatus.textContent = 'Cámara activa. Acerca el código al encuadre.';
                         } catch (error) {
-                            cameraStatus.textContent = 'No se pudo iniciar la cámara. Comprueba que esté conectada y que el navegador tenga permiso, o utiliza el código manual.';
+                            cameraStatus.textContent = 'No se pudo iniciar la cámara. Comprueba que esté conectada y que el navegador tenga permiso, o busca al asistente por nombre.';
                         } finally {
                             startButton.disabled = false;
                         }
@@ -162,7 +183,7 @@
                             cameraStatus.textContent = 'Código encontrado en la imagen.';
                             await send(token);
                         } catch (error) {
-                            cameraStatus.textContent = 'No se encontró un código QR en la imagen. Prueba con otra imagen o usa el código manual.';
+                            cameraStatus.textContent = 'No se encontró un código QR en la imagen. Prueba con otra imagen o busca al asistente por nombre.';
                         } finally {
                             imageInput.value = '';
                         }
