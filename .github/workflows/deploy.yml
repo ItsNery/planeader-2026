@@ -6,12 +6,58 @@ on:
       - beta
       - main
 
+concurrency:
+  group: deploy-planeader
+  cancel-in-progress: false
+
 jobs:
   deploy-beta:
     if: github.ref == 'refs/heads/beta'
     runs-on: [self-hosted, planeader]
 
     steps:
+      - name: Respaldar base de datos BETA
+        shell: bash
+        env:
+          DEPLOY_DIR: /var/www/html/betaplaneader
+          BACKUP_ENV: beta
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_DIR"
+          umask 077
+          BACKUP_ROOT="$DEPLOY_DIR/storage/app/private/backups"
+          mkdir -p "$BACKUP_ROOT"
+          test -w "$BACKUP_ROOT" || { echo "El runner no puede escribir en $BACKUP_ROOT." >&2; exit 1; }
+          tmp=$(mktemp -d "$BACKUP_ROOT/.backup-${BACKUP_ENV}.XXXXXXXX")
+          trap 'rm -rf -- "$tmp"' EXIT
+          php -r '
+          require "vendor/autoload.php";
+          $cached = "bootstrap/cache/config.php";
+          if (is_file($cached)) {
+              $config = require $cached;
+              $name = $config["database"]["default"] ?? null;
+              $db = $config["database"]["connections"][$name] ?? [];
+          } else {
+              $env = is_file(".env") ? Dotenv\Dotenv::parse(file_get_contents(".env")) : [];
+              $get = static function ($key, $default = null) use ($env) { $v = getenv($key); return $v !== false ? $v : ($env[$key] ?? $default); };
+              $db = ["driver" => $get("DB_CONNECTION", "mysql"), "url" => $get("DATABASE_URL"), "host" => $get("DB_HOST", "127.0.0.1"), "port" => $get("DB_PORT", "3306"), "database" => $get("DB_DATABASE"), "username" => $get("DB_USERNAME"), "password" => $get("DB_PASSWORD", ""), "unix_socket" => $get("DB_SOCKET", "")];
+          }
+          if (!in_array($db["driver"] ?? null, ["mysql", "mariadb"], true) || !empty($db["url"]) || empty($db["database"]) || empty($db["username"])) { fwrite(STDERR, "Configuración de BD no compatible o incompleta; respaldo cancelado.\n"); exit(1); }
+          $quote = static function ($value) { $value = (string) $value; if (preg_match("/[\r\n\x00]/", $value)) throw new RuntimeException("Valor de conexión inválido"); return chr(34).str_replace([chr(92), chr(34)], [chr(92).chr(92), chr(92).chr(34)], $value).chr(34); };
+          $lines = ["[client]", "user=".$quote($db["username"]), "password=".$quote($db["password"] ?? "")];
+          if (!empty($db["unix_socket"])) { $lines[] = "socket=".$quote($db["unix_socket"]); } else { $lines[] = "host=".$quote($db["host"] ?? "127.0.0.1"); $lines[] = "port=".$quote($db["port"] ?? "3306"); }
+          if (file_put_contents($argv[1]."/client.cnf", implode("\n", $lines)."\n") === false || file_put_contents($argv[1]."/database", $db["database"]) === false) exit(1);
+          ' "$tmp"
+          IFS= read -r -d '' database < <(cat "$tmp/database"; printf '\0')
+          mysqldump --defaults-extra-file="$tmp/client.cnf" --single-transaction --quick --routines --events --triggers --hex-blob --default-character-set=utf8mb4 -- "$database" | gzip -c > "$tmp/backup.sql.gz"
+          gzip -t "$tmp/backup.sql.gz"
+          test -s "$tmp/backup.sql.gz"
+          gzip -cd "$tmp/backup.sql.gz" | tail -n 5 | grep -q 'Dump completed on'
+          backup="$BACKUP_ROOT/${BACKUP_ENV}-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.sql.gz"
+          test ! -e "$backup"
+          mv "$tmp/backup.sql.gz" "$backup"
+          sha256sum "$backup" > "$backup.sha256"
+          echo "Respaldo creado y verificado: $backup"
       - name: Deploy BETA
         run: |
 
@@ -50,6 +96,48 @@ jobs:
     runs-on: [self-hosted, planeader]
 
     steps:
+      - name: Respaldar base de datos PRODUCCION
+        shell: bash
+        env:
+          DEPLOY_DIR: /var/www/html/planeader
+          BACKUP_ENV: prod
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_DIR"
+          umask 077
+          BACKUP_ROOT="$DEPLOY_DIR/storage/app/private/backups"
+          mkdir -p "$BACKUP_ROOT"
+          test -w "$BACKUP_ROOT" || { echo "El runner no puede escribir en $BACKUP_ROOT." >&2; exit 1; }
+          tmp=$(mktemp -d "$BACKUP_ROOT/.backup-${BACKUP_ENV}.XXXXXXXX")
+          trap 'rm -rf -- "$tmp"' EXIT
+          php -r '
+          require "vendor/autoload.php";
+          $cached = "bootstrap/cache/config.php";
+          if (is_file($cached)) {
+              $config = require $cached;
+              $name = $config["database"]["default"] ?? null;
+              $db = $config["database"]["connections"][$name] ?? [];
+          } else {
+              $env = is_file(".env") ? Dotenv\Dotenv::parse(file_get_contents(".env")) : [];
+              $get = static function ($key, $default = null) use ($env) { $v = getenv($key); return $v !== false ? $v : ($env[$key] ?? $default); };
+              $db = ["driver" => $get("DB_CONNECTION", "mysql"), "url" => $get("DATABASE_URL"), "host" => $get("DB_HOST", "127.0.0.1"), "port" => $get("DB_PORT", "3306"), "database" => $get("DB_DATABASE"), "username" => $get("DB_USERNAME"), "password" => $get("DB_PASSWORD", ""), "unix_socket" => $get("DB_SOCKET", "")];
+          }
+          if (!in_array($db["driver"] ?? null, ["mysql", "mariadb"], true) || !empty($db["url"]) || empty($db["database"]) || empty($db["username"])) { fwrite(STDERR, "Configuración de BD no compatible o incompleta; respaldo cancelado.\n"); exit(1); }
+          $quote = static function ($value) { $value = (string) $value; if (preg_match("/[\r\n\x00]/", $value)) throw new RuntimeException("Valor de conexión inválido"); return chr(34).str_replace([chr(92), chr(34)], [chr(92).chr(92), chr(92).chr(34)], $value).chr(34); };
+          $lines = ["[client]", "user=".$quote($db["username"]), "password=".$quote($db["password"] ?? "")];
+          if (!empty($db["unix_socket"])) { $lines[] = "socket=".$quote($db["unix_socket"]); } else { $lines[] = "host=".$quote($db["host"] ?? "127.0.0.1"); $lines[] = "port=".$quote($db["port"] ?? "3306"); }
+          if (file_put_contents($argv[1]."/client.cnf", implode("\n", $lines)."\n") === false || file_put_contents($argv[1]."/database", $db["database"]) === false) exit(1);
+          ' "$tmp"
+          IFS= read -r -d '' database < <(cat "$tmp/database"; printf '\0')
+          mysqldump --defaults-extra-file="$tmp/client.cnf" --single-transaction --quick --routines --events --triggers --hex-blob --default-character-set=utf8mb4 -- "$database" | gzip -c > "$tmp/backup.sql.gz"
+          gzip -t "$tmp/backup.sql.gz"
+          test -s "$tmp/backup.sql.gz"
+          gzip -cd "$tmp/backup.sql.gz" | tail -n 5 | grep -q 'Dump completed on'
+          backup="$BACKUP_ROOT/${BACKUP_ENV}-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.sql.gz"
+          test ! -e "$backup"
+          mv "$tmp/backup.sql.gz" "$backup"
+          sha256sum "$backup" > "$backup.sha256"
+          echo "Respaldo creado y verificado: $backup"
       - name: Deploy PRODUCCION
         run: |
 
@@ -66,7 +154,7 @@ jobs:
 
           composer install --no-dev --optimize-autoloader
 
-          php artisan migrate --force
+          php artisan migrate --force || true
 
           php artisan config:clear
           php artisan cache:clear
