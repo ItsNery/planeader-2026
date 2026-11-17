@@ -51,8 +51,19 @@ class RegistroCopladepController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'tipo_asistente' => 'required|string|in:titular,representante',
-            'invitado_id' => ['required', 'integer', Rule::exists('invitado_copladeps', 'id')->where('sesion_copladep_id', $sesion->id)],
+            'tipo_asistente' => 'required|string|in:titular,representante,otro',
+            'invitado_id' => [
+                Rule::requiredIf(fn () => in_array($request->tipo_asistente, ['titular', 'representante'])),
+                'nullable',
+                'integer',
+                Rule::exists('invitado_copladeps', 'id')->where('sesion_copladep_id', $sesion->id),
+            ],
+            'modalidad' => [
+                Rule::requiredIf(fn () => $request->tipo_asistente === 'otro'),
+                'nullable',
+                'string',
+                'in:presencial,virtual',
+            ],
             'nombre_completo' => 'required|string|max:50',
             'sexo' => 'required|string|in:Hombre,Mujer,Otro',
             'cargo' => 'required|string|max:191',
@@ -72,6 +83,7 @@ class RegistroCopladepController extends Controller
         ], [
             'tipo_asistente' => 'tipo de asistente',
             'invitado_id' => 'persona invitada',
+            'modalidad' => 'modalidad de asistencia',
             'nombre_completo' => 'nombre del asistente',
             'sexo' => 'sexo',
             'cargo' => 'cargo',
@@ -96,10 +108,26 @@ class RegistroCopladepController extends Controller
 
         try {
             $datos = $validator->validated();
-            $invitado = $sesion->invitados()->findOrFail($datos['invitado_id']);
+
+            if ($datos['tipo_asistente'] === 'otro') {
+                $invitado = $sesion->invitados()->create([
+                    'nombre_completo' => $datos['nombre_completo'],
+                    'cargo' => $datos['cargo'],
+                    'sexo' => $datos['sexo'],
+                    'municipio_id' => $datos['municipio_id'],
+                    'modalidad' => $datos['modalidad'],
+                    'sesion' => $sesion->numero === 2 ? 'segunda' : 'primera',
+                    'sesion_copladep_id' => $sesion->id,
+                ]);
+                $datos['invitado_id'] = $invitado->id;
+                $datos['modalidad'] = $invitado->modalidad;
+            } else {
+                $invitado = $sesion->invitados()->findOrFail($datos['invitado_id']);
+                $datos['modalidad'] = $invitado->modalidad;
+            }
+
             $datos['sesion'] = $sesion->numero === 2 ? 'segunda' : 'primera';
             $datos['sesion_copladep_id'] = $sesion->id;
-            $datos['modalidad'] = $invitado->modalidad;
             if ($datos['modalidad'] === 'presencial') {
                 $datos['token_qr'] = app(CopladepQrService::class)->token();
             }

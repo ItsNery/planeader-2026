@@ -76,8 +76,10 @@
                             <td class="text-center">
                                 @if($registro->tipo_asistente == 'titular')
                                     <span class="badge bg-success">Titular</span>
-                                @else
+                                @elseif($registro->tipo_asistente == 'representante')
                                     <span class="badge bg-warning text-dark">Representante</span>
+                                @else
+                                    <span class="badge bg-info text-dark">Otro</span>
                                 @endif
                             </td>
                             <td class="fw-bold">{{ $registro->invitado->nombre_completo ?? 'N/A' }}</td>

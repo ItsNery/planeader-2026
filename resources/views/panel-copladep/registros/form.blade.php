@@ -59,13 +59,17 @@
                         <input type="radio" class="btn-check" name="tipo_asistente" id="soy_representante"
                             value="representante" {{ old('tipo_asistente') == 'representante' ? 'checked' : '' }}>
                         <label class="btn btn-outline-primary" for="soy_representante">Vengo en Representación</label>
+
+                        <input type="radio" class="btn-check" name="tipo_asistente" id="soy_otro"
+                            value="otro" {{ old('tipo_asistente') == 'otro' ? 'checked' : '' }}>
+                        <label class="btn btn-outline-primary" for="soy_otro">No estoy en la lista / Otro</label>
                     </div>
                 </div>
 
                 <div class="mb-4 bg-light p-3 rounded border" id="seccion_buscador_invitado">
                     <label id="label_buscador" for="invitado_id" class="form-label fw-bold">Busque su nombre en la
                         lista: <span class="text-danger">*</span></label>
-                    <select class="form-select" id="invitado_id" name="invitado_id" required>
+                    <select class="form-select" id="invitado_id" name="invitado_id">
                         <option value="">Buscar nombre del funcionario...</option>
                         @foreach ($invitados as $invitado)
                             <option value="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
@@ -79,6 +83,17 @@
                     </select>
                 </div>
                 <div class="row">
+                    <div class="col-md-12 mb-3" id="seccion_modalidad" style="display: none;">
+                        <label for="modalidad" class="form-label fw-bold">Modalidad de asistencia <span class="text-danger">*</span></label>
+                        <select class="form-select @error('modalidad') is-invalid @enderror" id="modalidad" name="modalidad">
+                            <option value="">Seleccionar modalidad...</option>
+                            <option value="presencial" {{ old('modalidad') == 'presencial' ? 'selected' : '' }}>Presencial (Asistiré a la sede del evento)</option>
+                            <option value="virtual" {{ old('modalidad') == 'virtual' ? 'selected' : '' }}>Virtual (Me conectaré por transmisión)</option>
+                        </select>
+                        @error('modalidad') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <small class="text-muted">Selecciona cómo participarás en el evento para generar tu comprobante.</small>
+                    </div>
+
                     <div class="col-md-12 mb-3">
                         <label for="nombre_completo" class="form-label">Nombre del Asistente <span
                                 class="text-danger">*</span> </label>
@@ -205,6 +220,11 @@
 
             const radioTitular = document.getElementById('soy_titular');
             const radioRep = document.getElementById('soy_representante');
+            const radioOtro = document.getElementById('soy_otro');
+            const seccionBuscador = document.getElementById('seccion_buscador_invitado');
+            const seccionModalidad = document.getElementById('seccion_modalidad');
+            const selectModalidad = document.getElementById('modalidad');
+            const selectInvitado = document.getElementById('invitado_id');
             const labelBuscador = document.getElementById('label_buscador');
             const ayudaNombre = document.getElementById('ayuda_nombre');
 
@@ -256,11 +276,16 @@
             actualizarEstadoBoton();
             setInterval(actualizarEstadoBoton, 60000);
 
-            // 4. Lógica de Titular vs Representante
+            // 4. Lógica de Titular vs Representante vs Otro
             function cambiarModo(esEventoDelUsuario = true) {
                 if (radioTitular.checked) {
-                    labelBuscador.textContent = "Busque su nombre en la lista (obligatorio):";
-                    ayudaNombre.textContent = "Este campo se llena automáticamente.";
+                    seccionBuscador.style.display = "block";
+                    selectInvitado.required = true;
+                    seccionModalidad.style.display = "none";
+                    selectModalidad.required = false;
+
+                    labelBuscador.textContent = "Busque su nombre en la lista: *";
+                    ayudaNombre.textContent = "Este campo se llena automáticamente al seleccionar al titular.";
 
                     inputNombre.readOnly = true;
                     inputCargo.readOnly = true;
@@ -270,7 +295,12 @@
                     selectMunicipio.style.backgroundColor = "#e9ecef";
 
                     llenarCamposDesdeSelect();
-                } else {
+                } else if (radioRep.checked) {
+                    seccionBuscador.style.display = "block";
+                    selectInvitado.required = true;
+                    seccionModalidad.style.display = "none";
+                    selectModalidad.required = false;
+
                     labelBuscador.textContent = "¿A quién representa? Busque al titular (obligatorio):";
                     ayudaNombre.textContent = "Escriba SU propio nombre completo (el de usted).";
 
@@ -287,6 +317,30 @@
                         inputCargo.value = "";
                         selectSexo.value = "";
                         selectMunicipio.value = "";
+                    }
+                } else if (radioOtro && radioOtro.checked) {
+                    seccionBuscador.style.display = "none";
+                    selectInvitado.required = false;
+                    tomSelectInvitado.clear();
+
+                    seccionModalidad.style.display = "block";
+                    selectModalidad.required = true;
+
+                    ayudaNombre.textContent = "Escriba su propio nombre completo.";
+
+                    inputNombre.readOnly = false;
+                    inputCargo.readOnly = false;
+                    selectSexo.style.pointerEvents = "auto";
+                    selectSexo.style.backgroundColor = "#fff";
+                    selectMunicipio.style.pointerEvents = "auto";
+                    selectMunicipio.style.backgroundColor = "#fff";
+
+                    if (esEventoDelUsuario) {
+                        inputNombre.value = "";
+                        inputCargo.value = "";
+                        selectSexo.value = "";
+                        selectMunicipio.value = "";
+                        selectModalidad.value = "";
                     }
                 }
             }
@@ -320,6 +374,9 @@
             // Listeners: Les pasamos "true" para indicar que es un clic manual
             radioTitular.addEventListener('change', () => cambiarModo(true));
             radioRep.addEventListener('change', () => cambiarModo(true));
+            if (radioOtro) {
+                radioOtro.addEventListener('change', () => cambiarModo(true));
+            }
 
             tomSelectInvitado.on('change', function() {
                 llenarCamposDesdeSelect();
