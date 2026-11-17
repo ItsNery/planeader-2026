@@ -277,14 +277,14 @@ class RegistroCopladepController extends Controller
             $liga = $registro->sesionCopladep->enlace_virtual;
             $texto = $liga ?: 'La liga de transmisión se compartirá próximamente.';
             $x = $tamano['width'] * 0.16;
-            $y = $tamano['height'] * 0.385;
+            $y = $tamano['height'] * 0.445;
             $ancho = $tamano['width'] * 0.68;
             $pdf->SetXY($x, $y);
             $pdf->SetFont('Helvetica', $liga ? 'U' : '', 12);
             $pdf->SetTextColor(22, 91, 82);
             $pdf->MultiCell($ancho, 7, $this->pdfText($texto), 0, 'C');
             if ($liga) {
-                $pdf->Link($x, $y, $ancho, 28, $liga);
+                $pdf->Link($x, $y, $ancho, 14, $liga);
             }
         }
 

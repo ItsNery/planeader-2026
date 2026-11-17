@@ -74,9 +74,9 @@
                                 <li>
                                     {{ $punto['texto'] ?? '' }}
                                     @if (!empty($punto['hijos']))
-                                        <ol type="a">
+                                        <ol class="copladep-session__agenda-sublist">
                                             @foreach ($punto['hijos'] as $subpunto)
-                                                <li>{{ $subpunto }}</li>
+                                                <li>{{ preg_replace('/^([a-zA-Z][\.\)]|\([a-zA-Z]\))\s*/', '', $subpunto) }}</li>
                                             @endforeach
                                         </ol>
                                     @endif

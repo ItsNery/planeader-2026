@@ -107,8 +107,10 @@ class SesionCopladepController extends Controller
                 continue;
             }
 
-            // Detectar si la línea está indentada (empieza con espacios o tab)
-            $esSubpunto = preg_match('/^[\t ]{2,}/', $linea) || preg_match('/^\t/', $linea);
+            // Detectar si la línea está indentada (empieza con espacios o tab) o empieza con formato de subpunto (ej: a., a), (a))
+            $esSubpunto = preg_match('/^[\t ]{2,}/', $linea)
+                || preg_match('/^\t/', $linea)
+                || preg_match('/^([a-z]\)|\([a-z]\)|[a-z]\.)\s+/i', $trimmed);
 
             if ($esSubpunto && count($resultado) > 0) {
                 // Agregar como hijo del último punto principal
