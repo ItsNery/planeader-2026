@@ -53,7 +53,13 @@
                 <div class="col-md-6"><label class="form-label">Descripción</label><input class="form-control"
                         name="descripcion" value="{{ old('descripcion', $sesion->descripcion) }}"></div>
                 <div class="col-12"><label class="form-label">Orden del día</label>
-                    <textarea class="form-control" name="agenda_texto" rows="5" placeholder="Un punto por línea">{{ old('agenda_texto', implode("\n", $sesion->agenda ?: [])) }}</textarea>
+                    <textarea class="form-control" name="agenda_texto" rows="5" placeholder="Un punto por línea. Indenta con espacios o tabulador para crear subpuntos.">{{ old('agenda_texto', $agendaTexto ?? implode("\n", $sesion->agenda ?: [])) }}</textarea>
+                    <small class="text-muted">Escribe un punto por línea. Para agregar subpuntos, inicia la línea con espacios o un tabulador. Ejemplo:<br>
+                        <code>1. Bienvenida</code><br>
+                        <code>&nbsp;&nbsp;a) Presentación de invitados</code><br>
+                        <code>&nbsp;&nbsp;b) Palabras del presidente</code><br>
+                        <code>2. Informe de actividades</code>
+                    </small>
                 </div>
             </div>
             @if ($errors->any())

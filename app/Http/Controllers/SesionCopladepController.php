@@ -47,7 +47,9 @@ class SesionCopladepController extends Controller
 
     public function edit(SesionCopladep $sesion)
     {
-        return view('panel-copladep.sesiones.form', compact('sesion'));
+        $agendaTexto = self::agendaToText($sesion->agenda ?: []);
+
+        return view('panel-copladep.sesiones.form', compact('sesion', 'agendaTexto'));
     }
 
     public function update(Request $request, SesionCopladep $sesion)
@@ -84,9 +86,69 @@ class SesionCopladepController extends Controller
             }
             $data['clave'] = $clave;
         }
-        $data['agenda'] = collect(preg_split('/\r\n|\r|\n/', $data['agenda_texto'] ?? ''))->map(fn ($punto) => trim($punto))->filter()->values()->all();
+        $data['agenda'] = $this->parseAgenda($data['agenda_texto'] ?? '');
         unset($data['agenda_texto']);
 
         return $data;
+    }
+
+    /**
+     * Parsea el texto de agenda con indentación a una estructura jerárquica.
+     * Las líneas indentadas (con espacios o tabs) se convierten en subpuntos.
+     */
+    private function parseAgenda(string $texto): array
+    {
+        $lineas = preg_split('/\r\n|\r|\n/', $texto);
+        $resultado = [];
+
+        foreach ($lineas as $linea) {
+            $trimmed = trim($linea);
+            if ($trimmed === '') {
+                continue;
+            }
+
+            // Detectar si la línea está indentada (empieza con espacios o tab)
+            $esSubpunto = preg_match('/^[\t ]{2,}/', $linea) || preg_match('/^\t/', $linea);
+
+            if ($esSubpunto && count($resultado) > 0) {
+                // Agregar como hijo del último punto principal
+                $ultimoIndex = count($resultado) - 1;
+
+                // Si el último elemento es un string simple, convertirlo a estructura con hijos
+                if (is_string($resultado[$ultimoIndex])) {
+                    $resultado[$ultimoIndex] = [
+                        'texto' => $resultado[$ultimoIndex],
+                        'hijos' => [],
+                    ];
+                }
+
+                $resultado[$ultimoIndex]['hijos'][] = $trimmed;
+            } else {
+                $resultado[] = $trimmed;
+            }
+        }
+
+        return $resultado;
+    }
+
+    /**
+     * Convierte la estructura jerárquica de agenda de vuelta a texto con indentación.
+     */
+    public static function agendaToText(array $agenda): string
+    {
+        $lineas = [];
+
+        foreach ($agenda as $item) {
+            if (is_string($item)) {
+                $lineas[] = $item;
+            } elseif (is_array($item)) {
+                $lineas[] = $item['texto'] ?? '';
+                foreach ($item['hijos'] ?? [] as $hijo) {
+                    $lineas[] = '  ' . $hijo;
+                }
+            }
+        }
+
+        return implode("\n", $lineas);
     }
 }

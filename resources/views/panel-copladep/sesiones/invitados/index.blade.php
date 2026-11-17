@@ -99,6 +99,13 @@
                                             data-municipio="{{ $invitado->municipio_id }}" title="Editar Invitado">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
+                                        @can('borrar-invitado-copladep')
+                                        <button type="button" class="btn btn-outline-danger btn-eliminar"
+                                            data-id="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}"
+                                            title="Eliminar Invitado">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                        @endcan
                                     </div>
                                 </div>
                             </td>
@@ -429,6 +436,72 @@
 
                         return;
                     }
+                    // Handler para el botón de eliminar invitado (doble confirmación)
+                    const btnEliminar = event.target.closest('.btn-eliminar');
+                    if (btnEliminar) {
+                        const id = btnEliminar.dataset.id;
+                        const nombre = btnEliminar.dataset.nombre;
+
+                        Swal.fire({
+                            title: '¿Eliminar invitado?',
+                            html: `Estás a punto de eliminar a <strong>${nombre}</strong> de la lista de invitados.`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Sí, eliminar',
+                            cancelButtonText: 'Cancelar'
+                        }).then((firstResult) => {
+                            if (firstResult.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Confirma la eliminación',
+                                    html: `Esta acción <strong>no se puede deshacer</strong>. ¿Realmente deseas eliminar a <strong>${nombre}</strong>?`,
+                                    icon: 'error',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#dc3545',
+                                    cancelButtonColor: '#6c757d',
+                                    confirmButtonText: 'Eliminar definitivamente',
+                                    cancelButtonText: 'No, cancelar'
+                                }).then((secondResult) => {
+                                    if (secondResult.isConfirmed) {
+                                        const url = `{{ url('/panel-copladep/sesiones/' . $sesion->clave . '/invitados') }}/${id}`;
+                                        fetch(url, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                'Accept': 'application/json'
+                                            }
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: '¡Eliminado!',
+                                                    text: data.message || 'El invitado ha sido eliminado correctamente.',
+                                                    confirmButtonColor: '#0d6efd',
+                                                    timer: 2000,
+                                                    timerProgressBar: true
+                                                }).then(() => {
+                                                    location.reload();
+                                                });
+                                            } else {
+                                                Swal.fire('Error', data.message || 'No se pudo eliminar el invitado.', 'error');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            Swal.fire('Error', 'Ocurrió un error al eliminar el invitado.', 'error');
+                                        });
+                                    }
+                                });
+                            }
+                        });
+
+                        return;
+                    }
+
                     // Buscamos si el clic provino de un elemento con la clase '.btn-editar' o un hijo de este (como el ícono)
                     const botonEditar = event.target.closest('.btn-editar');
 

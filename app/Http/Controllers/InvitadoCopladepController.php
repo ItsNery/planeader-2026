@@ -109,13 +109,22 @@ class InvitadoCopladepController extends Controller
         return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->with('success', 'Datos del invitado actualizados correctamente.');
     }
 
-    public function destroy(SesionCopladep $sesion, InvitadoCopladep $invitado)
+    public function destroy(Request $request, SesionCopladep $sesion, InvitadoCopladep $invitado)
     {
         abort_unless($invitado->sesion_copladep_id === $sesion->id, 404);
         try {
             $invitado->delete();
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Invitado eliminado correctamente.']);
+            }
+
             return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->with('success', 'Invitado eliminado.');
         } catch (\Exception) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'No se puede eliminar a este invitado porque ya tiene un registro de asistencia vinculado.'], 422);
+            }
+
             return redirect()->route('panel-copladep-sesiones.invitados.index', $sesion)->withErrors(['error' => 'No se puede eliminar a este invitado porque ya tiene un registro de asistencia vinculado.']);
         }
     }

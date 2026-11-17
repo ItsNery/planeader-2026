@@ -68,7 +68,20 @@
                 @if (!empty($sesion?->agenda))
                     <ol class="copladep-session__agenda-list">
                         @foreach ($sesion->agenda as $punto)
-                            <li>{{ $punto }}</li>
+                            @if (is_string($punto))
+                                <li>{{ $punto }}</li>
+                            @elseif (is_array($punto))
+                                <li>
+                                    {{ $punto['texto'] ?? '' }}
+                                    @if (!empty($punto['hijos']))
+                                        <ol type="a">
+                                            @foreach ($punto['hijos'] as $subpunto)
+                                                <li>{{ $subpunto }}</li>
+                                            @endforeach
+                                        </ol>
+                                    @endif
+                                </li>
+                            @endif
                         @endforeach
                     </ol>
                 @else
