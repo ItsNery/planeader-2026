@@ -104,6 +104,8 @@ class RegistroCopladepTest extends TestCase
         $pdf = $this->get(route('copladep-registro.pdf', $registro->token_qr));
         $pdf->assertOk()->assertHeader('Content-Type', 'application/pdf');
         $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+        $this->get('/copladep/registro/descargar-pdf/' . $registro->token_qr)->assertOk()->assertHeader('Content-Type', 'application/pdf');
+        $this->get('/copladep/registro/confirmacion/' . $registro->token_qr)->assertOk();
         $this->assertSame($registro->token_qr, $registro->fresh()->token_qr);
 
         // Los registros anteriores pueden conservar una ruta que ya no existe.
@@ -129,6 +131,24 @@ class RegistroCopladepTest extends TestCase
         $registro = RegistroCopladep::firstOrFail();
         $this->assertSame('qr-copladep/2026-segunda-ordinaria/' . $registro->token_qr . '.png', $registro->qr_path);
         $this->get(route('copladep-registro.pdf', $registro->token_qr))->assertOk();
+    }
+
+    public function test_token_starting_with_digits_does_not_resolve_a_different_numeric_id(): void
+    {
+        $sesion = $this->sesionConInvitado();
+        $this->post(route('copladep-sesiones.registro.store', $sesion), $this->datos())->assertSessionHasNoErrors();
+        $registro = RegistroCopladep::firstOrFail();
+        $registro->forceFill(['token_qr' => '7abc123'])->save();
+        $datos = DB::table('registro_copladeps')->where('id', $registro->id)->first();
+        $otro = (array) $datos;
+        $otro['id'] = 7;
+        $otro['token_qr'] = null;
+        $otro['modalidad'] = null;
+        DB::table('registro_copladeps')->insert($otro);
+
+        $this->get(route('copladep-registro.confirmacion', '7abc123'))->assertOk()->assertViewHas('registro', fn ($encontrado) => $encontrado->id === $registro->id);
+        $this->get(route('copladep-registro.pdf', '7abc123'))->assertOk()->assertHeader('Content-Type', 'application/pdf');
+        $this->get(route('copladep-registro.confirmacion', '7noexiste'))->assertNotFound();
     }
 
     private function sesionConInvitado(): SesionCopladep

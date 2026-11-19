@@ -30,6 +30,9 @@
             @can('ver-listado-registro-copladep')
                 <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3 mx-2">Volver a la sesión</a>
             @endcan
+            <a href="{{ route('panel-copladep-sesiones.registros.exportar-pdf', $sesion) }}" class="btn btn-outline-danger mt-3 mb-3 mx-2" target="_blank" title="Descargar padrón oficial en PDF con hoja membretada">
+                <i class="bi bi-file-earmark-pdf"></i> Exportar PDF Oficial
+            </a>
             <a href="{{ route('panel-copladep-sesiones.scanner', $sesion) }}" class="mx-2">
                 <button class="btn btn-outline-secondary mt-3 mb-3 ml-3">Check-in QR</button>
             </a>
@@ -57,15 +60,15 @@
                         <th>Tipo de Asistencia</th>
                         <th>Invitado Oficial (Titular)</th>
                         <th>Datos del Asistente</th>
+                        <th>Representante</th>
                         <th>Municipio</th>
-                        <th class="text-center">Firma o rúbrica</th>
-                        <th>Fecha de Registro</th>
-                        <th>Nombre de quien asiste</th>
                         <th>Cargo</th>
                         <th>Sexo</th>
                         <th>Correo Electrónico</th>
                         <th>Tel. oficina</th>
                         <th>Tel. celular</th>
+                        <th>Fecha de Registro</th>
+
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -112,31 +115,25 @@
                                 </div>
                             </td>
 
+                            <td>{{ $registro->tipo_asistente === 'representante' ? $registro->nombre_completo : '-' }}</td>
+
                             <td>
                                 <span class="badge bg-light text-black border">
                                     {{ $registro->catMunicipio->nombre_municipio ?? 'N/A' }}
                                 </span>
                             </td>
 
-                            <td class="text-center">
-                                @if($registro->firma)
-                                    <img src="{{ $registro->firma }}" alt="Firma o rúbrica de {{ $registro->nombre_completo }}"
-                                        class="firma-img" title="{{ $registro->nombre_completo }}">
-                                @else
-                                    <span class="badge bg-secondary">Sin firma</span>
-                                @endif
-                            </td>
-
-                            <td>{{ $registro->created_at->format('d/m/Y H:i') }}</td>
-
-                            <td>{{ $registro->nombre_completo }}</td>
                             <td>{{ $registro->cargo }}</td>
                             <td>{{ $registro->sexo }}</td>
                             <td>{{ $registro->correo_electronico }}</td>
                             <td>{{ $registro->telefono_oficina ?? 'ND'}}</td>
                             <td>{{ $registro->telefono_celular ?? 'ND'}}</td>
+                            <td>{{ $registro->created_at->format('d/m/Y H:i') }}</td>
                             <td>
                                 <div class="d-flex flex-wrap gap-2">
+                                    <a class="btn btn-outline-primary btn-sm" href="{{ route('copladep-registro.pdf', $registro->token_qr ?: $registro->id) }}" target="_blank" title="Descargar pase de acceso completo en PDF">
+                                        <i class="bi bi-file-earmark-pdf"></i> Pase PDF
+                                    </a>
                                     @if ($registro->modalidad === 'presencial' && $registro->token_qr)
                                         <a class="btn btn-outline-secondary btn-sm" href="{{ route('panel-copladep-sesiones.registros.qr', [$sesion, $registro->id]) }}" aria-label="Descargar QR de {{ $registro->nombre_completo }}">Descargar QR</a>
                                     @endif
@@ -158,15 +155,14 @@
                         <th>Tipo de Asistencia</th>
                         <th>Invitado Oficial (Titular)</th>
                         <th>Datos del Asistente</th>
+                        <th>Representante</th>
                         <th>Municipio</th>
-                        <th class="text-center">Firma o rúbrica</th>
-                        <th>Fecha de Registro</th>
-                        <th>Nombre de quien asiste</th>
                         <th>Cargo</th>
                         <th>Sexo</th>
                         <th>Correo Electrónico</th>
                         <th>Tel. oficina</th>
                         <th>Tel. celular</th>
+                        <th>Fecha de Registro</th>
                         <th>Acciones</th>
                     </tr>
                 </tfoot>
@@ -188,8 +184,8 @@
                         responsive: true,
                         dom: 'Bfrtip',
                         "columnDefs": [
-                            // Ocultamos las columnas 7 a la 12 en la interfaz web
-                            { "visible": false, "targets": [5, 7, 8, 9, 10, 11, 12] }
+                            // Ocultamos las columnas en formato plano en la interfaz web (se muestran agrupadas en col 3)
+                            { "visible": false, "targets": [4, 6, 7, 8, 9, 10] }
                         ],
                         buttons: [
                             {
@@ -198,7 +194,7 @@
                                 text: '<i class="bi bi-file-earmark-spreadsheet"></i> Exportar a Excel',
                                 className: 'btn btn-success btn-sm',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
+                                    columns: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]
                                 }
                             },
                             {
@@ -207,17 +203,14 @@
                                 text: '<i class="bi bi-filetype-csv"></i> Exportar a CSV',
                                 className: 'btn btn-info btn-sm text-white',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
+                                    columns: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]
                                 }
                             },
                             {
-                                extend: 'pdfHtml5',
-                                title: 'Registros_COPLADEP',
-                                text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF',
-                                orientation: 'landscape',
+                                text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF (Membretado)',
                                 className: 'btn btn-danger btn-sm text-white',
-                                exportOptions: {
-                                    columns: [0, 1, 2, 7, 4, 8, 9, 10, 11, 12]
+                                action: function (e, dt, node, config) {
+                                    window.open('{{ route('panel-copladep-sesiones.registros.exportar-pdf', $sesion) }}', '_blank');
                                 }
                             }
                         ],

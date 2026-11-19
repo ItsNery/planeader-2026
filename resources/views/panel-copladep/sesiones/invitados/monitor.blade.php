@@ -23,6 +23,12 @@
                 <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mt-3 mb-3 mx-2">Volver a la sesión</a>
             @endcan
 
+            <a href="{{ route('panel-copladep-sesiones.asistencia.excel', $sesion) }}" class="btn btn-outline-success mt-3 mb-3 mx-2" title="Descargar lista oficial de asistencia en Excel">
+                <i class="bi bi-file-earmark-excel"></i> Descargar Asistencia (Excel)
+            </a>
+            <a href="{{ route('panel-copladep-sesiones.asistencia.pdf', $sesion) }}" class="btn btn-outline-danger mt-3 mb-3 mx-2" target="_blank" title="Descargar lista oficial de asistencia en PDF con membrete institucional">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar Asistencia (PDF)
+            </a>
             <a href="{{ route('panel-copladep-sesiones.registros.index', $sesion) }}" class="">
                 <button class="btn btn-custom-primary mt-3 mb-3 ml-3">
                     Volver al listado

@@ -38,6 +38,7 @@ class ImportacionInvitadosCopladepTest extends TestCase
         Schema::create('registro_copladeps', function (Blueprint $table) {
             $table->id(); $table->unsignedBigInteger('invitado_id'); $table->unsignedBigInteger('sesion_copladep_id');
             $table->string('nombre_completo'); $table->string('tipo_asistente'); $table->string('modalidad');
+            $table->string('cargo')->nullable(); $table->unsignedBigInteger('municipio_id')->nullable();
             $table->string('token_qr')->nullable(); $table->timestamp('check_in_at')->nullable(); $table->timestamps();
         });
         DB::table('cat_dependencias_copladep')->insert(['id' => 1, 'nombre' => 'Dependencia de prueba', 'activo' => true]);
@@ -175,6 +176,34 @@ class ImportacionInvitadosCopladepTest extends TestCase
         $this->assertStringContainsString('QR permanece', $manualOff['message']);
         $duplicate = app(RegistroCopladepController::class)->checkin(Request::create('/', 'POST', ['token' => 'representante']), $sesion);
         $this->assertSame(422, $duplicate->getStatusCode());
+    }
+
+    public function test_attendance_exports_include_each_checked_in_person_and_manual_attendance(): void
+    {
+        $sesion = $this->sesion();
+        $titular = $sesion->invitados()->create(['nombre_completo' => 'Titular', 'sexo' => 'Mujer', 'cargo' => 'Directora', 'municipio_id' => 1, 'sesion' => 'segunda']);
+        $sesion->invitados()->create(['nombre_completo' => 'Ingreso manual', 'sexo' => 'Hombre', 'cargo' => 'Titular', 'municipio_id' => 1, 'sesion' => 'segunda', 'check_in_express' => true]);
+        foreach ([['Titular', 'titular', 'Directora'], ['Representante', 'representante', 'Enlace'], ['Ausente', 'representante', 'Asesor']] as $i => [$nombre, $tipo, $cargo]) {
+            DB::table('registro_copladeps')->insert(['invitado_id' => $titular->id, 'sesion_copladep_id' => $sesion->id, 'nombre_completo' => $nombre, 'tipo_asistente' => $tipo, 'cargo' => $cargo, 'municipio_id' => 1, 'modalidad' => 'presencial', 'check_in_at' => $i < 2 ? now() : null]);
+        }
+        $controller = app(InvitadoCopladepController::class);
+        ob_start();
+        $controller->exportarAsistenciaExcel($sesion)->sendContent();
+        $bytes = ob_get_clean();
+        $path = tempnam(sys_get_temp_dir(), 'asistencia_');
+        try {
+            file_put_contents($path, $bytes);
+            $book = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+            $rows = $book->getActiveSheet()->rangeToArray('B7:I9');
+            $this->assertSame(['Ingreso manual', 'Titular', 'Representante'], array_column($rows, 2));
+            $this->assertSame('Enlace', $rows[2][3]);
+            $this->assertStringNotContainsString('Ausente', json_encode($rows));
+            $book->disconnectWorksheets();
+        } finally {
+            unlink($path);
+        }
+        $pdf = $controller->exportarAsistenciaPdf($sesion);
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
     }
 
     public function test_manual_checkin_is_scoped_to_session_and_rejects_duplicates_and_virtual_attendees(): void

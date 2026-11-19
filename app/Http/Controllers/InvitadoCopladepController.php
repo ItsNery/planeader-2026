@@ -8,14 +8,19 @@ use App\Models\InvitadoCopladep;
 use App\Models\SesionCopladep;
 use App\Services\ImportacionInvitadosCopladep;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class InvitadoCopladepController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index', 'monitor', 'exportarCsv']]);
+        $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index', 'monitor', 'exportarCsv', 'exportarAsistenciaExcel', 'exportarAsistenciaPdf']]);
         $this->middleware('permission:crear-invitado-copladep', ['only' => ['store', 'importarForm', 'plantilla', 'importar']]);
         $this->middleware('permission:editar-invitado-copladep', ['only' => ['update', 'toggleCheckInExpress']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
@@ -170,4 +175,131 @@ class InvitadoCopladepController extends Controller
             'modalidad' => 'nullable|in:presencial,virtual',
         ]);
     }
+
+    public function exportarAsistenciaPdf(SesionCopladep $sesion)
+    {
+        $asistentes = $this->asistenciasParaReporte($sesion);
+        $totalAsistentes = $asistentes->count();
+        $membretePath = public_path('sesiones-copladep/Membrete.png');
+        $membreteBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($membretePath));
+
+        $pdf = Pdf::loadView('pdf.copladep-asistencia-reporte', compact('sesion', 'asistentes', 'totalAsistentes', 'membreteBase64'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('asistencia-final-' . Str::slug($sesion->clave) . '.pdf');
+    }
+
+    public function exportarAsistenciaExcel(SesionCopladep $sesion)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Asistencia Efectiva');
+
+        $sheet->setCellValue('A1', 'COMITÉ DE PLANEACIÓN PARA EL DESARROLLO DEL ESTADO DE PUEBLA (COPLADEP)');
+        $sheet->setCellValue('A2', $sesion->nombre);
+        $sheet->setCellValue('A3', 'LISTA DE ASISTENCIA EFECTIVA (CHECK-IN)');
+        $sheet->setCellValue('A4', 'Fecha de emisión: ' . now()->format('d/m/Y H:i') . ' hrs');
+
+        $sheet->mergeCells('A1:I1');
+        $sheet->mergeCells('A2:I2');
+        $sheet->mergeCells('A3:I3');
+        $sheet->mergeCells('A4:I4');
+
+        $headerStyle = [
+            'font' => ['bold' => true, 'color' => ['rgb' => '691B31'], 'size' => 12],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ];
+        $sheet->getStyle('A1:A3')->applyFromArray($headerStyle);
+        $sheet->getStyle('A4')->getFont()->setItalic(true)->setSize(9);
+
+        $headers = ['No.', 'Tipo Asistencia', 'Titular Oficial Convocado', 'Asistente / Representante', 'Cargo', 'Dependencia / Organismo', 'Municipio', 'Modalidad', 'Hora Check-in'];
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . '6', $header);
+            $col++;
+        }
+
+        $tableHeaderStyle = [
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 10],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '691B31']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+        ];
+        $sheet->getStyle('A6:I6')->applyFromArray($tableHeaderStyle);
+        $sheet->getRowDimension(6)->setRowHeight(24);
+
+        $asistentes = $this->asistenciasParaReporte($sesion);
+        $row = 7;
+        foreach ($asistentes as $index => $asistente) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            foreach (['tipo', 'titular', 'nombre', 'cargo', 'dependencia', 'municipio', 'modalidad', 'hora'] as $i => $campo) {
+                $sheet->setCellValueExplicit(chr(ord('B') + $i) . $row, (string) $asistente[$campo], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            }
+
+            if ($row % 2 === 0) {
+                $sheet->getStyle('A' . $row . ':I' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F8F9FA');
+            }
+            $row++;
+        }
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'D9D9D9'],
+                ],
+            ],
+        ];
+        $sheet->getStyle('A6:I' . max(6, $row - 1))->applyFromArray($styleArray);
+
+        foreach (range('A', 'I') as $colLetter) {
+            $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+        }
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            try {
+                (new Xlsx($spreadsheet))->save('php://output');
+            } finally {
+                $spreadsheet->disconnectWorksheets();
+            }
+        }, 'asistencia-efectiva-' . Str::slug($sesion->clave) . '.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+    /** Cada ingreso QR es una persona; el pase manual no identifica a un representante. */
+    private function asistenciasParaReporte(SesionCopladep $sesion)
+    {
+        $invitados = $sesion->invitados()
+            ->where(fn ($q) => $q->where('check_in_express', true)
+                ->orWhereHas('registros', fn ($r) => $r->where('sesion_copladep_id', $sesion->id)->whereNotNull('check_in_at')))
+            ->with(['municipio', 'dependenciaCopladep', 'ingresosQr' => fn ($q) => $q->where('sesion_copladep_id', $sesion->id)->with('catMunicipio')->orderBy('check_in_at')->orderBy('id')])
+            ->orderBy('nombre_completo')->get();
+
+        return $invitados->flatMap(function ($invitado) {
+            $ingresos = $invitado->ingresosQr;
+            $filas = $ingresos->map(fn ($registro) => [
+                'tipo' => ucfirst($registro->tipo_asistente),
+                'titular' => $invitado->nombre_completo,
+                'nombre' => $registro->nombre_completo,
+                'cargo' => $registro->cargo ?? '-',
+                'dependencia' => $invitado->dependenciaCopladep?->nombre ?? $invitado->dependencia ?? '-',
+                'municipio' => $registro->catMunicipio?->nombre_municipio ?? 'N/A',
+                'modalidad' => ucfirst($registro->modalidad ?? 'N/A'),
+                'hora' => $registro->check_in_at->format('d/m/Y H:i'),
+            ]);
+            // Un pase manual sobre el mismo invitado no identifica a otra persona;
+            // no se agrega una fila duplicada cuando existe un ingreso QR.
+            if ($invitado->check_in_express && $ingresos->isEmpty()) {
+                $filas->push([
+                    'tipo' => 'Manual', 'titular' => $invitado->nombre_completo,
+                    'nombre' => $invitado->nombre_completo, 'cargo' => $invitado->cargo ?? '-',
+                    'dependencia' => $invitado->dependenciaCopladep?->nombre ?? $invitado->dependencia ?? '-',
+                    'municipio' => $invitado->municipio?->nombre_municipio ?? 'N/A',
+                    'modalidad' => ucfirst($invitado->modalidad ?? 'N/A'), 'hora' => 'Manual (hora no registrada)',
+                ]);
+            }
+            return $filas;
+        })->values();
+    }
+
 }

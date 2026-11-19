@@ -79,6 +79,9 @@ Route::get('/copladep/segunda-sesion-ordinaria/registro', [RegistroCopladepContr
 Route::post('/copladep/segunda-sesion-ordinaria/registro', [RegistroCopladepController::class, 'legacyStore'])->defaults('clave', '2026-segunda-ordinaria')->name('copladep-registro-segunda.store');
 Route::get('/copladep/sesiones/{sesion}/registro', [RegistroCopladepController::class, 'create'])->name('copladep-sesiones.registro.create');
 Route::post('/copladep/sesiones/{sesion}/registro', [RegistroCopladepController::class, 'store'])->name('copladep-sesiones.registro.store');
+// Compatibilidad con enlaces de acceso compartidos previamente.
+Route::get('/copladep/registro/confirmacion/{identificador}', [RegistroCopladepController::class, 'confirmacion']);
+Route::get('/copladep/registro/descargar-pdf/{identificador}', [RegistroCopladepController::class, 'descargarPdf']);
 Route::get('/copladep/registro/{identificador}/confirmacion', [RegistroCopladepController::class, 'confirmacion'])->name('copladep-registro.confirmacion');
 Route::get('/copladep/registro/{identificador}/pdf', [RegistroCopladepController::class, 'descargarPdf'])->name('copladep-registro.pdf');
 
@@ -194,6 +197,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel-copladep/sesiones/{sesion}/editar', [SesionCopladepController::class, 'edit'])->name('panel-copladep-sesiones.edit');
     Route::put('/panel-copladep/sesiones/{sesion}', [SesionCopladepController::class, 'update'])->name('panel-copladep-sesiones.update');
     Route::get('/panel-copladep/sesiones/{sesion}/registros', [RegistroCopladepController::class, 'index'])->name('panel-copladep-sesiones.registros.index');
+    Route::get('/panel-copladep/sesiones/{sesion}/registros/exportar-pdf', [RegistroCopladepController::class, 'exportarPdf'])->name('panel-copladep-sesiones.registros.exportar-pdf');
     Route::get('/panel-copladep/sesiones/{sesion}/registros/{registro}/qr', [RegistroCopladepController::class, 'descargarQr'])->name('panel-copladep-sesiones.registros.qr');
     Route::delete('/panel-copladep/sesiones/{sesion}/registros/{registro}', [RegistroCopladepController::class, 'destroy'])->name('panel-copladep-sesiones.registros.destroy');
     Route::get('/panel-copladep/sesiones/{sesion}/scanner', [RegistroCopladepController::class, 'scanner'])->name('panel-copladep-sesiones.scanner');
@@ -207,6 +211,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/panel-copladep/sesiones/{sesion}/invitados/{invitado}', [InvitadoCopladepController::class, 'update'])->name('panel-copladep-sesiones.invitados.update');
     Route::delete('/panel-copladep/sesiones/{sesion}/invitados/{invitado}', [InvitadoCopladepController::class, 'destroy'])->name('panel-copladep-sesiones.invitados.destroy');
     Route::get('/panel-copladep/sesiones/{sesion}/monitor', [InvitadoCopladepController::class, 'monitor'])->name('panel-copladep-sesiones.invitados.monitor');
+    Route::get('/panel-copladep/sesiones/{sesion}/asistencia/excel', [InvitadoCopladepController::class, 'exportarAsistenciaExcel'])->name('panel-copladep-sesiones.asistencia.excel');
+    Route::get('/panel-copladep/sesiones/{sesion}/asistencia/pdf', [InvitadoCopladepController::class, 'exportarAsistenciaPdf'])->name('panel-copladep-sesiones.asistencia.pdf');
     Route::post('/panel-copladep/sesiones/{sesion}/invitados/{invitado}/toggle-express', [InvitadoCopladepController::class, 'toggleCheckInExpress'])->name('panel-copladep-sesiones.invitados.toggle-express');
     Route::get('/panel-copladep/dependencias', [CatDependenciaCopladepController::class, 'index'])->name('panel-copladep-dependencias.index');
     Route::post('/panel-copladep/dependencias', [CatDependenciaCopladepController::class, 'store'])->name('panel-copladep-dependencias.store');

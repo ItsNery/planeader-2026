@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
@@ -22,7 +23,7 @@ class RegistroCopladepController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'scanner', 'checkin', 'descargarQr']]);
+        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'scanner', 'checkin', 'descargarQr', 'exportarPdf']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
     }
 
@@ -31,6 +32,18 @@ class RegistroCopladepController extends Controller
         $registros = $sesion->registros()->with('catMunicipio', 'invitado.dependenciaCopladep')->orderByDesc('created_at')->get();
 
         return view('panel-copladep.registros.index', compact('registros', 'sesion'));
+    }
+
+    public function exportarPdf(SesionCopladep $sesion)
+    {
+        $registros = $sesion->registros()->with('catMunicipio', 'invitado.dependenciaCopladep')->orderBy('id')->get();
+        $membretePath = public_path('sesiones-copladep/Membrete.png');
+        $membreteBase64 = is_file($membretePath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($membretePath)) : '';
+
+        $pdf = Pdf::loadView('pdf.copladep-registros-reporte', compact('sesion', 'registros', 'membreteBase64'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('padron-registrados-' . Str::slug($sesion->clave) . '.pdf');
     }
 
     public function create(SesionCopladep $sesion)
@@ -156,7 +169,7 @@ class RegistroCopladepController extends Controller
 
     public function confirmacion(string $identificador)
     {
-        $registro = RegistroCopladep::with('sesionCopladep')->where('token_qr', $identificador)->orWhere('id', $identificador)->firstOrFail();
+        $registro = $this->buscarRegistroParaPase($identificador);
         abort_unless($registro->modalidad, 404);
 
         return view('copladep-registro-confirmacion', compact('registro'));
@@ -164,7 +177,7 @@ class RegistroCopladepController extends Controller
 
     public function descargarPdf(string $identificador)
     {
-        $registro = RegistroCopladep::with('sesionCopladep')->where('token_qr', $identificador)->orWhere('id', $identificador)->firstOrFail();
+        $registro = $this->buscarRegistroParaPase($identificador);
         abort_unless($registro->modalidad && $registro->sesionCopladep, 404);
         $evento = $this->evento($registro->sesionCopladep, $registro->modalidad);
         $qrDataUri = null;
@@ -194,6 +207,17 @@ class RegistroCopladepController extends Controller
         }
 
         return response($merged->Output('S'), 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'attachment; filename="COPLADEP-' . $registro->id . '.pdf"']);
+    }
+
+    private function buscarRegistroParaPase(string $identificador): RegistroCopladep
+    {
+        $registro = RegistroCopladep::with('sesionCopladep')->where('token_qr', $identificador)->first();
+
+        if (! $registro && ctype_digit($identificador)) {
+            $registro = RegistroCopladep::with('sesionCopladep')->find($identificador);
+        }
+
+        return $registro ?? throw (new \Illuminate\Database\Eloquent\ModelNotFoundException())->setModel(RegistroCopladep::class);
     }
 
     public function scanner(SesionCopladep $sesion)
