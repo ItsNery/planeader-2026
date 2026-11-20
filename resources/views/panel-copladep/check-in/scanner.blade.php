@@ -26,17 +26,21 @@
                     <h3 id="manual-heading" class="checkin-scanner__heading">Registro manual</h3>
                     <p class="checkin-scanner__description">Busca y selecciona a la persona registrada para registrar su ingreso.</p>
                     <form id="manual-nombre">
-                        <label class="form-label" for="buscar-asistente">Buscar por nombre</label>
-                        <div class="checkin-busqueda"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="buscar-asistente" class="form-control" type="search" autocomplete="off" placeholder="Nombre o cargo" aria-describedby="busqueda-estado"></div>
-                        <div class="checkin-busqueda__list-heading"><label class="form-label" for="registro-id">Selecciona un asistente presencial</label><span id="busqueda-estado" role="status" aria-live="polite"></span></div>
-                        <select id="registro-id" class="form-select checkin-busqueda__results" size="6" required aria-describedby="busqueda-ayuda">
-                            <option value="" disabled>Selecciona un asistente</option>
-                            @foreach ($registros as $registro)
-                                <option value="{{ $registro->id }}">{{ $registro->nombre_completo }} — {{ $registro->cargo }}{{ $registro->check_in_at ? ' (ingreso registrado)' : '' }}</option>
-                            @endforeach
-                        </select>
-                        <p id="busqueda-ayuda" class="checkin-busqueda__help">Selecciona un nombre de la lista para registrar su ingreso.</p>
-                        <button id="nombre-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit">Registrar asistencia</button>
+                        <label class="checkin-manual__label" for="buscar-asistente">Nombre o cargo del asistente</label>
+                        <div class="checkin-busqueda"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="buscar-asistente" class="form-control" type="search" autocomplete="off" placeholder="Comienza a escribir para buscar" aria-describedby="busqueda-estado"></div>
+                        <p id="busqueda-estado" class="checkin-manual__status" role="status" aria-live="polite">Escribe un nombre o cargo para ver los resultados.</p>
+                        <fieldset id="resultados-asistentes" class="checkin-manual__results" hidden>
+                            <legend>Selecciona a la persona</legend>
+                            <div class="checkin-manual__list">
+                                @foreach ($registros as $registro)
+                                    <label class="checkin-manual__person" data-search="{{ $registro->nombre_completo }} {{ $registro->cargo }}" hidden>
+                                        <input type="radio" name="registro_id" value="{{ $registro->id }}" @disabled($registro->check_in_at)>
+                                        <span class="checkin-manual__details"><strong>{{ $registro->nombre_completo }}</strong><span>{{ $registro->cargo }}</span><span class="checkin-manual__registered" @if (!$registro->check_in_at) hidden @endif>Ingreso registrado</span></span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </fieldset>
+                        <button id="nombre-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit" disabled><i class="fa-solid fa-check me-2" aria-hidden="true"></i>Registrar asistencia</button>
                     </form>
                     <div id="resultado" class="alert d-none checkin-scanner__result" role="status" aria-live="polite"></div>
                 </section>
@@ -97,11 +101,11 @@
                         const message = data.message || 'No se pudo registrar la asistencia. Inténtalo de nuevo.';
                         showResult(message, response.ok ? 'success' : 'danger');
                         if (response.ok && registroId) {
-                            const option = document.getElementById('registro-id').selectedOptions[0];
-                            if (option && !option.textContent.includes('(ingreso registrado)')) {
-                                option.textContent += ' (ingreso registrado)';
-                                const savedOption = options.find(item => item.value === option.value);
-                                if (savedOption) savedOption.text = option.textContent;
+                            const selected = document.querySelector('input[name="registro_id"]:checked');
+                            if (selected && selected.value === String(registroId)) {
+                                selected.closest('.checkin-manual__person').querySelector('.checkin-manual__registered').hidden = false;
+                                selected.disabled = true;
+                                selected.checked = false;
                             }
                         }
                         await notifyResult(message, response.ok);
@@ -112,26 +116,40 @@
                     } finally {
                         lastScan = Date.now();
                         busy = false;
-                        document.getElementById('nombre-submit').disabled = false;
+                        updateSubmit();
                     }
                 }
 
                 const searchInput = document.getElementById('buscar-asistente');
-                const select = document.getElementById('registro-id');
-                const options = Array.from(select.options).slice(1).map(option => ({value: option.value, text: option.textContent}));
+                const results = document.getElementById('resultados-asistentes');
+                const people = Array.from(results.querySelectorAll('.checkin-manual__person'));
+                const submitButton = document.getElementById('nombre-submit');
+                const status = document.getElementById('busqueda-estado');
+                const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+                function updateSubmit() {
+                    submitButton.disabled = busy || !results.querySelector('input[name="registro_id"]:checked:not(:disabled)');
+                }
+
                 searchInput.addEventListener('input', () => {
-                    const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                     const query = normalize(searchInput.value.trim());
-                    const matches = options.filter(option => normalize(option.text).includes(query));
-                    const selected = select.value;
-                    select.replaceChildren();
-                    matches.forEach(option => select.add(new Option(option.text, option.value, false, option.value === selected)));
-                    if (!matches.some(option => option.value === selected)) select.selectedIndex = -1;
-                    document.getElementById('busqueda-estado').textContent = matches.length ? `${matches.length} ${matches.length === 1 ? 'resultado' : 'resultados'}` : 'Sin resultados';
+                    let count = 0;
+                    people.forEach(person => {
+                        const matches = query && normalize(person.dataset.search).includes(query);
+                        person.hidden = !matches;
+                        if (matches) count++;
+                        else person.querySelector('input').checked = false;
+                    });
+                    results.hidden = !query || !count;
+                    status.textContent = !query ? 'Escribe un nombre o cargo para ver los resultados.' :
+                        count ? `${count} ${count === 1 ? 'persona encontrada' : 'personas encontradas'}. Selecciona una para continuar.` : 'No encontramos coincidencias. Prueba con otro nombre o cargo.';
+                    updateSubmit();
                 });
+                results.addEventListener('change', updateSubmit);
                 document.getElementById('manual-nombre').addEventListener('submit', event => {
                     event.preventDefault();
-                    send('', false, select.value);
+                    const selected = results.querySelector('input[name="registro_id"]:checked:not(:disabled)');
+                    if (selected) send('', false, selected.value);
                 });
 
                 window.addEventListener('load', () => {

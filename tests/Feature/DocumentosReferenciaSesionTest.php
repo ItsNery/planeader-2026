@@ -41,6 +41,13 @@ class DocumentosReferenciaSesionTest extends TestCase
         Storage::disk('local')->assertMissing($documento->ruta);
     }
 
+    public function test_session_foreign_key_is_cast_to_integer(): void
+    {
+        $documento = new \App\Models\DocumentoReferenciaSesion();
+        $documento->setRawAttributes(['sesion_copladep_id' => '12']);
+        $this->assertSame(12, $documento->sesion_copladep_id);
+    }
+
     public function test_rejects_non_pdf_uploads(): void
     {
         $this->withoutMiddleware();

@@ -8,4 +8,8 @@ class DocumentoReferenciaSesion extends Model
 {
     protected $table = 'documentos_referencia_sesion';
     protected $fillable = ['nombre', 'ruta'];
+
+    protected $casts = [
+        'sesion_copladep_id' => 'integer',
+    ];
 }

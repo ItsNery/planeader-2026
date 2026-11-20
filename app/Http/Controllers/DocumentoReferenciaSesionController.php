@@ -24,6 +24,11 @@ class DocumentoReferenciaSesionController extends Controller
             'archivo.max' => 'El archivo no puede pesar más de 50 MB.',
         ]);
         $ruta = $request->file('archivo')->store('documentos-referencia-copladep', 'local');
+        if ($ruta === false) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'archivo' => 'No se pudo guardar el PDF. Inténtalo de nuevo o contacta al administrador.',
+            ]);
+        }
         try {
             $sesion->documentosReferencia()->create(['nombre' => $data['nombre'], 'ruta' => $ruta]);
         } catch (\Throwable $e) {

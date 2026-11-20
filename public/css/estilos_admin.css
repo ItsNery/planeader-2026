@@ -1530,11 +1530,25 @@ select[name="publicado"]:focus {
 .checkin-busqueda { position: relative; }
 .checkin-busqueda i { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); color: #691b31; pointer-events: none; }
 .checkin-busqueda input { padding-left: 2.5rem; min-height: 2.8rem; }
-.checkin-busqueda__list-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem; margin-top: 1.25rem; }
-.checkin-busqueda__list-heading span, .checkin-busqueda__help { color: #565656; font-size: .875rem; }
-.checkin-busqueda__results { width: 100%; padding: .35rem; min-height: 12rem; background-image: none; }
-.checkin-busqueda__results option { padding: .65rem; white-space: normal; }
-.checkin-busqueda__help { margin: .5rem 0 0; }
+/* Búsqueda manual de asistencia */
+.checkin-manual__label { display: block; color: var(--color5); font-weight: 600; margin-bottom: .55rem; }
+.checkin-manual__status { color: #565656; font-size: .875rem; line-height: 1.45; margin: .65rem 0 1rem; }
+.checkin-manual__results { border: 0; margin: 0; min-width: 0; padding: 0; }
+.checkin-manual__results[hidden], .checkin-manual__person[hidden], .checkin-manual__registered[hidden] { display: none; }
+.checkin-manual__results legend { color: var(--color5); float: none; font-family: var(--fontFamilyBold); font-size: .9rem; margin: 0 0 .6rem; width: auto; }
+.checkin-manual__list { border: 1px solid #dedede; border-radius: .75rem; max-height: 19rem; overflow-y: auto; }
+.checkin-manual__person { align-items: flex-start; cursor: pointer; display: flex; gap: .85rem; margin: 0; padding: .9rem 1rem; }
+.checkin-manual__person + .checkin-manual__person { border-top: 1px solid #e8e8e8; }
+.checkin-manual__person:hover { background: #f7f8f6; }
+.checkin-manual__person:has(input:checked) { background: #e9f1ee; }
+.checkin-manual__person:has(input:focus-visible) { outline: 2px solid #246252; outline-offset: -2px; }
+.checkin-manual__person:has(input:disabled) { cursor: default; }
+.checkin-manual__person input { accent-color: #246252; flex: 0 0 auto; height: 1.1rem; margin-top: .2rem; width: 1.1rem; }
+.checkin-manual__details { display: grid; gap: .2rem; min-width: 0; overflow-wrap: anywhere; }
+.checkin-manual__details strong { color: #173d35; font-size: .95rem; line-height: 1.35; }
+.checkin-manual__details > span { color: #565656; font-size: .82rem; line-height: 1.4; }
+.checkin-manual__details .checkin-manual__registered { color: #246252; font-weight: 700; }
+.checkin-scanner__submit:disabled { cursor: not-allowed; opacity: .6; }
 @media (max-width: 767.98px) {
     .sesion-documentos__upload { grid-template-columns: 1fr; }
     .sesion-documentos__submit { margin-top: 0; justify-self: start; }
