@@ -14,6 +14,16 @@
     'P谩gina principal de la Segunda Sesi贸n Ordinaria del Comit茅 de Planeaci贸n para el
     Desarrollo del Estado de Puebla del Estado de Puebla.')
 @section('content')
+    <style>
+        .referencia-documento { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 0; border-bottom:1px solid #dedede; }
+        .referencia-documento:last-child { border-bottom:0; }
+        .referencia-documento__nombre { min-width:0; overflow-wrap:anywhere; }
+        .referencia-documento__formato { display:inline-block; margin-left:.5rem; padding:.2rem .55rem; border-radius:1rem; background:#e33e42; color:#fff; font-size:.7rem; font-weight:700; vertical-align:middle; }
+        .referencia-documento__acciones { display:flex; flex-wrap:wrap; gap:1rem; flex-shrink:0; }
+        .referencia-documento__acciones a { color:#555; text-decoration:none; }
+        .referencia-documento__acciones a:hover { color:#691b31; text-decoration:underline; }
+        @media (max-width: 600px) { .referencia-documento { align-items:flex-start; flex-direction:column; } }
+    </style>
     <main class="copladep-session">
         <section class="contenedor-imagen-segunda-sesion" aria-labelledby="copladep-session__title">
             <h1 id="copladep-session__title">Segunda Sesi贸n Ordinaria 2026 de la Asamblea Plenaria del COPLADEP</h1>
@@ -87,6 +97,20 @@
                 @else
                     <p>El orden del d铆a se publicar谩 pr贸ximamente.</p>
                 @endif
+            </section>
+            <section class="copladep-session__card" aria-labelledby="referencia-title">
+                <h2 class="copladep-session__heading copladep-session__heading--section" id="referencia-title">Documentos de referencia</h2>
+                @forelse ($sesion?->documentosReferencia ?? [] as $documento)
+                    <div class="referencia-documento">
+                        <div class="referencia-documento__nombre">{{ $documento->nombre }} <span class="referencia-documento__formato">PDF</span></div>
+                        <div class="referencia-documento__acciones">
+                            <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}" target="_blank" rel="noopener" aria-label="Abrir {{ $documento->nombre }} en otra pesta馻"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Abrir</a>
+                            <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}?descargar=1" aria-label="Descargar {{ $documento->nombre }}"><i class="fa-solid fa-download" aria-hidden="true"></i> Descargar</a>
+                        </div>
+                    </div>
+                @empty
+                    <p>Los documentos de referencia se publicar醤 pr髕imamente.</p>
+                @endforelse
             </section>
         </div>
     </main>

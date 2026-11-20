@@ -23,6 +23,7 @@ use App\Http\Controllers\PlanEstatalAnexoController;
 use App\Http\Controllers\DocumentoApoyoCoplademunController;
 use App\Http\Controllers\DocumentoMetodologicoController;
 use App\Http\Controllers\DocumentoSesionController;
+use App\Http\Controllers\DocumentoReferenciaSesionController;
 use App\Http\Controllers\InvitadoCopladepController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventoController;
@@ -68,6 +69,7 @@ Route::get('/ped', function () {
 // Route::get('/copladep', function () {
 //     return view('copladep');
 // });
+Route::get('/copladep/sesiones/{sesion}/documentos/{documento}', [DocumentoReferenciaSesionController::class, 'ver'])->name('copladep-sesiones.documentos.ver');
 Route::get('/copladep/primera-sesion-ordinaria', [DocumentoSesionController::class, 'mostrarPrimeraSesion']);
 Route::get('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'legacyCreate'])->defaults('clave', '2026-primera-ordinaria')->name('copladep-registro.create');
 Route::post('/copladep/primera-sesion-ordinaria/registro', [RegistroCopladepController::class, 'legacyStore'])->defaults('clave', '2026-primera-ordinaria')->name('copladep-registro.store');
@@ -194,6 +196,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel-copladep/sesiones/crear', [SesionCopladepController::class, 'create'])->name('panel-copladep-sesiones.create');
     Route::post('/panel-copladep/sesiones', [SesionCopladepController::class, 'store'])->name('panel-copladep-sesiones.store');
     Route::get('/panel-copladep/sesiones/{sesion}', [SesionCopladepController::class, 'show'])->name('panel-copladep-sesiones.show');
+    Route::post('/panel-copladep/sesiones/{sesion}/documentos', [DocumentoReferenciaSesionController::class, 'store'])->name('panel-copladep-sesiones.documentos.store');
+    Route::delete('/panel-copladep/sesiones/{sesion}/documentos/{documento}', [DocumentoReferenciaSesionController::class, 'destroy'])->name('panel-copladep-sesiones.documentos.destroy');
     Route::get('/panel-copladep/sesiones/{sesion}/editar', [SesionCopladepController::class, 'edit'])->name('panel-copladep-sesiones.edit');
     Route::put('/panel-copladep/sesiones/{sesion}', [SesionCopladepController::class, 'update'])->name('panel-copladep-sesiones.update');
     Route::get('/panel-copladep/sesiones/{sesion}/registros', [RegistroCopladepController::class, 'index'])->name('panel-copladep-sesiones.registros.index');

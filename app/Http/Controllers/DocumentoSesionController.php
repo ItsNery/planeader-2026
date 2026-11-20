@@ -176,7 +176,9 @@ class DocumentoSesionController extends Controller
             ->orderBy('orden', 'asc')
             ->get();
 
-        return view('copladep-primera', compact('documentos'));
+        $sesion = SesionCopladep::where('clave', '2026-primera-ordinaria')->first();
+
+        return view('copladep-primera', compact('documentos', 'sesion'));
     }
 
     public function mostrarSegundaSesion()

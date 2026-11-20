@@ -104,6 +104,18 @@
                             </div>
                         </div>
                     </div>
+                    @if ($sesion && $sesion->documentosReferencia->isNotEmpty())
+                        <section class="py-4" aria-labelledby="documentos-referencia-title">
+                            <h2 class="h4" id="documentos-referencia-title">Documentos de referencia</h2>
+                            @foreach ($sesion->documentosReferencia as $documento)
+                                <div class="d-flex flex-wrap align-items-center gap-3 border-bottom py-3">
+                                    <span class="me-auto">{{ $documento->nombre }} <span class="badge bg-danger ms-2">PDF</span></span>
+                                    <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}" target="_blank" rel="noopener" aria-label="Abrir {{ $documento->nombre }} en otra pestaña"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Abrir</a>
+                                    <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}?descargar=1" aria-label="Descargar {{ $documento->nombre }}"><i class="fa-solid fa-download" aria-hidden="true"></i> Descargar</a>
+                                </div>
+                            @endforeach
+                        </section>
+                    @endif
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading9">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"

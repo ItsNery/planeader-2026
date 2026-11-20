@@ -29,6 +29,11 @@ class SesionCopladep extends Model
         return 'clave';
     }
 
+    public function documentosReferencia()
+    {
+        return $this->hasMany(DocumentoReferenciaSesion::class, 'sesion_copladep_id')->orderBy('id');
+    }
+
     public function invitados()
     {
         return $this->hasMany(InvitadoCopladep::class);
