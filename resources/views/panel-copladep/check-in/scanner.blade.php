@@ -27,15 +27,15 @@
                     <p class="checkin-scanner__description">Busca y selecciona a la persona registrada para registrar su ingreso.</p>
                     <form id="manual-nombre">
                         <label class="form-label" for="buscar-asistente">Buscar por nombre</label>
-                        <input id="buscar-asistente" class="form-control" type="search" autocomplete="off" placeholder="Escribe el nombre del asistente">
-                        <label class="form-label mt-3" for="registro-id">Asistente presencial</label>
-                        <select id="registro-id" class="form-control" required>
-                            <option value="">Selecciona un asistente</option>
+                        <div class="checkin-busqueda"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="buscar-asistente" class="form-control" type="search" autocomplete="off" placeholder="Nombre o cargo" aria-describedby="busqueda-estado"></div>
+                        <div class="checkin-busqueda__list-heading"><label class="form-label" for="registro-id">Selecciona un asistente presencial</label><span id="busqueda-estado" role="status" aria-live="polite"></span></div>
+                        <select id="registro-id" class="form-select checkin-busqueda__results" size="6" required aria-describedby="busqueda-ayuda">
+                            <option value="" disabled>Selecciona un asistente</option>
                             @foreach ($registros as $registro)
                                 <option value="{{ $registro->id }}">{{ $registro->nombre_completo }} — {{ $registro->cargo }}{{ $registro->check_in_at ? ' (ingreso registrado)' : '' }}</option>
                             @endforeach
                         </select>
-                        <p id="busqueda-estado" class="mt-2" role="status" aria-live="polite"></p>
+                        <p id="busqueda-ayuda" class="checkin-busqueda__help">Selecciona un nombre de la lista para registrar su ingreso.</p>
                         <button id="nombre-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit">Registrar asistencia</button>
                     </form>
                     <div id="resultado" class="alert d-none checkin-scanner__result" role="status" aria-live="polite"></div>
@@ -98,7 +98,11 @@
                         showResult(message, response.ok ? 'success' : 'danger');
                         if (response.ok && registroId) {
                             const option = document.getElementById('registro-id').selectedOptions[0];
-                            if (option && !option.textContent.includes('(ingreso registrado)')) option.textContent += ' (ingreso registrado)';
+                            if (option && !option.textContent.includes('(ingreso registrado)')) {
+                                option.textContent += ' (ingreso registrado)';
+                                const savedOption = options.find(item => item.value === option.value);
+                                if (savedOption) savedOption.text = option.textContent;
+                            }
                         }
                         await notifyResult(message, response.ok);
                     } catch (error) {
@@ -119,9 +123,11 @@
                     const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                     const query = normalize(searchInput.value.trim());
                     const matches = options.filter(option => normalize(option.text).includes(query));
-                    select.replaceChildren(new Option('Selecciona un asistente', ''));
-                    matches.forEach(option => select.add(new Option(option.text, option.value)));
-                    document.getElementById('busqueda-estado').textContent = matches.length ? `${matches.length} asistente(s) encontrado(s).` : 'No se encontraron asistentes presenciales.';
+                    const selected = select.value;
+                    select.replaceChildren();
+                    matches.forEach(option => select.add(new Option(option.text, option.value, false, option.value === selected)));
+                    if (!matches.some(option => option.value === selected)) select.selectedIndex = -1;
+                    document.getElementById('busqueda-estado').textContent = matches.length ? `${matches.length} ${matches.length === 1 ? 'resultado' : 'resultados'}` : 'Sin resultados';
                 });
                 document.getElementById('manual-nombre').addEventListener('submit', event => {
                     event.preventDefault();

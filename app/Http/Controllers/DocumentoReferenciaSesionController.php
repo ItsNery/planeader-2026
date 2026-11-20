@@ -21,7 +21,7 @@ class DocumentoReferenciaSesionController extends Controller
             'archivo' => 'required|file|mimes:pdf|max:51200',
         ], [
             'archivo.mimes' => 'El archivo debe ser un PDF.',
-            'archivo.max' => 'El archivo no puede pesar más de 50 MB.',
+            'archivo.max' => 'El archivo no puede pesar mÃ¡s de 50 MB.',
         ]);
         $ruta = $request->file('archivo')->store('documentos-referencia-copladep', 'local');
         try {

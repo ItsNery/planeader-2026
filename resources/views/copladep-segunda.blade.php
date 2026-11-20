@@ -104,12 +104,12 @@
                     <div class="referencia-documento">
                         <div class="referencia-documento__nombre">{{ $documento->nombre }} <span class="referencia-documento__formato">PDF</span></div>
                         <div class="referencia-documento__acciones">
-                            <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}" target="_blank" rel="noopener" aria-label="Abrir {{ $documento->nombre }} en otra pestaÒa"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Abrir</a>
+                            <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}" target="_blank" rel="noopener" aria-label="Abrir {{ $documento->nombre }} en otra pesta√±a"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Abrir</a>
                             <a href="{{ route('copladep-sesiones.documentos.ver', [$sesion, $documento]) }}?descargar=1" aria-label="Descargar {{ $documento->nombre }}"><i class="fa-solid fa-download" aria-hidden="true"></i> Descargar</a>
                         </div>
                     </div>
                 @empty
-                    <p>Los documentos de referencia se publicar·n prÛximamente.</p>
+                    <p>Los documentos de referencia se publicar√°n pr√≥ximamente.</p>
                 @endforelse
             </section>
         </div>
