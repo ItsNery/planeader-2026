@@ -68,6 +68,9 @@ jobs:
 
           sudo chown -R user_planeacion:www-data storage bootstrap/cache
           sudo chmod -R g+s storage bootstrap/cache
+          # Los PDF deben poder guardarse por el usuario del servidor web.
+          sudo install -d -o user_planeacion -g www-data -m 2775 storage/app/documentos-referencia-copladep
+          sudo -u www-data test -w storage/app/documentos-referencia-copladep
           npm install --legacy-peer-deps
           npm run prod
 
@@ -148,6 +151,9 @@ jobs:
 
           sudo chown -R user_planeacion:www-data storage bootstrap/cache
           sudo chmod -R g+s storage bootstrap/cache
+          # Los PDF deben poder guardarse por el usuario del servidor web.
+          sudo install -d -o user_planeacion -g www-data -m 2775 storage/app/documentos-referencia-copladep
+          sudo -u www-data test -w storage/app/documentos-referencia-copladep
 
           npm install --legacy-peer-deps
           npm run prod

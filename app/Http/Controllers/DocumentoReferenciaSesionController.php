@@ -23,8 +23,20 @@ class DocumentoReferenciaSesionController extends Controller
             'archivo.mimes' => 'El archivo debe ser un PDF.',
             'archivo.max' => 'El archivo no puede pesar más de 50 MB.',
         ]);
-        $ruta = $request->file('archivo')->store('documentos-referencia-copladep', 'local');
+        try {
+            $ruta = $request->file('archivo')->store('documentos-referencia-copladep', 'local');
+        } catch (\League\Flysystem\FilesystemException $e) {
+            report($e);
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'archivo' => 'No se pudo guardar el PDF. Inténtalo de nuevo o contacta al administrador.',
+            ]);
+        }
+
         if ($ruta === false) {
+            \Illuminate\Support\Facades\Log::error('No se pudo guardar un documento de referencia COPLADEP.', [
+                'directorio' => storage_path('app/documentos-referencia-copladep'),
+                'sesion_id' => $sesion->id,
+            ]);
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'archivo' => 'No se pudo guardar el PDF. Inténtalo de nuevo o contacta al administrador.',
             ]);
