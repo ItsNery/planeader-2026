@@ -42,6 +42,31 @@
                         </fieldset>
                         <button id="nombre-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit" disabled><i class="fa-solid fa-check me-2" aria-hidden="true"></i>Registrar asistencia</button>
                     </form>
+                    <details class="checkin-nuevo" @if (session('abrir_registro_presencial')) open @endif>
+                        <summary><span><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Registrar a una persona nueva</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+                        <div class="checkin-nuevo__body">
+                            <p>Completa sus datos para registrar su asistencia presencial en esta sesión.</p>
+                            @if ($errors->registroPresencial->any())
+                                <div class="alert alert-danger" role="alert"><strong>Revisa los datos:</strong><ul class="mb-0">@foreach ($errors->registroPresencial->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+                            @endif
+                            <form id="form-registro-presencial" method="POST" action="{{ route('panel-copladep-sesiones.registro-presencial', $sesion) }}">
+                                @csrf
+                                <div class="row g-3">
+                                    <div class="col-12"><label class="form-label" for="nuevo-tipo">Tipo de asistente</label><select class="form-select" name="tipo_asistente" id="nuevo-tipo" required><option value="otro" @selected(old('tipo_asistente', 'otro') === 'otro')>No está en la lista / Otro</option><option value="titular" @selected(old('tipo_asistente') === 'titular')>Titular / persona invitada</option><option value="representante" @selected(old('tipo_asistente') === 'representante')>Representante</option></select></div>
+                                    <div class="col-12" id="nuevo-invitado-contenedor" hidden><label class="form-label" for="nuevo-invitado">Persona invitada</label><select class="form-select" id="nuevo-invitado" name="invitado_id"><option value="">Selecciona una persona invitada</option>@foreach ($invitados as $invitado)<option value="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}" data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}" data-municipio="{{ $invitado->municipio_id }}" @selected(old('invitado_id') == $invitado->id)>{{ $invitado->nombre_completo }} — {{ $invitado->cargo }}{{ $invitado->dependenciaCopladep?->nombre ? ' | ' . $invitado->dependenciaCopladep->nombre : '' }}</option>@endforeach</select></div>
+                                    <div class="col-12"><label class="form-label" for="nuevo-nombre">Nombre completo</label><input class="form-control" id="nuevo-nombre" name="nombre_completo" value="{{ old('nombre_completo') }}" maxlength="50" required></div>
+                                    <div class="col-12"><label class="form-label" for="nuevo-cargo">Cargo</label><input class="form-control" id="nuevo-cargo" name="cargo" value="{{ old('cargo') }}" maxlength="191" required></div>
+                                    <div class="col-md-6"><label class="form-label" for="nuevo-sexo">Sexo</label><select class="form-select" id="nuevo-sexo" name="sexo" required><option value="">Selecciona</option><option value="Hombre" @selected(old('sexo') === 'Hombre')>Hombre</option><option value="Mujer" @selected(old('sexo') === 'Mujer')>Mujer</option></select></div>
+                                    <div class="col-md-6"><label class="form-label" for="nuevo-municipio">Municipio</label><select class="form-select" id="nuevo-municipio" name="municipio_id" required><option value="">Selecciona</option>@foreach ($municipios as $municipio)<option value="{{ $municipio->id }}" @selected(old('municipio_id') == $municipio->id)>{{ $municipio->nombre_municipio }}</option>@endforeach</select></div>
+                                    <div class="col-12"><label class="form-label" for="nuevo-correo">Correo electrónico</label><input class="form-control" type="email" id="nuevo-correo" name="correo_electronico" value="{{ old('correo_electronico') }}" maxlength="50" required></div>
+                                    <div class="col-md-6"><label class="form-label" for="nuevo-oficina">Teléfono de oficina <span class="text-muted">(opcional)</span></label><input class="form-control" type="tel" id="nuevo-oficina" name="telefono_oficina" value="{{ old('telefono_oficina') }}" maxlength="20"></div>
+                                    <div class="col-md-6"><label class="form-label" for="nuevo-celular">Teléfono celular</label><input class="form-control" type="tel" id="nuevo-celular" name="telefono_celular" value="{{ old('telefono_celular') }}" maxlength="20" required></div>
+                                    <div class="col-12"><button type="submit" class="btn btn-custom-primary"><i class="fa-solid fa-user-check me-2" aria-hidden="true"></i>Registrar y marcar asistencia</button></div>
+                                </div>
+                            </form>
+                        </div>
+                    </details>
+                    @if (session('registro_presencial_exito'))<div class="alert alert-success mt-3" role="status">{{ session('registro_presencial_exito') }}</div>@endif
                     <div id="resultado" class="alert d-none checkin-scanner__result" role="status" aria-live="polite"></div>
                 </section>
             </div>
@@ -51,6 +76,29 @@
         <script src="https://unpkg.com/html5-qrcode" defer></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+                const nuevoTipo = document.getElementById('nuevo-tipo');
+                const nuevoInvitado = document.getElementById('nuevo-invitado');
+                function actualizarTipo() {
+                    const requiereInvitado = nuevoTipo.value !== 'otro';
+                    document.getElementById('nuevo-invitado-contenedor').hidden = !requiereInvitado;
+                    nuevoInvitado.required = requiereInvitado;
+                    if (!requiereInvitado) nuevoInvitado.value = '';
+                }
+                nuevoTipo.addEventListener('change', actualizarTipo);
+                nuevoInvitado.addEventListener('change', () => {
+                    if (nuevoTipo.value !== 'titular' || !nuevoInvitado.value) return;
+                    const datos = nuevoInvitado.selectedOptions[0].dataset;
+                    for (const campo of ['nombre', 'cargo', 'sexo', 'municipio']) {
+                        const input = document.getElementById('nuevo-' + campo);
+                        if (datos[campo] && (input.tagName !== 'SELECT' || Array.from(input.options).some(option => option.value === datos[campo]))) input.value = datos[campo];
+                    }
+                });
+                actualizarTipo();
+                document.getElementById('form-registro-presencial').addEventListener('submit', event => {
+                    const button = event.currentTarget.querySelector('button[type=submit]');
+                    button.disabled = true;
+                    button.textContent = 'Guardando registro…';
+                });
                 const output = document.getElementById('resultado');
                 const cameraStatus = document.getElementById('camera-status');
                 const placeholder = document.getElementById('camera-placeholder');

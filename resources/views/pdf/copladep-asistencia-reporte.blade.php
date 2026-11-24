@@ -119,31 +119,6 @@
         .badge-titular { background-color: #d1e7dd; color: #0f5132; }
         .badge-rep { background-color: #fff3cd; color: #664d03; }
         .badge-manual { background-color: #e2e3e5; color: #41464b; }
-        .signatures {
-            margin-top: 35px;
-            page-break-inside: avoid;
-        }
-        .signatures table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .signatures td {
-            border: none;
-            text-align: center;
-            width: 50%;
-            padding: 0 25px;
-        }
-        .sign-line {
-            border-top: 1px solid #262626;
-            margin-top: 45px;
-            padding-top: 5px;
-            font-size: 8pt;
-            font-weight: bold;
-        }
-        .sign-role {
-            font-size: 7pt;
-            color: #555;
-        }
     </style>
 </head>
 <body>
@@ -209,23 +184,9 @@
             </tbody>
         </table>
 
-        <div class="signatures">
-            <p style="text-align: justify; font-size: 7pt; color: #666; margin-bottom: 25px;">
-                Lista de asistencia para apoyo en la integración del expediente y la verificación del quórum conforme a las reglas aplicables.
-            </p>
-            <table>
-                <tr>
-                    <td>
-                        <div class="sign-line">PRESIDENCIA DEL COPLADEP</div>
-                        <div class="sign-role">Comité de Planeación para el Desarrollo del Estado de Puebla</div>
-                    </td>
-                    <td>
-                        <div class="sign-line">SECRETARÍA TÉCNICA DEL COPLADEP</div>
-                        <div class="sign-role">Comité de Planeación para el Desarrollo del Estado de Puebla</div>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <p style="text-align: justify; font-size: 7pt; color: #666; margin-top: 20px;">
+            Lista de asistencia para apoyo en la integración del expediente y la verificación del quórum conforme a las reglas aplicables.
+        </p>
     </div>
 </body>
 </html>

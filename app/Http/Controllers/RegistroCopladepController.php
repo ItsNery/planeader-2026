@@ -23,7 +23,7 @@ class RegistroCopladepController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'scanner', 'checkin', 'descargarQr', 'exportarPdf']]);
+        $this->middleware('permission:ver-listado-registro-copladep', ['only' => ['index', 'scanner', 'checkin', 'registroPresencial', 'descargarQr', 'exportarPdf']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
     }
 
@@ -63,6 +63,62 @@ class RegistroCopladepController extends Controller
                 ->withInput();
         }
 
+        $validator = $this->validarRegistro($request, $sesion);
+
+        if ($validator->fails()) {
+            return redirect()->route('copladep-sesiones.registro.create', $sesion)->withErrors($validator)->withInput();
+        }
+
+        try {
+            $datos = $validator->validated();
+
+            if ($datos['tipo_asistente'] === 'otro') {
+                $invitado = $sesion->invitados()->create([
+                    'nombre_completo' => $datos['nombre_completo'],
+                    'cargo' => $datos['cargo'],
+                    'sexo' => $datos['sexo'],
+                    'municipio_id' => $datos['municipio_id'],
+                    'modalidad' => $datos['modalidad'],
+                    'sesion' => $sesion->numero === 2 ? 'segunda' : 'primera',
+                    'sesion_copladep_id' => $sesion->id,
+                ]);
+                $datos['invitado_id'] = $invitado->id;
+                $datos['modalidad'] = $invitado->modalidad;
+            } else {
+                $invitado = $sesion->invitados()->findOrFail($datos['invitado_id']);
+                $datos['modalidad'] = $invitado->modalidad;
+            }
+
+            $datos['sesion'] = $sesion->numero === 2 ? 'segunda' : 'primera';
+            $datos['sesion_copladep_id'] = $sesion->id;
+            if ($datos['modalidad'] === 'presencial') {
+                $datos['token_qr'] = app(CopladepQrService::class)->token();
+            }
+            $registro = RegistroCopladep::create($datos);
+
+            if (! $registro->modalidad) {
+                return redirect()->route('copladep-sesiones.registro.create', $sesion)
+                    ->with('success', '¡Te has registrado exitosamente a la sesión del COPLADEP!')
+                    ->with('warning', 'No se generó el PDF porque aún falta definir tu modalidad de asistencia.');
+            }
+
+            if ($registro->modalidad === 'presencial') {
+                app(CopladepQrService::class)->respaldar($registro);
+            }
+
+            return redirect()->route('copladep-registro.confirmacion', $registro->token_qr ?: $registro->id)
+                ->with('success', '¡Tu registro y documento de asistencia están listos!');
+        } catch (\Exception $e) {
+            Log::error('Error al guardar el registro COPLADEP: ' . $e->getMessage());
+
+            return redirect()->route('copladep-sesiones.registro.create', $sesion)
+                ->withErrors(['db_error' => 'Ocurrió un error inesperado al procesar tu registro.'])
+                ->withInput();
+        }
+    }
+
+    private function validarRegistro(Request $request, SesionCopladep $sesion)
+    {
         $validator = Validator::make($request->all(), [
             'tipo_asistente' => 'required|string|in:titular,representante,otro',
             'invitado_id' => [
@@ -115,56 +171,41 @@ class RegistroCopladepController extends Controller
             }
         });
 
+        return $validator;
+    }
+
+    public function registroPresencial(Request $request, SesionCopladep $sesion)
+    {
+        $request->merge(['modalidad' => 'presencial']);
+        $validator = $this->validarRegistro($request, $sesion);
         if ($validator->fails()) {
-            return redirect()->route('copladep-sesiones.registro.create', $sesion)->withErrors($validator)->withInput();
+            return redirect()->route('panel-copladep-sesiones.scanner', $sesion)->withErrors($validator, 'registroPresencial')->withInput()->with('abrir_registro_presencial', true);
         }
 
         try {
-            $datos = $validator->validated();
-
-            if ($datos['tipo_asistente'] === 'otro') {
-                $invitado = $sesion->invitados()->create([
-                    'nombre_completo' => $datos['nombre_completo'],
-                    'cargo' => $datos['cargo'],
-                    'sexo' => $datos['sexo'],
-                    'municipio_id' => $datos['municipio_id'],
-                    'modalidad' => $datos['modalidad'],
-                    'sesion' => $sesion->numero === 2 ? 'segunda' : 'primera',
-                    'sesion_copladep_id' => $sesion->id,
-                ]);
-                $datos['invitado_id'] = $invitado->id;
-                $datos['modalidad'] = $invitado->modalidad;
-            } else {
-                $invitado = $sesion->invitados()->findOrFail($datos['invitado_id']);
-                $datos['modalidad'] = $invitado->modalidad;
-            }
-
-            $datos['sesion'] = $sesion->numero === 2 ? 'segunda' : 'primera';
-            $datos['sesion_copladep_id'] = $sesion->id;
-            if ($datos['modalidad'] === 'presencial') {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($validator, $sesion) {
+                $datos = $validator->validated();
+                if ($datos['tipo_asistente'] === 'otro') {
+                    $invitado = $sesion->invitados()->create([
+                        'nombre_completo' => $datos['nombre_completo'], 'cargo' => $datos['cargo'],
+                        'sexo' => $datos['sexo'], 'municipio_id' => $datos['municipio_id'],
+                        'modalidad' => 'presencial', 'sesion' => $sesion->numero === 2 ? 'segunda' : 'primera',
+                    ]);
+                    $datos['invitado_id'] = $invitado->id;
+                }
+                $datos['modalidad'] = 'presencial';
+                $datos['sesion'] = $sesion->numero === 2 ? 'segunda' : 'primera';
+                $datos['sesion_copladep_id'] = $sesion->id;
                 $datos['token_qr'] = app(CopladepQrService::class)->token();
-            }
-            $registro = RegistroCopladep::create($datos);
-
-            if (! $registro->modalidad) {
-                return redirect()->route('copladep-sesiones.registro.create', $sesion)
-                    ->with('success', '¡Te has registrado exitosamente a la sesión del COPLADEP!')
-                    ->with('warning', 'No se generó el PDF porque aún falta definir tu modalidad de asistencia.');
-            }
-
-            if ($registro->modalidad === 'presencial') {
-                app(CopladepQrService::class)->respaldar($registro);
-            }
-
-            return redirect()->route('copladep-registro.confirmacion', $registro->token_qr ?: $registro->id)
-                ->with('success', '¡Tu registro y documento de asistencia están listos!');
-        } catch (\Exception $e) {
-            Log::error('Error al guardar el registro COPLADEP: ' . $e->getMessage());
-
-            return redirect()->route('copladep-sesiones.registro.create', $sesion)
-                ->withErrors(['db_error' => 'Ocurrió un error inesperado al procesar tu registro.'])
-                ->withInput();
+                $datos['check_in_at'] = now();
+                RegistroCopladep::create($datos);
+            });
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar asistencia presencial COPLADEP', ['exception' => $e, 'sesion_id' => $sesion->id]);
+            return redirect()->route('panel-copladep-sesiones.scanner', $sesion)->withErrors(['registro' => 'No se pudo completar el registro. Inténtalo de nuevo.'], 'registroPresencial')->withInput()->with('abrir_registro_presencial', true);
         }
+
+        return redirect()->route('panel-copladep-sesiones.scanner', $sesion)->with('registro_presencial_exito', 'Registro y asistencia guardados correctamente.');
     }
 
     public function confirmacion(string $identificador)
@@ -224,7 +265,10 @@ class RegistroCopladepController extends Controller
     {
         $registros = $sesion->registros()->where('modalidad', 'presencial')->orderBy('nombre_completo')->get(['id', 'nombre_completo', 'cargo', 'check_in_at']);
 
-        return view('panel-copladep.check-in.scanner', compact('sesion', 'registros'));
+        $municipios = CatMunicipio::select('nombre_municipio')->selectRaw('MIN(id) as id')->whereIn('id', [3, 4, 10, 15, 19, 45, 47, 53, 39, 71, 74, 85, 94, 114, 132, 140, 154, 156, 164, 169, 174, 186, 197, 207])->groupBy('nombre_municipio')->orderBy('nombre_municipio')->get();
+        $invitados = $sesion->invitados()->with('dependenciaCopladep')->orderBy('nombre_completo')->get();
+
+        return view('panel-copladep.check-in.scanner', compact('sesion', 'registros', 'municipios', 'invitados'));
     }
 
     public function checkin(Request $request, SesionCopladep $sesion)

@@ -68,6 +68,8 @@
                         <th>Tel. oficina</th>
                         <th>Tel. celular</th>
                         <th>Fecha de Registro</th>
+                        <th>Institución</th>
+                        <th>Categoría</th>
 
                         <th>Acciones</th>
                     </tr>
@@ -129,6 +131,8 @@
                             <td>{{ $registro->telefono_oficina ?? 'ND'}}</td>
                             <td>{{ $registro->telefono_celular ?? 'ND'}}</td>
                             <td>{{ $registro->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ $registro->invitado?->dependenciaCopladep?->nombre ?: $registro->invitado?->dependencia }}</td>
+                            <td>{{ $registro->invitado?->categoria }}</td>
                             <td>
                                 <div class="d-flex flex-wrap gap-2">
                                     <a class="btn btn-outline-primary btn-sm" href="{{ route('copladep-registro.pdf', $registro->token_qr ?: $registro->id) }}" target="_blank" title="Descargar pase de acceso completo en PDF">
@@ -163,6 +167,8 @@
                         <th>Tel. oficina</th>
                         <th>Tel. celular</th>
                         <th>Fecha de Registro</th>
+                        <th>Institución</th>
+                        <th>Categoría</th>
                         <th>Acciones</th>
                     </tr>
                 </tfoot>
@@ -194,7 +200,7 @@
                                 text: '<i class="bi bi-file-earmark-spreadsheet"></i> Exportar a Excel',
                                 className: 'btn btn-success btn-sm',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]
+                                    columns: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
                                 }
                             },
                             {
@@ -203,7 +209,7 @@
                                 text: '<i class="bi bi-filetype-csv"></i> Exportar a CSV',
                                 className: 'btn btn-info btn-sm text-white',
                                 exportOptions: {
-                                    columns: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]
+                                    columns: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
                                 }
                             },
                             {

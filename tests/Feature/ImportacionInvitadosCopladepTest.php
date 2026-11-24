@@ -178,6 +178,28 @@ class ImportacionInvitadosCopladepTest extends TestCase
         $this->assertSame(422, $duplicate->getStatusCode());
     }
 
+    public function test_revoking_one_qr_keeps_the_registration_and_other_attendance(): void
+    {
+        $sesion = $this->sesion();
+        $otra = SesionCopladep::create(['clave' => 'otra', 'nombre' => 'Otra', 'numero' => 1]);
+        $invitado = $sesion->invitados()->create(['nombre_completo' => 'Titular', 'sexo' => 'Mujer', 'cargo' => 'Titular', 'municipio_id' => 1, 'sesion' => 'segunda', 'check_in_express' => true]);
+        foreach (['Titular', 'Representante'] as $nombre) {
+            DB::table('registro_copladeps')->insert(['invitado_id' => $invitado->id, 'sesion_copladep_id' => $sesion->id, 'nombre_completo' => $nombre, 'tipo_asistente' => 'representante', 'modalidad' => 'presencial', 'check_in_at' => now(), 'created_at' => now(), 'updated_at' => now()]);
+        }
+        $id = DB::table('registro_copladeps')->where('nombre_completo', 'Titular')->value('id');
+        $controller = app(InvitadoCopladepController::class);
+        try {
+            $controller->revocarIngreso($otra, $id);
+            $this->fail('Se revocó un ingreso de otra sesión.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
+            $this->assertNotNull(DB::table('registro_copladeps')->where('id', $id)->value('check_in_at'));
+        }
+        $controller->revocarIngreso($sesion, $id);
+        $this->assertDatabaseHas('registro_copladeps', ['id' => $id, 'check_in_at' => null]);
+        $this->assertNotNull(DB::table('registro_copladeps')->where('nombre_completo', 'Representante')->value('check_in_at'));
+        $this->assertTrue($invitado->fresh()->check_in_express);
+    }
+
     public function test_attendance_exports_include_each_checked_in_person_and_manual_attendance(): void
     {
         $sesion = $this->sesion();

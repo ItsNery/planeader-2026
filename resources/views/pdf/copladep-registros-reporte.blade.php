@@ -119,12 +119,14 @@
             <thead>
                 <tr>
                     <th style="width: 22px; text-align: center;">No.</th>
-                    <th style="width: 65px; text-align: center;">Tipo</th>
-                    <th style="width: 130px;">Invitado Oficial (Titular)</th>
-                    <th style="width: 120px;">Representante</th>
+                    <th style="width: 45px; text-align: center;">Tipo</th>
+                    <th style="width: 95px;">Invitado Oficial (Titular)</th>
+                    <th style="width: 85px;">Representante</th>
                     <th>Cargo</th>
-                    <th style="width: 80px;">Municipio</th>
-                    <th style="width: 55px; text-align: center;">Modalidad</th>
+                    <th>Institución</th>
+                    <th>Categoría</th>
+                    <th style="width: 60px;">Municipio</th>
+                    <th style="width: 45px; text-align: center;">Modalidad</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,6 +147,8 @@
                         <td><strong>{{ $titular }}</strong></td>
                         <td>{{ $representante }}</td>
                         <td>{{ $registro->cargo }}</td>
+                        <td>{{ $registro->invitado?->dependenciaCopladep?->nombre ?: $registro->invitado?->dependencia }}</td>
+                        <td>{{ $registro->invitado?->categoria }}</td>
                         <td>{{ $municipio }}</td>
                         <td style="text-align: center;">
                             <span class="badge {{ $registro->modalidad === 'virtual' ? 'badge-virtual' : 'badge-presencial' }}">

@@ -15,6 +15,7 @@ class InvitadoCopladep extends Model
         'cargo',
         'dependencia',
         'dependencia_id',
+        'categoria',
         'municipio_id',
         'check_in_express',
         'sesion',

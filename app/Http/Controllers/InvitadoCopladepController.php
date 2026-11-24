@@ -22,7 +22,7 @@ class InvitadoCopladepController extends Controller
     {
         $this->middleware('permission:ver-invitado-copladep|crear-invitado-copladep|editar-invitado-copladep|borrar-invitado-copladep', ['only' => ['index', 'monitor', 'exportarCsv', 'exportarAsistenciaExcel', 'exportarAsistenciaPdf']]);
         $this->middleware('permission:crear-invitado-copladep', ['only' => ['store', 'importarForm', 'plantilla', 'importar']]);
-        $this->middleware('permission:editar-invitado-copladep', ['only' => ['update', 'toggleCheckInExpress']]);
+        $this->middleware('permission:editar-invitado-copladep', ['only' => ['update', 'toggleCheckInExpress', 'revocarIngreso']]);
         $this->middleware('permission:borrar-invitado-copladep', ['only' => ['destroy']]);
     }
 
@@ -162,6 +162,15 @@ class InvitadoCopladepController extends Controller
             'estado_clase' => $estado === 'Falta' ? 'bg-secondary' : ($estado === 'Asistencia con retardo' ? 'bg-warning text-dark' : 'bg-success'),
             'message' => $invitado->check_in_express ? 'Asistencia manual registrada.' : ($invitado->presente() ? 'Asistencia manual retirada; el ingreso por QR permanece registrado.' : 'Asistencia manual retirada.'),
         ]);
+    }
+
+    public function revocarIngreso(SesionCopladep $sesion, int $registro)
+    {
+        $ingreso = $sesion->registros()->whereKey($registro)->whereNotNull('check_in_at')->firstOrFail();
+        $ingreso->update(['check_in_at' => null]);
+
+        return redirect()->route('panel-copladep-sesiones.invitados.monitor', $sesion)
+            ->with('ingreso_revocado', 'Se retiró el ingreso. El registro de la persona se conserva.');
     }
 
     private function validated(Request $request): array

@@ -71,6 +71,12 @@ jobs:
           # Los PDF deben poder guardarse por el usuario del servidor web.
           sudo install -d -o user_planeacion -g www-data -m 2775 storage/app/documentos-referencia-copladep
           sudo -u www-data test -w storage/app/documentos-referencia-copladep
+          # Dompdf genera y actualiza métricas de fuentes al producir PDF.
+          sudo install -d -o user_planeacion -g www-data -m 2775 storage/fonts
+          sudo find storage/fonts -type d -exec chmod g+rwx,g+s {} +
+          sudo find storage/fonts -type f -exec chmod g+rw {} +
+          sudo -u www-data test -w storage/fonts
+          sudo -u www-data sh -c 'test -z "$(find storage/fonts -type f ! -writable -print -quit)"'
           npm install --legacy-peer-deps
           npm run prod
 
@@ -154,6 +160,12 @@ jobs:
           # Los PDF deben poder guardarse por el usuario del servidor web.
           sudo install -d -o user_planeacion -g www-data -m 2775 storage/app/documentos-referencia-copladep
           sudo -u www-data test -w storage/app/documentos-referencia-copladep
+          # Dompdf genera y actualiza métricas de fuentes al producir PDF.
+          sudo install -d -o user_planeacion -g www-data -m 2775 storage/fonts
+          sudo find storage/fonts -type d -exec chmod g+rwx,g+s {} +
+          sudo find storage/fonts -type f -exec chmod g+rw {} +
+          sudo -u www-data test -w storage/fonts
+          sudo -u www-data sh -c 'test -z "$(find storage/fonts -type f ! -writable -print -quit)"'
 
           npm install --legacy-peer-deps
           npm run prod

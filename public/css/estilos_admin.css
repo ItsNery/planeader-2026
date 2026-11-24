@@ -1554,3 +1554,28 @@ select[name="publicado"]:focus {
     .sesion-documentos__submit { margin-top: 0; justify-self: start; }
     .sesion-documentos__item { flex-wrap: wrap; }
 }
+
+
+/* Registro presencial desde el scanner */
+.checkin-nuevo { border-top: 1px solid #e1e4e2; margin-top: 1.75rem; padding-top: 1.25rem; }
+.checkin-nuevo summary { align-items: center; color: var(--color5); cursor: pointer; display: flex; font-family: var(--fontFamilyBold); gap: 1rem; justify-content: space-between; list-style: none; }
+.checkin-nuevo summary::-webkit-details-marker { display: none; }
+.checkin-nuevo summary span { align-items: center; display: flex; gap: .7rem; }
+.checkin-nuevo summary:focus-visible { outline: 2px solid #246252; outline-offset: 4px; }
+.checkin-nuevo[open] summary > i { transform: rotate(180deg); }
+.checkin-nuevo__body { padding-top: 1rem; }
+.checkin-nuevo__body > p { color: var(--text-color); line-height: 1.5; }
+.checkin-nuevo__body .form-label { font-weight: 600; margin-bottom: .35rem; }
+
+
+/* Ingresos individuales en el monitor de asistencia */
+.asiento--qr { gap: .4rem; justify-content: flex-start; padding: .65rem .55rem; }
+.asiento--qr .nombre-truncado { max-width: 100%; }
+.monitor-ingreso { align-items: center; background: rgba(255, 255, 255, .14); border-radius: .3rem; display: flex; flex-direction: column; gap: .3rem; padding: .4rem; width: 100%; }
+.monitor-ingreso__nombre { font-size: .72rem; line-height: 1.3; overflow-wrap: anywhere; }
+.monitor-ingreso__tipo { display: block; font-size: .68rem; }
+.monitor-ingreso__revocar { align-items: center; background: #fff; border: 1px solid transparent; border-radius: .3rem; color: #691b31; display: inline-flex; font-size: .7rem; font-weight: 600; gap: .3rem; line-height: 1.2; min-height: 2rem; padding: .3rem .55rem; }
+.monitor-ingreso__revocar:hover { background: #f7edef; color: #501125; }
+.monitor-ingreso__revocar:focus-visible { outline: 3px solid #691b31; outline-offset: 2px; }
+.monitor-resumen__cifras > div { min-width: 5rem; }
+@media (max-width: 480px) { .monitor-resumen__cifras { width: 100%; } .monitor-resumen__cifras > div { flex: 1 1 5rem; } }

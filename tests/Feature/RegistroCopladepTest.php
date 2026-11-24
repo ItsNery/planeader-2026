@@ -35,6 +35,12 @@ class RegistroCopladepTest extends TestCase
             $table->id();
             $table->unsignedBigInteger('sesion_copladep_id');
             $table->string('modalidad')->nullable();
+            $table->string('nombre_completo')->nullable();
+            $table->string('sexo')->nullable();
+            $table->string('cargo')->nullable();
+            $table->unsignedBigInteger('municipio_id')->nullable();
+            $table->string('sesion')->nullable();
+            $table->timestamps();
         });
         Schema::create('cat_municipios', function (Blueprint $table) {
             $table->id();
@@ -55,6 +61,7 @@ class RegistroCopladepTest extends TestCase
             $table->string('modalidad')->nullable();
             $table->string('token_qr')->nullable();
             $table->string('qr_path')->nullable();
+            $table->timestamp('check_in_at')->nullable();
             $table->timestamps();
         });
     }
@@ -149,6 +156,34 @@ class RegistroCopladepTest extends TestCase
         $this->get(route('copladep-registro.confirmacion', '7abc123'))->assertOk()->assertViewHas('registro', fn ($encontrado) => $encontrado->id === $registro->id);
         $this->get(route('copladep-registro.pdf', '7abc123'))->assertOk()->assertHeader('Content-Type', 'application/pdf');
         $this->get(route('copladep-registro.confirmacion', '7noexiste'))->assertNotFound();
+    }
+
+    public function test_on_site_registration_creates_presential_checkin_after_public_registration_closes(): void
+    {
+        $this->withoutMiddleware([\Illuminate\Auth\Middleware\Authenticate::class, \Spatie\Permission\Middleware\PermissionMiddleware::class]);
+        $sesion = $this->sesionConInvitado();
+        $sesion->update(['registro_fin' => now()->subHour()]);
+        $datos = array_merge($this->datos(), ['tipo_asistente' => 'otro', 'invitado_id' => null, 'modalidad' => 'virtual']);
+        $this->post(route('panel-copladep-sesiones.registro-presencial', $sesion), $datos)
+            ->assertRedirect(route('panel-copladep-sesiones.scanner', $sesion))->assertSessionHasNoErrors();
+        $registro = RegistroCopladep::firstOrFail();
+        $this->assertSame('presencial', $registro->modalidad);
+        $this->assertNotNull($registro->check_in_at);
+        $this->assertNotEmpty($registro->token_qr);
+        $this->assertSame($sesion->id, $registro->invitado->sesion_copladep_id);
+        $this->post(route('panel-copladep-sesiones.registro-presencial', $sesion), $datos)
+            ->assertSessionHasErrors(['nombre_completo', 'correo_electronico'], null, 'registroPresencial');
+        $this->assertDatabaseCount('registro_copladeps', 1);
+    }
+
+    public function test_on_site_registration_rejects_guests_from_another_session(): void
+    {
+        $this->withoutMiddleware([\Illuminate\Auth\Middleware\Authenticate::class, \Spatie\Permission\Middleware\PermissionMiddleware::class]);
+        $sesion = $this->sesionConInvitado();
+        DB::table('invitado_copladeps')->where('id', 1)->update(['sesion_copladep_id' => 999]);
+        $this->post(route('panel-copladep-sesiones.registro-presencial', $sesion), $this->datos())
+            ->assertSessionHasErrors(['invitado_id'], null, 'registroPresencial');
+        $this->assertDatabaseCount('registro_copladeps', 0);
     }
 
     private function sesionConInvitado(): SesionCopladep

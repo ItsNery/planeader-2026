@@ -41,13 +41,14 @@
             </a>
         </div>
         <div class="container">
-            <div class="d-flex justify-content-between align-items-end mb-3 border-bottom pb-2">
+            @if (session('ingreso_revocado'))<div class="alert alert-success" role="status">{{ session('ingreso_revocado') }}</div>@endif
+            <div class="monitor-resumen d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3 border-bottom pb-2">
                 <div>
                     <h4 class="fw-bold mb-0">Estatus de Ocupación</h4>
                     <small class="text-danger"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>En
                         vivo</small>
                 </div>
-                <div class="d-flex gap-2 text-center">
+                <div class="monitor-resumen__cifras d-flex flex-wrap gap-2 text-center">
                     <div class="bg-light px-3 py-1 border rounded">
                         <span class="d-block text-muted"
                             style="font-size: 0.6rem; text-transform: uppercase;">Esperados</span>
@@ -99,7 +100,15 @@
                             {{ $nombreCorto }}
                         </div>
                         @foreach ($invitado->ingresosQr as $ingreso)
-                            <small class="d-block">{{ $ingreso->nombre_completo }}@if ($ingreso->tipo_asistente === 'representante') (representante)@endif</small>
+                            <div class="monitor-ingreso">
+                                <span class="monitor-ingreso__nombre">{{ $ingreso->nombre_completo }}@if ($ingreso->tipo_asistente === 'representante') <span class="monitor-ingreso__tipo">(representante)</span>@endif</span>
+                                @can('editar-invitado-copladep')
+                                    <form class="revocar-ingreso" method="POST" action="{{ route('panel-copladep-sesiones.invitados.revocar-ingreso', [$sesion, $ingreso->id]) }}" data-nombre="{{ $ingreso->nombre_completo }}">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="monitor-ingreso__revocar" aria-label="Revocar ingreso de {{ $ingreso->nombre_completo }}" title="Revocar ingreso"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i><span>Revocar</span></button>
+                                    </form>
+                                @endcan
+                            </div>
                         @endforeach
 
                         @if($yaLlego)
@@ -118,8 +127,26 @@
                     return new bootstrap.Tooltip(tooltipTriggerEl)
                 });
 
-                setTimeout(function () {
-                    window.location.reload();
+                let enviando = false;
+                document.querySelectorAll('.revocar-ingreso').forEach(function (form) {
+                    form.addEventListener('submit', async function (event) {
+                        event.preventDefault();
+                        if (!window.Swal) {
+                            if (window.confirm('¿Revocar el ingreso de ' + form.dataset.nombre + '?')) { enviando = true; form.submit(); }
+                            return;
+                        }
+                        const result = await Swal.fire({
+                            title: '¿Revocar este ingreso?',
+                            text: 'Se retirará la asistencia de ' + form.dataset.nombre + '. Su registro se conservará.',
+                            icon: 'warning', showCancelButton: true,
+                            confirmButtonText: 'Sí, revocar ingreso', cancelButtonText: 'Cancelar',
+                            confirmButtonColor: '#9d2449'
+                        });
+                        if (result.isConfirmed) { enviando = true; form.submit(); }
+                    });
+                });
+                setInterval(function () {
+                    if (!enviando && !(window.Swal && Swal.isVisible()) && !document.querySelector('.grid-asientos:focus-within')) window.location.reload();
                 }, 5000);
             });
         </script>

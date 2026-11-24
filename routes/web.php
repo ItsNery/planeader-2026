@@ -205,6 +205,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel-copladep/sesiones/{sesion}/registros/{registro}/qr', [RegistroCopladepController::class, 'descargarQr'])->name('panel-copladep-sesiones.registros.qr');
     Route::delete('/panel-copladep/sesiones/{sesion}/registros/{registro}', [RegistroCopladepController::class, 'destroy'])->name('panel-copladep-sesiones.registros.destroy');
     Route::get('/panel-copladep/sesiones/{sesion}/scanner', [RegistroCopladepController::class, 'scanner'])->name('panel-copladep-sesiones.scanner');
+    Route::post('/panel-copladep/sesiones/{sesion}/scanner/registro-presencial', [RegistroCopladepController::class, 'registroPresencial'])->name('panel-copladep-sesiones.registro-presencial');
     Route::post('/panel-copladep/sesiones/{sesion}/scanner/checkin', [RegistroCopladepController::class, 'checkin'])->name('panel-copladep-sesiones.checkin');
     Route::get('/panel-copladep/sesiones/{sesion}/invitados', [InvitadoCopladepController::class, 'index'])->name('panel-copladep-sesiones.invitados.index');
     Route::get('/panel-copladep/sesiones/{sesion}/invitados/exportar-csv', [InvitadoCopladepController::class, 'exportarCsv'])->name('panel-copladep-sesiones.invitados.csv');
@@ -214,6 +215,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/panel-copladep/sesiones/{sesion}/invitados/importar', [InvitadoCopladepController::class, 'importar'])->name('panel-copladep-sesiones.invitados.importar');
     Route::put('/panel-copladep/sesiones/{sesion}/invitados/{invitado}', [InvitadoCopladepController::class, 'update'])->name('panel-copladep-sesiones.invitados.update');
     Route::delete('/panel-copladep/sesiones/{sesion}/invitados/{invitado}', [InvitadoCopladepController::class, 'destroy'])->name('panel-copladep-sesiones.invitados.destroy');
+    Route::delete('/panel-copladep/sesiones/{sesion}/monitor/ingresos/{registro}', [InvitadoCopladepController::class, 'revocarIngreso'])->name('panel-copladep-sesiones.invitados.revocar-ingreso');
     Route::get('/panel-copladep/sesiones/{sesion}/monitor', [InvitadoCopladepController::class, 'monitor'])->name('panel-copladep-sesiones.invitados.monitor');
     Route::get('/panel-copladep/sesiones/{sesion}/asistencia/excel', [InvitadoCopladepController::class, 'exportarAsistenciaExcel'])->name('panel-copladep-sesiones.asistencia.excel');
     Route::get('/panel-copladep/sesiones/{sesion}/asistencia/pdf', [InvitadoCopladepController::class, 'exportarAsistenciaPdf'])->name('panel-copladep-sesiones.asistencia.pdf');
