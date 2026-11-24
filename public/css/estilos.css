@@ -4432,6 +4432,31 @@ footer {
     font-size: 0.9rem;
 }
 
+.map-profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+    background: var(--color1);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.map-profile-link:hover,
+.map-profile-link:focus-visible {
+    background: #75102e;
+    color: #fff;
+    text-decoration: underline;
+}
+
+.map-profile-link:focus-visible {
+    outline: 3px solid #75102e;
+    outline-offset: 3px;
+}
+
 .map-retry-button {
     padding: 0.55rem 1rem;
     border: 0;

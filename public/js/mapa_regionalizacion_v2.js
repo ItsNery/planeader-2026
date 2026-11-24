@@ -18,6 +18,34 @@ document.addEventListener("DOMContentLoaded", () => {
             label: "Macrorregión",
         },
     };
+    // Slugs del catálogo de Fichas Municipales; los nombres no siempre coinciden
+    // con los del mapa y algunas microrregiones son partes de un municipio.
+    const perfilesRegionales = {
+        Microrregiones: {
+            1: "xicotepec", 2: "huauchinango", 3: "chignahuapan", 4: "zacapoaxtla",
+            5: "libres", 6: "teziutlan", 7: "san-martin-texmelucan", 8: "huejotzingo",
+            12: "amozoc", 13: "tepeaca", 14: "ciudad-serdan", 15: "tecamachalco",
+            18: "cholula", 21: "atlixco", 22: "izucar-de-matamoros", 23: "acatlan",
+            24: "tehuacan", 25: "tehuacan-2", 26: "ajalpan", 27: "cuautempan",
+            28: "chiautla", 29: "tepexi-de-rodriguez", 30: "acatzingo", 31: "tlatlauquitepec",
+        },
+        Macrorregiones: {
+            1: "sierra-norte", 2: "sierra-nororiental", 3: "valle-de-serdan",
+            4: "angelopolis", 5: "valle-de-atlixco-y-matamoros", 6: "mixteca",
+            7: "tehuacan-y-sierra-negra",
+        },
+    };
+    const partesDePuebla = new Set([9, 10, 11, 16, 17, 19, 20]);
+
+    function perfilUrl(id, layerName) {
+        if (layerName === "Microrregiones" && partesDePuebla.has(Number(id))) {
+            return "https://sei.puebla.gob.mx/fichas/municipios/puebla";
+        }
+        const slug = perfilesRegionales[layerName]?.[Number(id)];
+        if (!slug) return null;
+        const tipo = layerName === "Microrregiones" ? "microrregion" : "macrorregion";
+        return `https://sei.puebla.gob.mx/fichas/ficha/${tipo}/${slug}/perfil`;
+    }
     const cacheTtl = 24 * 60 * 60 * 1000;
     const initialView = [19.35, -97.8];
     const loader = document.getElementById("loader-mapa");
@@ -283,12 +311,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
             const data = await response.json();
             const municipalities = data.municipios || [];
+            const urlPerfil = perfilUrl(id, layerName);
+            const esParteDePuebla = layerName === "Microrregiones" && partesDePuebla.has(Number(id));
             details.innerHTML = `
                 <div class="map-selection-heading">
                     <div><span>${config.label}</span><h2>${escapeHtml(id)} - ${escapeHtml(data.nombre)}</h2></div>
                     <strong>${municipalities.length} municipios</strong>
                 </div>
                 <ul class="map-detail-list">${municipalities.map((item) => `<li>${escapeHtml(item.nombre_municipio)}</li>`).join("")}</ul>
+                ${urlPerfil ? `<a class="map-profile-link" href="${urlPerfil}" target="_blank" rel="noopener noreferrer">${esParteDePuebla ? "Consultar ficha municipal de Puebla" : "Consultar perfil en Fichas Municipales"} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span class="visually-hidden"> (abre en una nueva pestaña)</span></a>` : ""}
             `;
         } catch (error) {
             if (error.name === "AbortError") return;
