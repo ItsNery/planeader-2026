@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <strong>${municipalities.length} municipios</strong>
                 </div>
                 <ul class="map-detail-list">${municipalities.map((item) => `<li>${escapeHtml(item.nombre_municipio)}</li>`).join("")}</ul>
-                ${urlPerfil ? `<a class="map-profile-link" href="${urlPerfil}" target="_blank" rel="noopener noreferrer">${esParteDePuebla ? "Consultar ficha municipal de Puebla" : "Consultar perfil en Fichas Municipales"} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span class="visually-hidden"> (abre en una nueva pestaña)</span></a>` : ""}
+                ${urlPerfil ? `<a class="map-profile-link" href="${urlPerfil}" target="_blank" rel="noopener noreferrer">${esParteDePuebla ? "Consultar ficha municipal de Puebla" : "Consultar perfil en el Portal de Información Municipal y Regional"} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span class="visually-hidden"> (abre en una nueva pestaña)</span></a>` : ""}
             `;
         } catch (error) {
             if (error.name === "AbortError") return;
