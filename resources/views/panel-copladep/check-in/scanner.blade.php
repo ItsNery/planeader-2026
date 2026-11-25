@@ -1,30 +1,44 @@
 <x-app-layout>
     @section('title', 'Check-in QR COPLADEP')
-    <div class="container tarjeta-admin py-3">
-        <div class="form-header py-3 px-3"><h2>Check-in con QR</h2><p class="text-white mb-0">Escanea el código de acceso de {{ $sesion->nombre }}.</p></div>
+    @push('styles')
+        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    @endpush
+    <div class="container tarjeta-admin checkin-desk py-3">
+        <header class="checkin-desk__header">
+            <div>
+                @can('ver-listado-registro-copladep')
+                    <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="checkin-desk__back"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a la sesión</a>
+                @endcan
+                <h1>Control de acceso</h1>
+                <p>{{ $sesion->nombre }}</p>
+            </div>
+            <span class="checkin-desk__mode"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Atención presencial</span>
+        </header>
         <div class="checkin-scanner">
-            @can('ver-listado-registro-copladep')
-                <a href="{{ route('panel-copladep-sesiones.show', $sesion) }}" class="btn btn-outline-secondary mb-4">Volver a la sesión</a>
-            @endcan
+            <nav class="checkin-desk__nav" aria-label="Opciones de registro de asistencia">
+                <a href="#scanner-heading"><i class="fa-solid fa-qrcode" aria-hidden="true"></i> Escanear QR</a>
+                <a href="#manual-heading"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Buscar persona</a>
+                <a href="#nuevo-registro"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Nuevo registro</a>
+            </nav>
+            @if (session('registro_presencial_exito'))<div class="alert alert-success checkin-desk__notice" role="status">{{ session('registro_presencial_exito') }}</div>@endif
+            <div id="resultado" class="alert d-none checkin-scanner__result checkin-desk__notice" role="status" aria-live="polite"></div>
             <div class="checkin-scanner__layout">
                 <section class="checkin-scanner__camera" aria-labelledby="scanner-heading">
-                    <h3 id="scanner-heading" class="checkin-scanner__heading">Escanear código QR</h3>
-                    <p class="checkin-scanner__description">Activa la cámara y coloca el código dentro del encuadre. También puedes seleccionar una imagen del código.</p>
+                    <div class="checkin-desk__section-title"><span class="checkin-desk__icon"><i class="fa-solid fa-qrcode" aria-hidden="true"></i></span><div><h2 id="scanner-heading" class="checkin-scanner__heading">Escanear código QR</h2><p>La forma más rápida de registrar un ingreso.</p></div></div>
                     <div class="checkin-scanner__viewer">
                         <div id="reader" class="checkin-scanner__reader"></div>
-                        <p id="camera-placeholder" class="checkin-scanner__placeholder">La vista de la cámara aparecerá aquí.</p>
+                        <div id="camera-placeholder" class="checkin-scanner__placeholder"><span class="checkin-desk__camera-icon"><i class="fa-solid fa-camera" aria-hidden="true"></i></span><strong>Tu cámara aparecerá aquí</strong><span>Actívala y coloca el código QR frente a ella.</span></div>
                     </div>
                     <p id="camera-status" class="checkin-scanner__status" role="status" aria-live="polite">Cámara desactivada.</p>
                     <div class="checkin-scanner__actions">
-                        <button type="button" id="camera-start" class="btn btn-custom-primary">Activar cámara</button>
+                        <button type="button" id="camera-start" class="btn btn-custom-primary"><i class="fa-solid fa-camera me-2" aria-hidden="true"></i>Activar cámara</button>
                         <button type="button" id="camera-stop" class="btn btn-outline-secondary" hidden>Detener cámara</button>
                         <input type="file" id="qr-image" class="checkin-scanner__file" accept="image/*">
-                        <label for="qr-image" class="btn btn-outline-secondary checkin-scanner__file-label">Seleccionar imagen</label>
+                        <label for="qr-image" class="btn btn-outline-secondary checkin-scanner__file-label"><i class="fa-regular fa-image me-2" aria-hidden="true"></i>Usar imagen de QR</label>
                     </div>
                 </section>
                 <section class="checkin-scanner__manual" aria-labelledby="manual-heading">
-                    <h3 id="manual-heading" class="checkin-scanner__heading">Registro manual</h3>
-                    <p class="checkin-scanner__description">Busca y selecciona a la persona registrada para registrar su ingreso.</p>
+                    <div class="checkin-desk__section-title"><span class="checkin-desk__icon checkin-desk__icon--light"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></span><div><h2 id="manual-heading" class="checkin-scanner__heading">Buscar persona</h2><p>Para asistentes que ya cuentan con registro.</p></div></div>
                     <form id="manual-nombre">
                         <label class="checkin-manual__label" for="buscar-asistente">Nombre o cargo del asistente</label>
                         <div class="checkin-busqueda"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="buscar-asistente" class="form-control" type="search" autocomplete="off" placeholder="Comienza a escribir para buscar" aria-describedby="busqueda-estado"></div>
@@ -42,8 +56,10 @@
                         </fieldset>
                         <button id="nombre-submit" class="btn btn-custom-primary checkin-scanner__submit" type="submit" disabled><i class="fa-solid fa-check me-2" aria-hidden="true"></i>Registrar asistencia</button>
                     </form>
-                    <details class="checkin-nuevo" @if (session('abrir_registro_presencial')) open @endif>
-                        <summary><span><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Registrar a una persona nueva</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+                </section>
+            </div>
+                    <details id="nuevo-registro" class="checkin-nuevo" @if (session('abrir_registro_presencial')) open @endif>
+                        <summary><span class="checkin-nuevo__summary"><span class="checkin-desk__icon checkin-desk__icon--light"><i class="fa-solid fa-user-plus" aria-hidden="true"></i></span><span><strong>Registrar a una persona nueva</strong><small>Si no tiene registro, captura sus datos y marca su asistencia.</small></span></span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
                         <div class="checkin-nuevo__body">
                             <p>Completa sus datos para registrar su asistencia presencial en esta sesión.</p>
                             @if ($errors->registroPresencial->any())
@@ -53,7 +69,7 @@
                                 @csrf
                                 <div class="row g-3">
                                     <div class="col-12"><label class="form-label" for="nuevo-tipo">Tipo de asistente</label><select class="form-select" name="tipo_asistente" id="nuevo-tipo" required><option value="otro" @selected(old('tipo_asistente', 'otro') === 'otro')>No está en la lista / Otro</option><option value="titular" @selected(old('tipo_asistente') === 'titular')>Titular / persona invitada</option><option value="representante" @selected(old('tipo_asistente') === 'representante')>Representante</option></select></div>
-                                    <div class="col-12" id="nuevo-invitado-contenedor" hidden><label class="form-label" for="nuevo-invitado">Persona invitada</label><select class="form-select" id="nuevo-invitado" name="invitado_id"><option value="">Selecciona una persona invitada</option>@foreach ($invitados as $invitado)<option value="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}" data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}" data-municipio="{{ $invitado->municipio_id }}" @selected(old('invitado_id') == $invitado->id)>{{ $invitado->nombre_completo }} — {{ $invitado->cargo }}{{ $invitado->dependenciaCopladep?->nombre ? ' | ' . $invitado->dependenciaCopladep->nombre : '' }}</option>@endforeach</select></div>
+                                    <div class="col-12" id="nuevo-invitado-contenedor" hidden><label class="form-label" for="nuevo-invitado">Persona invitada</label><select class="form-select" id="nuevo-invitado" name="invitado_id" aria-describedby="nuevo-invitado-ayuda"><option value="">Selecciona una persona invitada</option>@foreach ($invitados as $invitado)<option value="{{ $invitado->id }}" data-nombre="{{ $invitado->nombre_completo }}" data-cargo="{{ $invitado->cargo }}" data-sexo="{{ $invitado->sexo }}" data-municipio="{{ $invitado->municipio_id }}" @selected(old('invitado_id') == $invitado->id)>{{ $invitado->nombre_completo }} — {{ $invitado->cargo }}{{ $invitado->dependenciaCopladep?->nombre ? ' | ' . $invitado->dependenciaCopladep->nombre : '' }}</option>@endforeach</select><small id="nuevo-invitado-ayuda" class="checkin-nuevo__ayuda">Busca por nombre, cargo o institución.</small></div>
                                     <div class="col-12"><label class="form-label" for="nuevo-nombre">Nombre completo</label><input class="form-control" id="nuevo-nombre" name="nombre_completo" value="{{ old('nombre_completo') }}" maxlength="50" required></div>
                                     <div class="col-12"><label class="form-label" for="nuevo-cargo">Cargo</label><input class="form-control" id="nuevo-cargo" name="cargo" value="{{ old('cargo') }}" maxlength="191" required></div>
                                     <div class="col-md-6"><label class="form-label" for="nuevo-sexo">Sexo</label><select class="form-select" id="nuevo-sexo" name="sexo" required><option value="">Selecciona</option><option value="Hombre" @selected(old('sexo') === 'Hombre')>Hombre</option><option value="Mujer" @selected(old('sexo') === 'Mujer')>Mujer</option></select></div>
@@ -66,28 +82,39 @@
                             </form>
                         </div>
                     </details>
-                    @if (session('registro_presencial_exito'))<div class="alert alert-success mt-3" role="status">{{ session('registro_presencial_exito') }}</div>@endif
-                    <div id="resultado" class="alert d-none checkin-scanner__result" role="status" aria-live="polite"></div>
-                </section>
-            </div>
         </div>
     </div>
     @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script src="https://unpkg.com/html5-qrcode" defer></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+                const nuevoRegistro = document.getElementById('nuevo-registro');
+                document.querySelector('a[href="#nuevo-registro"]').addEventListener('click', () => { nuevoRegistro.open = true; });
                 const nuevoTipo = document.getElementById('nuevo-tipo');
                 const nuevoInvitado = document.getElementById('nuevo-invitado');
+                const datosInvitados = new Map(Array.from(nuevoInvitado.options, option => [option.value, { ...option.dataset }]));
+                const buscadorInvitado = window.TomSelect ? new TomSelect(nuevoInvitado, {
+                    create: false,
+                    maxOptions: 100,
+                    placeholder: 'Buscar persona invitada...',
+                    render: {
+                        no_results: () => '<div class="no-results">No se encontraron personas invitadas.</div>'
+                    }
+                }) : null;
                 function actualizarTipo() {
                     const requiereInvitado = nuevoTipo.value !== 'otro';
                     document.getElementById('nuevo-invitado-contenedor').hidden = !requiereInvitado;
                     nuevoInvitado.required = requiereInvitado;
-                    if (!requiereInvitado) nuevoInvitado.value = '';
+                    if (!requiereInvitado) {
+                        if (buscadorInvitado) buscadorInvitado.clear();
+                        else nuevoInvitado.value = '';
+                    }
                 }
                 nuevoTipo.addEventListener('change', actualizarTipo);
                 nuevoInvitado.addEventListener('change', () => {
                     if (nuevoTipo.value !== 'titular' || !nuevoInvitado.value) return;
-                    const datos = nuevoInvitado.selectedOptions[0].dataset;
+                    const datos = datosInvitados.get(nuevoInvitado.value) || {};
                     for (const campo of ['nombre', 'cargo', 'sexo', 'municipio']) {
                         const input = document.getElementById('nuevo-' + campo);
                         if (datos[campo] && (input.tagName !== 'SELECT' || Array.from(input.options).some(option => option.value === datos[campo]))) input.value = datos[campo];
